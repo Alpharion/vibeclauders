@@ -2,7 +2,7 @@
 
 ## Completion boundary
 
-The local risk-model, normalized-metric, queue-validation and advisory implementation is complete and tested. It has now been refreshed with Member 1's verified canonical flights and cutoff-safe weather features (capacity run `m1-20261031T050536Z-89e2f0`), and extended with the parallel-plan evaluation additions (storm cohorts, status-quo impact, alert rates, explained failure cases, calibration experiment). Current project capability is still **partial**: no genuine AAR, complete demand or cutoff backlog is published, so queue/advice remain unavailable. Member 3's dashboard integration has not started in this repository. This is not a claim that Challenge 5 is fully satisfied.
+The local risk-model, normalized-metric, queue-validation and advisory implementation is complete and tested. It has now been refreshed with Member 1's verified canonical flights and cutoff-safe weather features (now capacity run `m1-20261031T054026Z-670c8c`, merged from branch `zeph`), and extended with the parallel-plan evaluation additions (storm cohorts, status-quo impact, alert rates, explained failure cases, calibration experiment). Current project capability is still **partial**: no genuine AAR, complete demand or cutoff backlog is published, so queue/advice remain unavailable. Member 3's v2 dashboard is on `main`; its rendering of these outputs was reviewed in `handover/message-to-member-3.md`. This is not a claim that Challenge 5 is fully satisfied.
 
 ## Published real outputs
 
@@ -11,7 +11,7 @@ The local risk-model, normalized-metric, queue-validation and advisory implement
 - `artifacts/risk/normalized_metrics.parquet`: daily UTC observed delay/cancellation/missingness cohorts with explicit denominators and outcome-reveal flags.
 - `artifacts/risk/evaluation.json`: candidate comparison, thresholds, per-airport/horizon metrics, weather vs schedule matched-cohort comparison, reliability bins, exclusions, plus the frozen contract additions `storm_cohorts`, `impact`, `alert_rates`, `failure_cases` and the `calibration_experiment` record. The legacy single `failure_case` key is kept.
 - `artifacts/risk/manifest.json`: schema, runtime, source hashes, artifact hashes, row counts and capability status.
-- `artifacts/risk/input_snapshots/8413140de27948afbe71083c9d246533/`: immutable copies of the verified upstream flights, weather-feature and storm-event bytes used for training, with upstream run provenance. Its flights and weather bytes are identical to the previous snapshot, which was removed from the tree as a duplicate (it remains in git history).
+- `artifacts/risk/input_snapshots/b11f5103991946449c7c0c7d20aa8cbb/`: immutable copies of the verified upstream flights, weather-feature and storm-event bytes used for training, with provenance pointing to capacity run `m1-20261031T054026Z-670c8c`. Superseded snapshots were removed from the tree; they remain in git history.
 - `artifacts/risk/recommendations.json`, `queue.parquet`, `decision_manifest.json`: verified unavailable result at KATL / 2025-07-15T12:00:00Z / six-hour window because demand, capacity and initial backlog are missing. Queue is empty with typed columns; no invented benefit or flight action.
 
 The run used 15,947 eligible labels from 25,299 canonical rows (16,151 target departures): 6,064 training, 6,346 validation and 3,537 test departures. All 204 cancelled departures were excluded, including seven with nonmissing delay labels. No invalid schedule, duplicate or naive-UTC rows. Seven test flight/horizon combinations were excluded because their cutoff preceded selection completion (2025-01-01T06:00Z).
@@ -82,16 +82,13 @@ Platt scaling was fitted on 2024 validation before September and judged on Septe
 ## Verification performed
 
 ```powershell
-python -m src.data_capacity run --bts-months 2023-01
 python -m src.flight_risk train
 python -m src.flight_risk decide --airport KATL --asof 2025-07-15T12:00:00Z --window-hours 6
 python -m src.flight_risk verify
-python -m pytest tests/flight_risk -q --basetemp=tmp/pt-31
+python -m pytest tests -q --basetemp=tmp/pt-all-2
 ```
 
-**Clean-clone check:** a `git archive` export of commit `707b4d5`, which has the bytes a fresh clone receives on any platform, gives `verify` passed and all Member 2 tests passing. Before the LF fix, the same check failed `verify` with a hash mismatch on `evaluation.json`. The export's full suite gives 136 passed and 2 failed; both failures are Member 1's `tests/data_capacity/test_manifest.py` (CRLF-hashed capacity JSON, plan task 1.1).
-
-All commands exited 0. **96 Member 2 tests passed.** `verify` reported `passed`, model status `partial`, decision status `unavailable`, 10,604 predictions / 3,537 flights / both airports / leads 3, 6, 12. The `tmp/` directory must exist before running pytest with `--basetemp=tmp/...`.
+All Member 2 commands exited 0. The full suite gave **248 passed, 2 skipped, 1 failed**. All 96 Member 2 tests pass. The failure is Member 1's `tests/data_capacity/test_capacity.py::test_published_forecast_schema_and_honest_status`: their code now expects an `aar_observed` column that the published `forecast.parquet` does not yet carry. `verify` reported `passed`, model status `partial`, decision status `unavailable`, 10,604 predictions / 3,537 flights / both airports / leads 3, 6, 12. The `tmp/` directory must exist before running pytest with `--basetemp=tmp/...`.
 
 Member 2 test coverage includes storm events never changing predictions, small-cohort withholding, equal-workload baseline ties, alert-rate counts, failure-case kinds, calibration decisions independent of test labels, third-airport scoring through the registry only, LF-only published JSON, leakage under changed test outcomes, original-date/2400 splits, daylight-saving ambiguity, cancelled labels, source/availability/feature validity, queue conservation, stale/mismatched populations, complete hourly windows, capacity target provenance, model selection timing, manifest tampering, generation mismatch, typed unavailable outputs and CLI publication. Test fixtures stay under tests/tmp and are not passed off as real data.
 
@@ -107,9 +104,11 @@ Member 1's first published manifest (`m1-20261031T045159Z-3df67d`) lacked the co
 
 ## Runtime and provenance
 
-Model run: `28ffd143d091491fb9a66c8015784263`; generated `2026-10-31T05:54:59.987632+00:00`. Probabilities and thresholds are identical to the previous run `b3747032ae754cc9be967b9e4ab681b9`; only the evaluation additions changed.
-Decision run: `cb6148fc59fd46afbe30c5dae43e7c46`.
-Upstream capacity run: `m1-20261031T050536Z-89e2f0`.
+Model run: `b307f1c50ba24af3b2b01b4b060c93de`; generated `2026-10-31T06:15:45.380065+00:00`.
+Decision run: `752753983daf48dfa9dbdf70a71ebb54`.
+Upstream capacity run: `m1-20261031T054026Z-670c8c`.
+
+This retrain followed Member 1's TAF/METAR validity fix (plan 1.4), which changed `weather_features.parquet`. The fix altered only columns Member 2 does not use (`cond_*` conditional-group summaries and `taf_group_valid_to_utc`). The 9 contract features, keys, availability times and statuses are identical across all 135,786 rows. As a result, probabilities, thresholds and every metric in this document match the previous runs `28ffd143…` and `b3747032…` exactly; only run identity and upstream provenance changed.
 Python `3.14.6`; numpy 2.4.6, pandas 3.0.3, scikit-learn 1.9.0, pyarrow 23.0.1.
 
 The old root requirements constrain pandas below 3, while the verified runtime uses pandas 3.0.3. Member 3 owns dependency reconciliation. Serialized model reuse requires compatible versions or retraining.
