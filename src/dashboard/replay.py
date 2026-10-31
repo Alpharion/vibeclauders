@@ -678,13 +678,23 @@ def traffic_versus(bundle: Bundle, snapshot: Snapshot, forecasts: MovementForeca
 
     groups = [("Incoming", incoming.forecast if incoming else None, value(actual_in)), ("Outgoing", outgoing.forecast if outgoing else None, value(actual_out))]
     st.plotly_chart(plots.forecast_actual_bars(groups), key="forecast-vs-actual", **CHART)
-    forecast_total = incoming.forecast + outgoing.forecast if incoming and outgoing else None
-    actual_total = None if pd.isna(actual_in) or pd.isna(actual_out) else actual_in + actual_out
+    if incoming and outgoing:
+        scope = "Total"
+        forecast_total = incoming.forecast + outgoing.forecast
+        actual_total = None if pd.isna(actual_in) or pd.isna(actual_out) else actual_in + actual_out
+    elif incoming or outgoing:
+        # compare the direction that has a forecast instead of blanking the whole row
+        scope, chosen, actual = ("Incoming", incoming, actual_in) if incoming else ("Outgoing", outgoing, actual_out)
+        forecast_total = chosen.forecast
+        actual_total = value(actual)
+    else:
+        scope, forecast_total = "Total", None
+        actual_total = None if pd.isna(actual_in) or pd.isna(actual_out) else actual_in + actual_out
     error = None if forecast_total is None or actual_total is None else actual_total - forecast_total
     delta = "—" if error is None else f"{error:+.0f}".replace("-", "−")
     html(
-        f'<div class="totals"><div>Total forecast<b class="{"" if forecast_total is not None else "none"}">{number(forecast_total)}</b></div>'
-        f'<div>Actual<b>{number(actual_total)}</b></div><div>Actual minus forecast<b class="{"red" if error else "none" if error is None else ""}">{delta}</b></div></div>'
+        f'<div class="totals"><div>{scope} forecast<b class="{"" if forecast_total is not None else "none"}">{number(forecast_total)}</b></div>'
+        f'<div>{scope} actual<b>{number(actual_total)}</b></div><div>Actual minus forecast<b class="{"red" if error else "none" if error is None else ""}">{delta}</b></div></div>'
     )
     reasons = [forecasts.reasons[d] for d in ("arrival", "departure") if d in forecasts.reasons]
     if reasons:
