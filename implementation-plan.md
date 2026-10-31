@@ -1,5 +1,7 @@
 # Challenge 5 delivery plan - contract v2
 
+> Readiness update (31 October 2026): Member 1 published chart fix and reporting-carrier capacity proxy at `5805f89b8ae908b330e1e981536f52ae1725c2ee`, run `m1-capest-20261031T072310Z-a27968`, ready for review. Organiser AAR labels remain unavailable. The proxy does not establish facility-AAR accuracy, complete queue inputs or operational savings. Use the combined verification report and manual submission checklist for acceptance; historical label-acquisition gates and merge instructions below do not authorize a main merge.
+
 > Historical architecture plan. For current ownership and deliverables, use `handover/sprint-30min/README.md`, `handover/JUDGING-DEMO.md` and `handover/SUBMISSION-CHECKLIST.md`. The user clarified that organiser AAR labels are unavailable: implement a separately labelled model capacity estimate with explicit assumptions/proxy evaluation. Earlier label-acquisition gates below do not block that work. No current completion claim follows from this plan.
 
 ## 1. Outcome and operating model

@@ -2,6 +2,8 @@
 
 This guide is the current presentation plan. Earlier plans are historical where they require organiser AAR labels or describe already-published artifacts as absent. The organisers provide no genuine AAR labels; the capacity deliverable is a separately labelled model estimate with explicit assumptions and proxy validation. Member 1 owns that estimator and all frontend changes.
 
+Member 1 published the chart fix and estimate as commit `5805f89b8ae908b330e1e981536f52ae1725c2ee`, run `m1-capest-20261031T072310Z-a27968`, ready for review. Check the combined report before treating that publication as a working demo.
+
 ## Rehearse before submission
 
 1. Run `python -m tools.delivery.verify_release` on the combined tree. A nonzero exit blocks the live demo. `--baseline` permits an absent estimator for independent testing, but still fails on any test/app error.
@@ -31,11 +33,11 @@ Scenario flight IDs: `460f3042c18b22443112` (false alarm, 0.612027) and `a6e1ef6
 | Delay probabilities and weather benefit | `artifacts/risk/evaluation.json`, matched cohorts | Modest precision; no calibrated probability guarantee |
 | Better alert prioritization | `impact.comparisons` in risk evaluation | Same alert workload; sampled departures; no intervention tested |
 | Reporting-carrier arrivals forecast | `artifacts/capacity/throughput_evaluation.json` | RMSE 9.26 vs baseline 15.43; not facility capacity accuracy |
-| Capacity estimate | Member 1's optional `capacity_estimate` publication | Absent until published; proxy target and assumptions must be visible |
+| Capacity estimate | Member 1's optional `capacity_estimate` publication | Published separately in `5805f89`; inclusion, exact-key support and combined checks must be verified |
 | Controller review suggestion | Hashed exact-key predictions in companion brief | Human review only; no capacity/routing/scheduling decision |
 | Reliable delivery | Current `output/delivery/verification.json` | Current failures and manual browser checks still matter |
 
-The challenge asks for controller recommendations, but does not explicitly demand a full rescheduling optimizer. The companion brief is a bounded review aid; it does not complete the missing capacity/recommendation integration in the app. No new UI work is assigned to Member 1 by this guide.
+The challenge asks for controller recommendations, but does not explicitly demand a full rescheduling optimizer. The companion brief is a bounded review aid. Member 1 supplies the existing-panel estimate integration; operational recommendation integration remains unavailable without complete inputs. No new UI work is assigned to Member 1 by this guide.
 
 ## Rubric coverage
 
