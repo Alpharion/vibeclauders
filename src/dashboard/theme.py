@@ -1,141 +1,242 @@
-"""Visual language of the design: small HTML pieces. All text passes through escape."""
+"""Design tokens and HTML primitives, mirroring the Figma library. All text passes through escape.
+
+TOKENS use the same names as the Figma variables' code syntax. Styling hooks are our own classes
+and the documented `st-key-*` class from `st.container(key=...)`. The only undocumented selectors
+sit in UNSTABLE_CSS, and losing them costs spacing, not function.
+"""
 from __future__ import annotations
 
 from html import escape
 
 import streamlit as st
 
-CSS = """
-<style>
-.block-container{padding:1rem 1.6rem 2rem;max-width:1680px}
-header[data-testid=stHeader]{background:transparent;height:0;pointer-events:none}
-header[data-testid=stHeader] button{pointer-events:auto}
-[data-testid=stToolbar],[data-testid=stDecoration],[data-testid=stStatusWidget]{display:none}
-.stRadio [role=radiogroup]{gap:0;background:#0C1824;border:1px solid #1E3244;border-radius:6px;width:fit-content;padding:2px;flex-wrap:nowrap}
-.stRadio [role=radiogroup] label{margin:0;padding:6px 15px;border-radius:5px;cursor:pointer;white-space:nowrap}
-.stRadio [role=radiogroup] label>div>div:not([data-testid=stMarkdownContainer]){display:none}
-[data-testid=stSidebarHeader]{padding:.3rem;height:auto;min-height:0}
-.stRadio [role=radiogroup] label:has(input:checked){background:#22B8F0}
-.stRadio [role=radiogroup] label:has(input:checked) p{color:#07131D;font-weight:600}
-[data-testid=stSidebar]{background:#0C1824;border-right:1px solid #1E3244}
-[data-testid=stSidebar] [data-testid=stSidebarContent]{padding-top:.4rem}
-h1,h2,h3{letter-spacing:-.02em}
-[data-testid=stVerticalBlockBorderWrapper]{background:#0F1E2C;border-color:#1E3244!important;border-radius:8px}
-[data-testid=stDataFrame]{border:1px solid #1E3244;border-radius:6px}
-button[data-baseweb=tab]{font-size:15px;padding:10px 20px}
-.brand{display:flex;align-items:baseline;gap:14px;padding:4px 0}
-.brand b{font-size:27px;font-weight:700;color:#fff}.brand span{color:#AFC1D2;font-size:15px}
-.page-title{font-size:27px;font-weight:700;color:#fff;margin:4px 0 0}
-.page-sub{color:#AFC1D2;font-size:15px;margin:0 0 12px}
-.badge{display:inline-block;padding:5px 11px;border-radius:5px;font-size:11.5px;font-weight:600;letter-spacing:.5px;border:1px solid #2B4257;color:#AFC1D2;white-space:nowrap}
-.badge.amber{border-color:#F2B95D;color:#F2B95D}.badge.cyan{border-color:#22B8F0;color:#7BDDFA}
-.target{color:#AFC1D2;font-size:13px;padding-top:36px;white-space:nowrap}.target b{color:#fff;font-size:16px;margin-left:8px}
-.pill{display:inline-block;min-width:38px;text-align:center;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700;color:#07131D}
-.pill.VFR{background:#4ADE9A}.pill.MVFR{background:#38A9FF}.pill.IFR{background:#F2555F}.pill.LIFR{background:#B58CFF}
-.pill.Unknown{background:#35495C;color:#E7EEF6}
-.station{background:#0F1E2C;border:1px solid #1E3244;border-radius:8px;padding:12px 14px;margin-bottom:10px}
-.station.active{border-color:#22B8F0;background:#10283A}
-.station .head{color:#fff;font-weight:600;font-size:14px}.station .head span{font-weight:400;color:#AFC1D2;font-size:13px}
-.station .now{display:flex;gap:12px;align-items:center;margin:9px 0 6px;color:#fff;font-size:18px;font-weight:600}
-.station .line{color:#C9D6E2;font-size:13px;line-height:1.55}
-.station .label{color:#8FA5B8;font-size:11.5px;margin:8px 0 5px;border-top:1px solid #1E3244;padding-top:7px}
-.chips{display:flex;gap:5px;color:#AFC1D2;font-size:11px;align-items:center}
-.source-row{display:flex;gap:9px;align-items:center;color:#C9D6E2;font-size:12.5px;padding:2.5px 0}
-.dot{width:9px;height:9px;border-radius:50%;flex:none}.dot.available{background:#4ADE9A}.dot.partial{background:#F2B95D}.dot.unavailable{background:#F2555F}
-.tile{background:#0F1E2C;border:1px solid #1E3244;border-radius:8px;padding:13px 16px;min-height:112px;margin-bottom:12px}
-.tile .label{color:#C9D6E2;font-size:13.5px}.tile .value{color:#fff;font-size:31px;font-weight:700;line-height:1.25}
-.tile .value.warn{color:#F2B95D}.tile .value.alert{color:#F2555F}
-.tile .note{color:#8FA5B8;font-size:11.5px}
-.card-title{color:#fff;font-size:16px;font-weight:600;margin:0 0 7px}
-.card-note{color:#8FA5B8;font-size:12px;margin:0 0 7px}
-.banner{border:1px solid #F2B95D;background:#2A2413;color:#F2CF8E;border-radius:6px;padding:9px 13px;font-size:13.5px;margin:0 0 10px}
-.banner.quiet{border-color:#2B4257;background:#0C1824;color:#AFC1D2}
-.grid{width:100%;border-collapse:collapse;font-size:13px;color:#DCE6F1}
-.grid th,.grid td{border:0!important}
-.grid th{color:#AFC1D2;font-weight:500;text-align:left;padding:7px 10px;border-bottom:1px solid #2B4257!important}
-.grid td{padding:7px 10px;border-bottom:1px solid #1E3244!important}
-.grid th.on,.grid td.on{background:#123045}
-.steps{display:flex;gap:6px;margin:0 0 6px}
-.step{flex:1;background:#13283A;text-align:center;padding:9px;color:#fff;font-weight:600;font-size:14px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,0 100%,12px 50%)}
-.step span{display:block;font-weight:400;color:#AFC1D2;font-size:12px}
-.check{display:flex;justify-content:space-between;gap:12px;color:#DCE6F1;font-size:13px;padding:6px 0;border-bottom:1px solid #1E3244}
-.check b{font-weight:500;white-space:nowrap}.check b.pass{color:#4ADE9A}.check b.fail{color:#F2555F}.check b.none{color:#F2B95D}
-.heat{width:100%;border-collapse:separate;border-spacing:3px;font-size:13.5px;color:#fff}
-.heat th{color:#AFC1D2;font-weight:500;padding:6px 8px;text-align:center;border:0!important}
-.heat th:first-child,.heat td:first-child{text-align:left;color:#DCE6F1;background:none;font-weight:500}
-.heat td{padding:10px 8px;text-align:center;font-weight:600;border:0!important;border-radius:3px}
-.heat th.on{color:#7BDDFA}.heat td.on{outline:2px solid #22B8F0;outline-offset:-1px}
-.scale{height:9px;border-radius:5px;background:linear-gradient(90deg,#1B2B2A,#6E6A2A,#E8A33D,#E0603C,#D01F4F);margin-top:10px}
-.scale-labels{display:flex;justify-content:space-between;color:#8FA5B8;font-size:11px;margin-top:3px}
-.bar-row{display:flex;align-items:center;gap:10px;font-size:13px;color:#DCE6F1;padding:3px 0}
-.bar-row .name{width:122px}.bar-row .bar{flex:1;height:8px;background:#1E3244;border-radius:4px;overflow:hidden}
-.bar-row .fill{height:100%;background:#F2B95D}.bar-row .fill.high{background:#F2555F}.bar-row .pct{width:42px;text-align:right}
-.split{display:flex;gap:18px}.split>div{flex:1}.split .big{font-size:29px;font-weight:700;color:#fff;line-height:1.2}.split .big small{font-size:14px;color:#AFC1D2}
-.split .cap{color:#AFC1D2;font-size:12px}
-.flight{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:#DCE6F1;padding:5px 0;border-bottom:1px solid #1E3244}
-.flight b{color:#F2B95D}.flight span.dim{color:#8FA5B8}
-.footnote{color:#6F8598;font-size:11.5px;text-align:right;margin-top:10px}
-</style>
+TOKENS = {
+    "bg-app": "#0C1117", "bg-card": "#141C25", "bg-inset": "#19232E", "border": "#2A3947",
+    "text-primary": "#F1F5F9", "text-secondary": "#93A4B5", "text-on-accent": "#0C1117",
+    "cyan": "#28C6F4", "amber": "#F4BC49", "red": "#F26B73", "green": "#62C995", "violet": "#A78BFA",
+    "cat-vfr": "#62C995", "cat-mvfr": "#3B9BFF", "cat-ifr": "#F26B73", "cat-lifr": "#A97BF5",
+    "space-xs": "4px", "space-sm": "8px", "space-md": "12px", "space-lg": "16px", "space-xl": "24px",
+    "radius-sm": "4px", "radius-md": "6px",
+}
+
+ICONS = {
+    "plane": '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+    "cloud": '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
+    "storm": '<path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"/><path d="m13 12-3 5h4l-3 5"/>',
+    "eye": '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+    "eyeoff": '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="m2 2 20 20"/>',
+    "wind": '<path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/>',
+    "thermo": '<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>',
+    "clock": '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+    "bell": '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+    "check": '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+    "cross": '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+    "alert": '<circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>',
+    "warn": '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+    "database": '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/>',
+    "file": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
+    "bars": '<path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>',
+    "globe": '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+    "info": '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+    "trend": '<path d="M22 7 13.5 15.5l-5-5L2 17"/><path d="M16 7h6v6"/>',
+    "table": '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/>',
+    "clipboard": '<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>',
+    "landing": '<path d="M2 22h20"/><path d="M3.77 10.77 2 9l2-4.5 1.12.55c.55.28.9.84.9 1.45s.35 1.17.9 1.45L8 8.5l3-6 1.05.53a2 2 0 0 1 1.09 1.52l.72 5.4a2 2 0 0 0 1.09 1.52l4.4 2.2c.42.22.78.55 1.01.96l.6 1.03c.49.88-.06 1.98-1.06 2.1l-1.18.15c-.47.06-.95-.02-1.37-.24L4.29 11.15a2 2 0 0 1-.52-.38Z"/>',
+    "takeoff": '<path d="M2 22h20"/><path d="M6.36 17.4 4 17l-2-4 1.1-.55a2 2 0 0 1 1.8 0l.17.1a2 2 0 0 0 1.8 0L8 12 5 6l.9-.45a2 2 0 0 1 2.09.2l4.02 3a2 2 0 0 0 2.1.2l4.19-2.06a2.41 2.41 0 0 1 1.73-.17L21 7a1.4 1.4 0 0 1 .87 1.99l-.38.76c-.23.46-.6.84-1.07 1.08L7.58 17.2a2 2 0 0 1-1.22.18Z"/>',
+    "swap": '<path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>',
+    "calendar": '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>',
+}
+
+_ROOT = ":root{" + "".join(f"--{name}:{value};" for name, value in TOKENS.items()) + "}"
+
+CSS = _ROOT + """
+.st-key-app-header,.st-key-toolbar{border-bottom:1px solid var(--border);padding:8px 16px;align-items:center}
+.st-key-rail{border-right:1px solid var(--border);padding:12px 16px 12px 16px}
+.st-key-main{padding:0 16px 8px;min-width:0}
+[class*="st-key-card-"]{background:var(--bg-card);padding:12px 16px}
+[class*="st-key-tile-"]{background:var(--bg-card)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{width:30px;height:30px;stroke:var(--cyan)}
+.brand b{font-size:24px;line-height:30px;font-weight:700;color:var(--text-primary);white-space:nowrap}
+.brand span{color:var(--text-secondary);font-size:14px}
+.tb-target{color:var(--text-secondary);font-size:12px;white-space:nowrap}
+.tb-target b{color:var(--text-primary);font-size:14px;font-weight:500;margin-left:8px}
+.page-title{font-size:28px;line-height:34px;font-weight:700;color:var(--text-primary);margin:0}
+.page-sub{color:var(--text-secondary);font-size:14px;line-height:20px;margin:4px 0 0}
+.card-title{display:flex;align-items:center;gap:8px;color:var(--text-primary);font-size:16px;line-height:22px;font-weight:600}
+.card-title svg{width:18px;height:18px;flex:none}
+.card-note{color:var(--text-secondary);font-size:12px;line-height:16px;margin-top:4px}
+.ico{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke:currentColor}
+.badge{display:inline-block;padding:3px 8px;border-radius:var(--radius-sm);border:1px solid var(--text-secondary);color:var(--text-secondary);font-size:11px;line-height:14px;font-weight:500;white-space:nowrap;letter-spacing:.02em}
+.badge.amber{border-color:var(--amber);color:var(--amber)}.badge.cyan{border-color:var(--cyan);color:var(--cyan)}
+.badge.green{border-color:var(--green);color:var(--green)}.badge.red{border-color:var(--red);color:var(--red)}.badge.violet{border-color:var(--violet);color:var(--violet)}
+.chip{display:inline-block;min-width:34px;text-align:center;padding:3px 8px;border-radius:var(--radius-sm);font-size:11px;line-height:14px;font-weight:600;color:var(--text-on-accent)}
+.chip.VFR{background:var(--cat-vfr)}.chip.MVFR{background:var(--cat-mvfr)}.chip.IFR{background:var(--cat-ifr)}.chip.LIFR{background:var(--cat-lifr)}.chip.Unknown{background:var(--bg-inset);color:var(--text-secondary);border:1px solid var(--border)}
+.side-title{color:var(--text-primary);font-size:16px;line-height:22px;font-weight:600;margin:0 0 4px}
+.side-line{color:var(--text-secondary);font-size:12px;line-height:18px}
+.side-line.cyan{color:var(--cyan)}
+.status-row{display:flex;gap:8px;align-items:center;font-size:12px;line-height:24px;color:var(--text-secondary)}
+.status-row span{flex:1;min-width:0}.status-row b{font-weight:400;color:var(--text-primary);white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;background:var(--text-secondary)}
+.dot.available,.dot.green{background:var(--green)}.dot.partial,.dot.amber{background:var(--amber)}.dot.unavailable,.dot.red{background:var(--red)}
+.tile{display:flex;gap:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 16px;min-height:100px;height:100%}
+.tile>svg{width:24px;height:24px;flex:none;color:var(--cyan)}
+.tile .body{min-width:0;flex:1}
+.tile .label{display:flex;justify-content:space-between;gap:8px;color:var(--text-secondary);font-size:14px;line-height:20px;font-weight:500}
+.tile .value{color:var(--text-primary);font-size:26px;line-height:32px;font-weight:700;margin:4px 0;font-variant-numeric:tabular-nums}
+.tile .note{color:var(--text-secondary);font-size:12px;line-height:16px}
+.tile.cyan .value,.tile.cyan>svg{color:var(--cyan)}.tile.violet .value,.tile.violet>svg{color:var(--violet)}.tile.red .value,.tile.red>svg{color:var(--red)}.tile.amber .value,.tile.amber>svg{color:var(--amber)}.tile.green .value,.tile.green>svg{color:var(--green)}
+.tile.muted .value{color:var(--text-secondary)}
+.strip{display:flex;align-items:center;gap:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:8px 16px;font-size:14px;line-height:20px;color:var(--text-secondary);flex-wrap:wrap}
+.strip svg{width:18px;height:18px;flex:none;color:var(--cyan)}.strip b{color:var(--text-primary);font-weight:500}
+.notice{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--amber);background:rgba(244,188,73,.08);color:var(--amber);border-radius:var(--radius-md);padding:8px 12px;font-size:13px;line-height:18px}
+.notice svg{width:18px;height:18px;flex:none;margin-top:1px}.notice.quiet{border-color:var(--border);background:var(--bg-inset);color:var(--text-secondary)}
+.notice.red{border-color:var(--red);background:rgba(242,107,115,.08);color:var(--red)}
+.notice b{font-weight:600}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-md)}
+.grid{width:100%;border-collapse:collapse;font-size:13px;line-height:18px;color:var(--text-primary);font-variant-numeric:tabular-nums}
+.grid th,.grid td{border:0!important;padding:8px 12px;text-align:left;white-space:nowrap}
+.grid td.wrap{white-space:normal;min-width:240px}
+.grid th{background:var(--bg-inset);color:var(--text-secondary);font-weight:500}
+.grid tr+tr td,.grid tr td{border-top:1px solid var(--border)!important}
+.grid tr.on td{background:var(--bg-inset);color:var(--cyan)}
+.grid th.in{color:var(--cyan)}.grid th.out{color:var(--violet)}
+.grid td.green{color:var(--green)}.grid td.red{color:var(--red)}.grid td.amber{color:var(--amber)}.grid td.dim,.grid td.secondary{color:var(--text-secondary)}
+.heat{width:100%;border-collapse:separate;border-spacing:4px;font-size:13px;color:var(--text-primary)}
+.heat th{color:var(--text-secondary);font-weight:500;padding:4px 8px;text-align:center;border:1px solid transparent!important;font-size:12px;line-height:16px;border-radius:var(--radius-sm)}
+.heat th small{display:block;font-size:11px}
+.heat th:first-child{text-align:left}.heat td:first-child{text-align:left;background:none!important;color:var(--text-primary);padding-left:0;white-space:nowrap}
+.heat td{padding:8px;text-align:center;font-weight:500;border:0!important;border-radius:var(--radius-sm);font-variant-numeric:tabular-nums}
+.heat th.on{color:var(--cyan);border-color:var(--cyan)!important}.heat td.on{outline:1px solid var(--cyan);outline-offset:-1px}
+.bar-row{display:flex;align-items:center;gap:8px;font-size:12px;line-height:20px;color:var(--text-secondary)}
+.bar-row .name{width:112px;flex:none}.bar-row .bar{flex:1;height:8px;background:var(--bg-inset);border-radius:var(--radius-sm);overflow:hidden}
+.bar-row .fill{height:100%;background:var(--amber)}.bar-row .fill.high{background:var(--red)}
+.bar-row .pct{width:36px;text-align:right;color:var(--text-primary);font-variant-numeric:tabular-nums}
+.split{display:flex;gap:16px}.split>div{flex:1;min-width:0}
+.split .cap{color:var(--text-secondary);font-size:12px;line-height:16px}
+.split .big{font-size:26px;line-height:32px;font-weight:700;color:var(--text-primary);margin-top:4px;font-variant-numeric:tabular-nums}.split .big small{font-size:14px;font-weight:500;color:var(--text-secondary)}
+.split .big.none{color:var(--text-secondary)}
+.flight{display:flex;justify-content:space-between;gap:8px;font-size:12px;line-height:20px;color:var(--text-primary)}
+.flight b{color:var(--amber);font-weight:600}.flight span.dim{color:var(--text-secondary)}
+.log{display:flex;flex-direction:column;gap:12px;margin:0;padding:0}
+.log div{display:flex;gap:12px;align-items:center;color:var(--text-primary);font-size:14px;line-height:20px}
+.log i{width:10px;height:10px;border:2px solid var(--cyan);border-radius:50%;flex:none}.log b{font-weight:600;font-variant-numeric:tabular-nums}
+.totals{display:flex;background:var(--bg-inset);border-radius:var(--radius-sm);padding:8px 12px;gap:12px}
+.totals div{flex:1;text-align:center;color:var(--text-secondary);font-size:11px;line-height:14px}
+.totals b{display:block;margin-top:2px;color:var(--text-primary);font-size:15px;line-height:20px;font-weight:600;font-variant-numeric:tabular-nums}.totals b.red{color:var(--red)}.totals b.none{color:var(--text-secondary)}
+.empty{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg-inset);border-radius:var(--radius-md);padding:24px 12px;text-align:center;color:var(--text-secondary);font-size:12px;line-height:16px}
+.empty svg{width:28px;height:28px}.empty b{color:var(--text-primary);font-size:14px;font-weight:500}
+.steps{display:flex;gap:8px}
+.step{flex:1;background:var(--bg-inset);border:1px solid var(--border);border-radius:var(--radius-sm);text-align:center;padding:4px 12px;color:var(--text-primary);font-weight:500;font-size:14px;line-height:20px}
+.step span{display:block;font-weight:500;color:var(--text-secondary);font-size:11px;line-height:14px}
+.check{display:flex;justify-content:space-between;gap:12px;color:var(--text-primary);font-size:13px;line-height:28px}
+.check b{font-weight:500;white-space:nowrap}.check b.pass{color:var(--green)}.check b.fail{color:var(--red)}.check b.none{color:var(--amber)}
+.conditions{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.conditions>svg{width:44px;height:44px;color:var(--text-primary)}
+.conditions .item{flex:1;min-width:120px;display:flex;gap:8px;align-items:center;color:var(--text-secondary);font-size:12px;line-height:16px}
+.conditions .item svg{width:20px;height:20px;flex:none}.conditions .item b{display:block;color:var(--text-primary);font-size:15px;line-height:20px;font-weight:600}
+.cat-col{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text-secondary);font-size:11px}
+.footnote{color:var(--text-secondary);font-size:11px;line-height:14px;text-align:right}
+.brand-row,.head-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 """
+
+# Undocumented Streamlit structure. Each rule is cosmetic, so a rename only loosens the layout.
+UNSTABLE_CSS = """
+.stMainBlockContainer,.block-container{padding:0!important;max-width:none!important}
+[data-testid=stHeader]{display:none}
+"""
+
+
+def inject() -> None:
+    st.html(f"<style>{CSS}{UNSTABLE_CSS}</style>")
 
 
 def html(markup: str, target=st) -> None:
     target.markdown(markup, unsafe_allow_html=True)
 
 
-def pill(category: str) -> str:
-    return f'<span class="pill {escape(category)}">{escape(category)}</span>'
+def icon(name: str) -> str:
+    return f'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">{ICONS[name]}</svg>'
 
 
-def tile(label: str, value, note: str = "", tone: str = "") -> str:
+def chip(category: str) -> str:
+    return f'<span class="chip {escape(category)}">{escape(category)}</span>'
+
+
+def badge(label: str, tone: str = "") -> str:
+    return f'<span class="badge {tone}">{escape(label)}</span>'
+
+
+def tile(label: str, value, note: str = "", tone: str = "", glyph: str | None = None, tag: str = "") -> str:
+    """Figma KPI Card. `tag` is trusted markup, normally a badge()."""
+    mark = icon(glyph) if glyph else ""
     return (
-        f'<div class="tile"><div class="label">{escape(label)}</div>'
-        f'<div class="value {tone}">{escape(str(value))}</div><div class="note">{escape(note)}</div></div>'
+        f'<div class="tile {tone}">{mark}<div class="body"><div class="label"><span>{escape(label)}</span>{tag}</div>'
+        f'<div class="value">{escape(str(value))}</div><div class="note">{escape(note)}</div></div></div>'
     )
 
 
-def title(text: str, subtitle: str = "") -> None:
-    html(f'<div class="page-title">{escape(text)}</div><div class="page-sub">{escape(subtitle)}</div>')
+def title(text: str, subtitle: str = "", target=st) -> None:
+    html(f'<div class="page-title">{escape(text)}</div><div class="page-sub">{escape(subtitle)}</div>', target)
 
 
-def card_title(text: str, note: str = "") -> None:
-    html(f'<div class="card-title">{escape(text)}</div>' + (f'<div class="card-note">{escape(note)}</div>' if note else ""))
+def card(key: str, **options):
+    return st.container(border=True, key=f"card-{key}", **options)
+
+
+def card_title(text: str, note: str = "", glyph: str | None = None, target=st) -> None:
+    mark = f'<span style="color:var(--cyan);display:flex">{icon(glyph)}</span>' if glyph else ""
+    extra = f'<div class="card-note">{escape(note)}</div>' if note else ""
+    html(f'<div class="card-title">{mark}{escape(text)}</div>{extra}', target)
+
+
+def strip(glyph: str, label: str, detail: str, target=st) -> None:
+    html(f'<div class="strip">{icon(glyph)}<b>{escape(label)}</b><span>{escape(detail)}</span></div>', target)
+
+
+def notice(text: str, tone: str = "", glyph: str = "alert", target=st) -> None:
+    html(f'<div class="notice {tone}">{icon(glyph)}<div>{text}</div></div>', target)
+
+
+def status_row(tone: str, name: str, value: str) -> str:
+    return (
+        f'<div class="status-row" title="{escape(name)}: {escape(value)}"><i class="dot {tone}"></i>'
+        f'<span>{escape(name)}</span><b>{escape(value)}</b></div>'
+    )
+
+
+def empty(glyph: str, heading: str, detail: str) -> str:
+    return f'<div class="empty">{icon(glyph)}<b>{escape(heading)}</b>{escape(detail)}</div>'
 
 
 def heat_color(share: float) -> str:
-    """Scale is capped at 40%: these conditions are rare, so the full 100% range would look flat."""
-    stops = [(27, 43, 42), (110, 106, 42), (232, 163, 61), (224, 96, 60), (208, 31, 79)]
-    position = min(share / 0.4, 1) * (len(stops) - 1)
-    low = min(int(position), len(stops) - 2)
-    mix = position - low
-    rgb = [round(a + (b - a) * mix) for a, b in zip(stops[low], stops[low + 1])]
-    return f"rgb({rgb[0]},{rgb[1]},{rgb[2]})"
+    """Sequential amber scale, capped at 60% so rare conditions still separate."""
+    return f"rgba(244,188,73,{0.08 + min(share / 0.6, 1) * 0.62:.2f})"
 
 
-def heatmap(columns: list[str], values: dict[str, list[float | None]], highlight: int | None) -> str:
+def heatmap(columns: list[tuple[str, str]], values: dict[str, list[float | None]], highlight: int | None) -> str:
     def cls(index):
         return ' class="on"' if index == highlight else ""
 
-    head = "<th></th>" + "".join(f"<th{cls(i)}>{escape(c)}</th>" for i, c in enumerate(columns))
+    head = "<th>Condition</th>" + "".join(
+        f"<th{cls(i)}>{escape(a)}<small>{escape(b)}</small></th>" for i, (a, b) in enumerate(columns)
+    )
     rows = ""
     for label, shares in values.items():
         cells = "".join(
-            f'<td{cls(i)} style="background:{"#1E3244" if s is None else heat_color(s)}">{"n/a" if s is None else f"{s:.0%}"}</td>'
+            f'<td{cls(i)} style="background:{"var(--bg-inset)" if s is None else heat_color(s)}">{"n/a" if s is None else f"{s:.0%}"}</td>'
             for i, s in enumerate(shares)
         )
         rows += f"<tr><td>{escape(label)}</td>{cells}</tr>"
-    return (
-        f'<table class="heat"><tr>{head}</tr>{rows}</table><div class="scale"></div>'
-        '<div class="scale-labels"><span>0%</span><span>10%</span><span>20%</span><span>30%</span><span>40%+</span></div>'
-    )
+    return f'<table class="heat"><tr>{head}</tr>{rows}</table>'
 
 
 def bars(values: dict[str, float | None]) -> str:
     rows = ""
     for label, share in values.items():
-        width = 0 if share is None else min(share / 0.4, 1) * 100
+        width = 0 if share is None else min(share, 1) * 100
         shown = "n/a" if share is None else f"{share:.0%}"
-        tone = " high" if share is not None and share >= 0.2 else ""
+        tone = " high" if share is not None and share >= 0.5 else ""
         rows += (
             f'<div class="bar-row"><span class="name">{escape(label)}</span><span class="bar">'
             f'<div class="fill{tone}" style="width:{width:.0f}%"></div></span><span class="pct">{shown}</span></div>'
@@ -143,14 +244,14 @@ def bars(values: dict[str, float | None]) -> str:
     return rows
 
 
-def grid(headers: list[str], rows: list[list[str]], highlight: int | None = None) -> str:
-    """Cells are trusted markup, so callers escape values or pass pill()."""
-
-    def cls(index):
-        return ' class="on"' if index == highlight else ""
-
-    head = "".join(f"<th{cls(i)}>{escape(h)}</th>" for i, h in enumerate(headers))
+def table(headers: list[str], rows: list[list[str]], selected: int | None = None, head_classes: dict[int, str] | None = None, cell_classes: dict[tuple[int, int], str] | None = None) -> str:
+    """Figma Table Row, horizontally scrollable. Cells are trusted, so callers escape values."""
+    head_classes, cell_classes = head_classes or {}, cell_classes or {}
+    head = "".join(f'<th class="{head_classes.get(i, "")}">{escape(h)}</th>' for i, h in enumerate(headers))
     body = "".join(
-        "<tr>" + "".join(f"<td{cls(i)}>{cell}</td>" for i, cell in enumerate(row)) + "</tr>" for row in rows
+        f'<tr class="{"on" if r == selected else ""}">'
+        + "".join(f'<td class="{cell_classes.get((r, c), "")}">{cell}</td>' for c, cell in enumerate(row))
+        + "</tr>"
+        for r, row in enumerate(rows)
     )
-    return f'<table class="grid"><tr>{head}</tr>{body}</table>'
+    return f'<div class="table-wrap"><table class="grid"><tr>{head}</tr>{body}</table></div>'

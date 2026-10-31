@@ -9,17 +9,23 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
+from src.dashboard.theme import TOKENS
 from src.shared import AIRPORTS
 
 REFERENCE_PATH = Path(__file__).resolve().parents[2] / "data" / "reference" / "airports.json"
 
-SERIES = ["#22B8F0", "#A78BFA", "#4ADE9A"]
-FLAG = "#F2B95D"
-CATEGORY_COLORS = {"VFR": "#4ADE9A", "MVFR": "#38A9FF", "IFR": "#F2555F", "LIFR": "#B58CFF", "Unknown": "#8FA5B8"}
-INK = "#E7EEF6"
-INK_SECONDARY = "#AFC1D2"
-GRID = "#2B4257"
+SERIES = [TOKENS["cyan"], TOKENS["violet"], TOKENS["green"]]
+FLAG = TOKENS["amber"]
+CATEGORY_COLORS = {
+    "VFR": TOKENS["cat-vfr"], "MVFR": TOKENS["cat-mvfr"], "IFR": TOKENS["cat-ifr"], "LIFR": TOKENS["cat-lifr"],
+    "Unknown": TOKENS["text-secondary"],
+}
+INK = TOKENS["text-primary"]
+INK_SECONDARY = TOKENS["text-secondary"]
+GRID = TOKENS["border"]
 SURFACE = "rgba(0,0,0,0)"
+SCHEDULED = "rgba(241,245,249,.13)"
+CONFIG = {"displayModeBar": False, "responsive": True}
 
 
 def _layout(figure: go.Figure, title: str, y_title: str, height: int = 320) -> go.Figure:
@@ -28,7 +34,7 @@ def _layout(figure: go.Figure, title: str, y_title: str, height: int = 320) -> g
         template=None,
         paper_bgcolor=SURFACE,
         plot_bgcolor=SURFACE,
-        font={"color": INK_SECONDARY},
+        font={"color": INK_SECONDARY, "family": "Inter, system-ui, sans-serif", "size": 12},
         height=height,
         margin={"l": 56, "r": 20, "t": 72, "b": 44},
         hovermode="x unified",
@@ -36,7 +42,7 @@ def _layout(figure: go.Figure, title: str, y_title: str, height: int = 320) -> g
         bargap=0.3,
         bargroupgap=0.08,
     )
-    figure.update_xaxes(gridcolor=SURFACE, linecolor=GRID)
+    figure.update_xaxes(gridcolor=SURFACE, linecolor=GRID, tickcolor=GRID)
     figure.update_yaxes(title=y_title, gridcolor=GRID, zeroline=False, rangemode="tozero")
     return figure
 
@@ -136,15 +142,16 @@ def great_circle(start: tuple[float, float], end: tuple[float, float]) -> tuple[
 def category_bars(frequency: dict[str, dict[str, float] | None], leads: list[int], clocks: list[str]) -> go.Figure:
     """One stacked bar per lead, so conditions read in time order from the top."""
     labels = [f"+{lead}h · {clock}" for lead, clock in zip(leads, clocks)]
+    gap = {"color": TOKENS["bg-card"], "width": 2}
     figure = go.Figure()
     for category, color in CATEGORY_COLORS.items():
         if category == "Unknown":
             continue
         values = [(frequency[lead] or {}).get(category) for lead in leads]
         figure.add_bar(
-            y=labels, x=values, name=category, orientation="h", marker={"color": color},
+            y=labels, x=values, name=category, orientation="h", marker={"color": color, "line": gap},
             text=[f"{v:.0%}" if v and v >= 0.06 else "" for v in values], textposition="inside",
-            textfont={"color": "#07131D"}, hovertemplate=f"{category}: %{{x:.1%}}<extra></extra>",
+            textfont={"color": TOKENS["text-on-accent"]}, hovertemplate=f"{category}: %{{x:.1%}}<extra></extra>",
         )
     _layout(figure, "", "", 240)
     figure.update_layout(barmode="stack", hovermode="closest", margin={"l": 92, "r": 12, "t": 34, "b": 30}, bargap=0.35)
@@ -153,40 +160,104 @@ def category_bars(frequency: dict[str, dict[str, float] | None], leads: list[int
     return figure
 
 
-def reporting_chart(rows: pd.DataFrame, title: str, color: str, asof: pd.Timestamp, target: pd.Timestamp) -> go.Figure:
+def hourly_volume(rows: pd.DataFrame, name: str, color: str, asof: pd.Timestamp, target: pd.Timestamp) -> go.Figure:
+    """Observed, scheduled, saved forecast and any revealed actual, each a separate mark."""
     figure = go.Figure()
     figure.add_bar(
-        x=rows["hour_utc"], y=rows["scheduled_count"], name="Scheduled", marker={"color": GRID, "cornerradius": 3},
-        text=rows["scheduled_count"], textposition="inside", textfont={"color": INK},
+        x=rows["hour_utc"], y=rows[f"{name}_scheduled"], name="Scheduled", marker={"color": SCHEDULED, "cornerradius": 3},
+        text=rows[f"{name}_scheduled"], textposition="inside", insidetextanchor="start", textfont={"color": INK_SECONDARY, "size": 11},
+        hovertemplate="Scheduled %{y}<extra></extra>",
     )
-    if "actual_count" in rows:
+    forecast = rows[rows[f"{name}_forecast"].notna()]
+    if not forecast.empty:
         figure.add_scatter(
-            x=rows["hour_utc"], y=rows["actual_count"], name="Actual", mode="lines+markers",
-            line={"color": color, "width": 2}, marker={"size": 8},
+            x=forecast["hour_utc"], y=forecast[f"{name}_forecast"], name="Forecast", mode="markers+text",
+            marker={"color": color, "size": 10}, text=[f"{v:.0f}" for v in forecast[f"{name}_forecast"]],
+            textposition="top right", textfont={"color": INK},
+            error_y={
+                "type": "data", "symmetric": False, "color": color, "thickness": 2, "width": 5,
+                "array": forecast[f"{name}_upper"] - forecast[f"{name}_forecast"],
+                "arrayminus": forecast[f"{name}_forecast"] - forecast[f"{name}_lower"],
+            },
+            hovertemplate="Forecast %{y:.1f}<extra></extra>",
         )
-    high = rows["scheduled_count"].max()
-    figure.add_vline(x=asof, line={"color": INK, "dash": "dot", "width": 1}, annotation_text="Cutoff", annotation_font_color=INK)
-    figure.add_bar(
-        x=[target], y=[rows.loc[rows["hour_utc"] == target, "scheduled_count"].max()], name="Target hour",
-        marker={"color": color, "cornerradius": 3}, hoverinfo="skip", width=2_700_000,
+    figure.add_scatter(
+        x=rows["hour_utc"], y=rows[f"{name}_observed"], name="Observed", mode="lines+markers+text",
+        line={"color": INK, "width": 2}, marker={"size": 8, "color": INK},
+        text=[f"{v:.0f}" if pd.notna(v) else "" for v in rows[f"{name}_observed"]], textposition="top center",
+        textfont={"color": INK}, hovertemplate="Observed %{y:.0f}<extra></extra>",
     )
-    _layout(figure, title, "Flights per hour", 330)
-    figure.update_layout(barmode="overlay", margin={"l": 56, "r": 14, "t": 74, "b": 40})
-    figure.update_yaxes(range=[0, (0 if pd.isna(high) else high) * 1.25 + 1])
+    if rows[f"{name}_actual"].notna().any():
+        figure.add_scatter(
+            x=rows["hour_utc"], y=rows[f"{name}_actual"], name="Actual (revealed)", mode="lines+markers",
+            line={"color": INK, "width": 2, "dash": "dot"}, marker={"size": 8, "color": TOKENS["bg-card"], "line": {"color": INK, "width": 2}},
+            hovertemplate="Actual %{y:.0f}<extra></extra>",
+        )
+    figure.add_vline(x=asof - pd.Timedelta(minutes=30), line={"color": INK_SECONDARY, "dash": "dot", "width": 1}, annotation_text="Cutoff", annotation_font_color=INK_SECONDARY)
+    figure.add_vrect(x0=target - pd.Timedelta(minutes=30), x1=target + pd.Timedelta(minutes=30), fillcolor=color, opacity=0.1, line_width=0)
+    _layout(figure, "", "Flights / hour", 300)
+    figure.update_layout(barmode="overlay", margin={"l": 48, "r": 12, "t": 34, "b": 30}, hovermode="x unified")
+    figure.update_xaxes(tickformat="%H", dtick=3_600_000, title="Hour (UTC)")
     return figure
 
 
-def ceiling_by_lead(leads: list[str], ceilings: list[float]) -> go.Figure:
-    figure = go.Figure(
-        go.Scatter(
-            x=leads, y=ceilings, mode="lines+markers+text", text=[f"{c:,.0f} ft" for c in ceilings],
-            textposition="top center", textfont={"color": INK}, line={"color": SERIES[0], "width": 2},
-            marker={"size": 9}, hovertemplate="%{x}: %{y:,.0f} ft<extra></extra>",
-        )
+def forecast_actual_bars(groups: list[tuple[str, float | None, float | None]]) -> go.Figure:
+    """Saved forecast against actual. A missing forecast stays absent rather than drawn at zero."""
+    labels = [g[0] for g in groups]
+    figure = go.Figure()
+    figure.add_bar(
+        x=labels, y=[g[1] for g in groups], name="Forecast saved at cutoff",
+        marker={"color": "rgba(40,198,244,.12)", "line": {"color": SERIES[0], "width": 2}},
+        text=[f"{g[1]:.0f}" if g[1] is not None else "No forecast" for g in groups], textposition="outside",
+        textfont={"color": SERIES[0]}, hovertemplate="Forecast %{y:.1f}<extra></extra>",
     )
-    _layout(figure, "", "Ceiling (ft AGL)", 250)
-    figure.update_yaxes(range=[0, max(ceilings) * 1.3])
+    figure.add_bar(
+        x=labels, y=[g[2] for g in groups], name="Actual", marker={"color": INK},
+        text=[f"{g[2]:.0f}" if g[2] is not None else "Missing" for g in groups], textposition="outside",
+        textfont={"color": INK}, hovertemplate="Actual %{y:.0f}<extra></extra>",
+    )
+    _layout(figure, "", "Flights", 210)
+    figure.update_layout(barmode="group", bargap=0.45, bargroupgap=0.12, margin={"l": 44, "r": 12, "t": 30, "b": 26}, hovermode="closest")
+    high = max([v for g in groups for v in g[1:] if v is not None] or [1])
+    figure.update_yaxes(range=[0, high * 1.3])
+    return figure
+
+
+def ceiling_by_lead(leads: list[str], ceilings: list[float], lower=None, upper=None) -> go.Figure:
+    """Published point forecast; a band appears only when a model publishes bounds."""
+    figure = go.Figure()
+    if lower is not None and upper is not None:
+        figure.add_scatter(x=leads, y=upper, mode="lines", line={"width": 0}, hoverinfo="skip", showlegend=False)
+        figure.add_scatter(
+            x=leads, y=lower, mode="lines", line={"width": 0}, fill="tonexty", fillcolor="rgba(40,198,244,.2)",
+            name="P10–P90", hoverinfo="skip",
+        )
+    figure.add_scatter(
+        x=leads, y=ceilings, mode="lines+markers+text", text=[f"{c:,.0f} ft" for c in ceilings],
+        textposition="top center", textfont={"color": INK}, line={"color": SERIES[0], "width": 2},
+        marker={"size": 9}, hovertemplate="%{x}: %{y:,.0f} ft<extra></extra>", showlegend=False,
+    )
+    figure.add_hline(y=1000, line={"color": FLAG, "dash": "dash", "width": 1}, annotation_text="IFR below 1,000 ft", annotation_font_color=FLAG)
+    _layout(figure, "", "Ceiling (ft AGL)", 220)
+    figure.update_yaxes(range=[0, max([*ceilings, *(upper or [])]) * 1.3])
     figure.update_layout(margin={"l": 56, "r": 20, "t": 22, "b": 34}, hovermode="closest")
+    return figure
+
+
+def reliability(rows: list[dict]) -> go.Figure:
+    """Predicted probability against observed rate. Point size is left constant: n is in the tooltip."""
+    figure = go.Figure()
+    high = max(max(r["mean_probability"], r["observed_severe_rate"]) for r in rows) * 1.1
+    figure.add_scatter(x=[0, high], y=[0, high], mode="lines", line={"color": GRID, "dash": "dash"}, hoverinfo="skip", showlegend=False)
+    figure.add_scatter(
+        x=[r["mean_probability"] for r in rows], y=[r["observed_severe_rate"] for r in rows], mode="lines+markers",
+        line={"color": SERIES[0], "width": 2}, marker={"size": 8}, customdata=[r["n"] for r in rows], showlegend=False,
+        hovertemplate="Predicted %{x:.1%}, observed %{y:.1%} (n=%{customdata})<extra></extra>",
+    )
+    _layout(figure, "", "Observed rate", 190)
+    figure.update_layout(margin={"l": 52, "r": 12, "t": 10, "b": 40}, hovermode="closest")
+    figure.update_xaxes(title="Predicted probability", tickformat=".0%")
+    figure.update_yaxes(tickformat=".0%")
     return figure
 
 

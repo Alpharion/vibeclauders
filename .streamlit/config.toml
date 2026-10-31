@@ -1,13 +1,25 @@
 [theme]
 base = "dark"
-primaryColor = "#22B8F0"
-backgroundColor = "#0A1520"
-secondaryBackgroundColor = "#0F1E2C"
-textColor = "#E7EEF6"
-font = "sans serif"
+primaryColor = "#28C6F4"
+backgroundColor = "#0C1117"
+secondaryBackgroundColor = "#19232E"
+textColor = "#F1F5F9"
+borderColor = "#2A3947"
+linkColor = "#28C6F4"
+baseRadius = "6px"
+buttonRadius = "6px"
+baseFontSize = 14
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap, sans-serif"
+showWidgetBorder = true
+dataframeHeaderBackgroundColor = "#19232E"
+dataframeBorderColor = "#2A3947"
+chartCategoricalColors = ["#28C6F4", "#A78BFA", "#62C995"]
 
 [server]
 headless = true
+
+[client]
+toolbarMode = "minimal"
 
 [browser]
 gatherUsageStats = false
