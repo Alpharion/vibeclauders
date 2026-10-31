@@ -14,8 +14,12 @@ def flight_cards(rows):
         tone = "unscored" if not known else "red" if probability >= .5 else "amber" if probability > .20 else "cyan"
         value = f"{probability:.1%}" if known else "Not scored"
         status = "REVIEW" if known and pd.notna(threshold) and probability >= threshold else "Below threshold" if known and pd.notna(threshold) else "Threshold unavailable"
-        name = row.get("Flight", row.get("flight_id", "Unknown flight"))
+        name = row.get("Flight")
+        if pd.isna(name) or not str(name).strip():
+            name = f"Flight {row.get('flight_id', 'identifier unavailable')}"
         departure = row.get("scheduled_dep_utc")
+        if pd.isna(departure):
+            departure = row.get("scheduled_dep_utc_y", row.get("scheduled_dep_utc_x"))
         when = pd.Timestamp(departure).strftime("%d %b %H:%M UTC") if pd.notna(departure) else "Time unavailable"
         threshold_text = f"{threshold:.1%}" if pd.notna(threshold) else "Unknown"
         cards.append(f'<article class="flight-risk-card {tone}"><div class="flight-risk-head"><b>{escape(str(name))}</b><span>{escape(str(row.get("origin", "")))} → {escape(str(row.get("dest", "Unknown")))}</span></div><div class="flight-risk-score"><strong>{value}</strong><span>delay &gt;45 min</span></div><div class="flight-risk-status">{status} · threshold {threshold_text}</div><div class="flight-risk-meta">{when}</div></article>')

@@ -99,7 +99,7 @@ def risk_rows(bundle: Bundle, snapshot: Snapshot) -> pd.DataFrame | None:
     flights = bundle.table("flights")
     if flights is not None and not rows.empty:
         keep = [c for c in UNREVEALED_FLIGHT_COLUMNS if c != "coverage"]
-        rows = rows.merge(flights[keep], how="left", on="flight_id")
+        rows = rows.merge(flights[keep], how="left", on="flight_id", suffixes=("", "_flight"))
     return rows
 
 
