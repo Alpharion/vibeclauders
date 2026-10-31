@@ -145,6 +145,9 @@ CSS = _ROOT + """
 .st-key-scenario-reroute strong{color:var(--cyan)}
 .st-key-app-header,.st-key-toolbar{background:linear-gradient(180deg,#22282D,#171C20)}
 [class*="st-key-card-"],.tile{box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
+.st-key-card-flight-watchlist{border-left:3px solid var(--cyan)!important;background:linear-gradient(110deg,#183039,#1B2023)}
+.st-key-card-response,.st-key-card-scenarios{border-left:3px solid var(--amber)!important;background:linear-gradient(110deg,#302A1B,#1B2023)}
+.st-key-card-coverage,.st-key-card-integrity{border-left:3px solid #8BBBD6!important;background:linear-gradient(110deg,#222C34,#1B2023)}
 """
 
 # Undocumented Streamlit structure. Each rule is cosmetic, so a rename only loosens the layout.

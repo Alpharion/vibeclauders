@@ -14,8 +14,9 @@ from src.shared import AIRPORTS
 
 REFERENCE_PATH = Path(__file__).resolve().parents[2] / "data" / "reference" / "airports.json"
 
-SERIES = [TOKENS["cyan"], TOKENS["violet"], TOKENS["green"]]
-FLAG = TOKENS["amber"]
+# Stable data colours: page/card theme changes must not recolour routes or series.
+SERIES = ["#28C6F4", "#A78BFA", "#62C995"]
+FLAG = "#F4BC49"
 CATEGORY_COLORS = {
     "VFR": TOKENS["cat-vfr"], "MVFR": TOKENS["cat-mvfr"], "IFR": TOKENS["cat-ifr"], "LIFR": TOKENS["cat-lifr"],
     "Unknown": TOKENS["text-secondary"],
