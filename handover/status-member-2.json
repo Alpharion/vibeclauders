@@ -1,7 +1,7 @@
 {
   "member": 2,
   "schema_version": "2.0",
-  "updated_at_utc": "2026-10-31T05:13:50.512816+00:00",
+  "updated_at_utc": "2026-10-31T05:57:19.889506+00:00",
   "state": "ready_for_review",
   "completed": [
     "Revised comprehensive plan and v2 shared contract",
@@ -12,18 +12,23 @@
     "Implemented gated arrival queue and review advisory",
     "Verified CLI and 85 passing tests",
     "Merged Member 1 run and added contract artifact_hashes to its manifest writer (user-authorized)",
-    "Refreshed with verified canonical flights and weather features; weather-enhanced model selected"
+    "Refreshed with verified canonical flights and weather features; weather-enhanced model selected",
+    "Plan 2.1: JSON published with LF bytes so hashes verify on any checkout",
+    "Plan 2.8: frozen parallel-plan additions recorded in handover/shared-contract.md",
+    "Plan 2.2-2.5: storm_cohorts, impact (equal alert share vs historical rate), alert_rates and three explained failure_cases published",
+    "Plan 2.6: third-airport registry tests (KORD fixture) pass without modelling changes",
+    "Plan 2.7: validation-only Platt calibration experiment; not adopted (0.07% gain < 1% rule)"
   ],
   "artifacts": [
     {
       "path": "artifacts/risk/manifest.json",
-      "run_id": "b3747032ae754cc9be967b9e4ab681b9",
+      "run_id": "28ffd143d091491fb9a66c8015784263",
       "status": "partial",
       "coverage": "KATL/KDFW, leads 3/6/12, test 2025-01-01..2025-07-31; 10,599/10,604 rows weather-enhanced"
     },
     {
       "path": "artifacts/risk/decision_manifest.json",
-      "run_id": "b82893a4224744aa8c4a54228060f1f0",
+      "run_id": "cb6148fc59fd46afbe30c5dae43e7c46",
       "status": "unavailable",
       "coverage": null
     },
@@ -35,23 +40,16 @@
     }
   ],
   "commands_tested": [
-    "python -m src.data_capacity run --bts-months 2023-01",
     "python -m src.flight_risk train",
     "python -m src.flight_risk decide --airport KATL --asof 2025-07-15T12:00:00Z --window-hours 6",
     "python -m src.flight_risk verify",
-    "python -m pytest tests/flight_risk -q --basetemp=tmp/pytest-m2-refresh-01",
-    "python -m pytest tests/data_capacity -q --basetemp=tmp/pytest-m1-03"
+    "python -m pytest tests/flight_risk -q --basetemp=tmp/pt-31"
   ],
   "test_results": [
     {
-      "command": "python -m pytest tests/flight_risk -q --basetemp=tmp/pytest-m2-refresh-01",
+      "command": "python -m pytest tests/flight_risk -q --basetemp=tmp/pt-31",
       "result": "passed",
-      "evidence": "85 passed; exit 0"
-    },
-    {
-      "command": "python -m pytest tests/data_capacity -q --basetemp=tmp/pytest-m1-03",
-      "result": "passed",
-      "evidence": "42 passed; exit 0"
+      "evidence": "96 passed; exit 0"
     },
     {
       "command": "python -m src.flight_risk verify",
@@ -80,9 +78,9 @@
     }
   ],
   "next_steps": [
-    "Obtain genuine FAA ASPM AAR extract (Member 1 supervisor) and rerun data_capacity, then train/decide/verify",
-    "Member 3 integrates refreshed run b3747032ae754cc9be967b9e4ab681b9 into the v2 dashboard",
-    "Final whole-project acceptance"
+    "Plan 2.9 at Gate 3: rerun decide only if AAR forecasts and complete demand are on main",
+    "Member 1 task 1.1: LF JSON in src/data_capacity/io.py (tests/data_capacity/test_manifest.py fails on a fresh clone until republished)",
+    "Member 3 renders storm_cohorts, impact, alert_rates and failure_cases from run 28ffd143d091491fb9a66c8015784263"
   ],
   "contract_changes_requested": []
 }
