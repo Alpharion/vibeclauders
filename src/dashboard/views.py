@@ -369,6 +369,41 @@ def history_rollup(metrics: pd.DataFrame, period: str = "W") -> pd.DataFrame:
     return pooled
 
 
+def aar_trend(forecast: pd.DataFrame | None, airport: Airport, horizon: int) -> pd.DataFrame:
+    """Held-out hours with a genuine observed AAR; empty until labels are published."""
+    if forecast is None or "aar_observed" not in forecast:
+        return pd.DataFrame()
+    rows = forecast[
+        (forecast["airport"] == airport.icao)
+        & (forecast["horizon_hours"] == horizon)
+        & (forecast["label_kind"] == "facility_aar")
+        & forecast["aar_observed"].notna()
+    ]
+    return rows.sort_values("target_hour_utc")
+
+
+def reporting_traffic(
+    traffic: pd.DataFrame, airport: Airport, asof_utc: pd.Timestamp, window_hours: int, reveal: bool
+) -> pd.DataFrame:
+    """Hourly counts in the window. Missing rows stay missing rather than becoming zero."""
+    hours = pd.date_range(asof_utc, periods=window_hours, freq="h")
+    rows = traffic[(traffic["airport"] == airport.icao) & traffic["hour_utc"].isin(hours)]
+    columns = ["hour_utc", "direction", "scheduled_count"] + (["actual_count"] if reveal else [])
+    return rows.sort_values(["hour_utc", "direction"])[columns]
+
+
+def failure_cards(*documents: dict | None) -> list:
+    """Distinct failure cases; a case can appear in both the old and new fields."""
+    cards, seen = [], set()
+    for document in documents:
+        for case in find_failure_cases(document):
+            key = (case.get("flight_id"), case.get("asof_utc")) if isinstance(case, dict) else repr(case)
+            if key not in seen:
+                seen.add(key)
+                cards.append(case)
+    return cards
+
+
 def find_failure_cases(document: dict | None) -> list:
     """Failure examples may sit anywhere in nested evaluation results."""
     found = []
@@ -377,7 +412,7 @@ def find_failure_cases(document: dict | None) -> list:
         if isinstance(node, dict):
             for key, value in node.items():
                 if "failure" in str(key).lower():
-                    found.append(value)
+                    found.extend(value if isinstance(value, list) else [value])
                 else:
                     walk(value)
         elif isinstance(node, list):

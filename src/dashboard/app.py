@@ -203,7 +203,25 @@ def forecast_tab(bundle: Bundle, snapshot: Snapshot, reveal: bool) -> None:
     st.dataframe(views.mask_outcomes(table[shown], reveal), hide_index=True)
 
 
-def traffic_tab(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
+def reporting_traffic_section(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool) -> None:
+    traffic = bundle.table("traffic_hourly")
+    st.subheader("Reporting-carrier traffic")
+    if traffic is None:
+        unavailable("Reporting-carrier traffic", bundle.problem("traffic_hourly"))
+        return
+    rows = views.reporting_traffic(traffic, snapshot.airport, snapshot.asof_utc, window, reveal)
+    if rows.empty:
+        st.info("No reporting-carrier counts in this window.")
+        return
+    st.dataframe(rows, hide_index=True)
+    st.caption(
+        f"Population: {', '.join(map(str, traffic['population'].unique()))}. Reconstructed "
+        "retrospectively, not known at the cutoff, so these counts are not queue demand."
+    )
+
+
+def traffic_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool) -> None:
+    reporting_traffic_section(bundle, snapshot, window, reveal)
     flights = bundle.table("flights")
     if flights is None:
         unavailable("Flight traffic", bundle.problem("flights"))
@@ -290,7 +308,19 @@ def decision_tab(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
         st.write(recommendations["limitations"])
 
 
-def trends_tab(bundle: Bundle, reveal: bool) -> None:
+def aar_trend_section(bundle: Bundle, snapshot: Snapshot | None) -> None:
+    st.subheader("AAR observed versus predicted")
+    rows = pd.DataFrame()
+    if snapshot:
+        rows = views.aar_trend(bundle.table("forecast"), snapshot.airport, snapshot.horizon_hours)
+    if rows.empty:
+        unavailable("AAR trend", "No held-out rows with a genuine observed AAR are published.")
+        return
+    st.plotly_chart(plots.aar_lines(rows, snapshot.airport.icao, snapshot.horizon_hours), key="aar-trend")
+    st.dataframe(rows[["target_hour_utc", "aar_observed", "aar_pred"]], hide_index=True)
+
+
+def trends_tab(bundle: Bundle, snapshot: Snapshot | None, reveal: bool) -> None:
     metrics = bundle.table("normalized_metrics")
     if metrics is None:
         unavailable("Historical trends", bundle.problem("normalized_metrics"))
@@ -315,11 +345,7 @@ def trends_tab(bundle: Bundle, reveal: bool) -> None:
         key="trend-minutes",
     )
     st.dataframe(rollup, hide_index=True)
-    st.subheader("AAR observed versus predicted")
-    unavailable(
-        "AAR trend",
-        "The contract has no published observed-AAR column for held-out rows (contract change requested).",
-    )
+    aar_trend_section(bundle, snapshot)
 
 
 def evaluation_section(title: str, document: dict | None, missing: str) -> None:
@@ -339,6 +365,47 @@ def evaluation_section(title: str, document: dict | None, missing: str) -> None:
         st.json(visible, expanded=False)
 
 
+def impact_section(document: dict | None) -> None:
+    st.subheader("Against the status quo")
+    impact = (document or {}).get("impact")
+    if not impact:
+        unavailable("Impact comparison", "No baseline comparison is published.")
+        return
+    st.caption(
+        f"Measured prediction comparison, not an operational saving. Status quo: "
+        f"{impact.get('status_quo')}. Basis: {impact.get('basis')}."
+    )
+    st.dataframe(pd.DataFrame(impact.get("comparisons", [])), hide_index=True)
+    if impact.get("limitations"):
+        st.write("Limitations:", impact["limitations"])
+
+
+def storm_section(document: dict | None) -> None:
+    st.subheader("Storm-event cohorts")
+    cohorts = (document or {}).get("storm_cohorts")
+    if not cohorts:
+        unavailable("Storm-event cohorts", "No storm cohort evaluation is published.")
+        return
+    st.caption("Retrospective NOAA annotation of held-out rows. Storm logs are never model inputs.")
+    st.dataframe(pd.DataFrame(cohorts), hide_index=True)
+
+
+def failure_section(cases: list) -> None:
+    for case in cases:
+        if not isinstance(case, dict):
+            st.json(case, expanded=False)
+            continue
+        with st.container(border=True):
+            kind = str(case.get("kind", "Failure case")).replace("_", " ").capitalize()
+            st.markdown(f"**{kind}** · {case.get('airport', 'unknown airport')} · flight {case.get('flight_id')}")
+            if case.get("explanation"):
+                st.write("Likely reason:", case["explanation"])
+            if case.get("remedy"):
+                st.write("What would help:", case["remedy"])
+            details = {k: v for k, v in case.items() if k not in ("kind", "explanation", "remedy")}
+            st.json(details, expanded=False)
+
+
 def evaluation_tab(bundle: Bundle, reveal: bool) -> None:
     st.caption("Measured prediction quality. It is separate from any simulated operational benefit.")
     evaluation_section("Delay risk", bundle.docs.get("risk_evaluation"), bundle.problem("risk_evaluation"))
@@ -347,13 +414,14 @@ def evaluation_tab(bundle: Bundle, reveal: bool) -> None:
     if predictions is not None:
         mix = ", ".join(f"{count:,} {label.lower()}" for label, count in views.model_mix(predictions).items())
         st.caption(f"Held-out predictions by model: {mix}.")
+    impact_section(bundle.docs.get("risk_evaluation"))
+    storm_section(bundle.docs.get("risk_evaluation"))
     st.subheader("Failure cases")
-    cases = views.find_failure_cases(bundle.docs.get("risk_evaluation"))
-    cases += views.find_failure_cases(bundle.docs.get("capacity_evaluation"))
+    cases = views.failure_cards(bundle.docs.get("risk_evaluation"), bundle.docs.get("capacity_evaluation"))
     if not reveal:
         st.info("Failure cases contain observed outcomes. Turn on **Reveal outcomes** to view them.", icon="🔒")
     elif cases:
-        st.json(cases, expanded=False)
+        failure_section(cases)
     else:
         st.info("No failure case published.")
 
@@ -446,11 +514,11 @@ def main() -> None:
     with tabs[0]:
         forecast_tab(bundle, snapshot, reveal) if snapshot else unavailable("Replay", "No snapshot is published.")
     with tabs[1]:
-        traffic_tab(bundle, snapshot, window) if snapshot else unavailable("Traffic", "No snapshot is published.")
+        traffic_tab(bundle, snapshot, window, reveal) if snapshot else unavailable("Traffic", "No snapshot is published.")
     with tabs[2]:
         decision_tab(bundle, snapshot, window) if snapshot else unavailable("Decision support", "No snapshot is published.")
     with tabs[3]:
-        trends_tab(bundle, reveal)
+        trends_tab(bundle, snapshot, reveal)
     with tabs[4]:
         evaluation_tab(bundle, reveal)
     with tabs[5]:

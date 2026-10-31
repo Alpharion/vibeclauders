@@ -169,6 +169,18 @@ def route_map(routes: pd.DataFrame, selected_iata: str, points=None) -> tuple[go
     return figure, unmapped
 
 
+def aar_lines(rows: pd.DataFrame, icao: str, horizon: int) -> go.Figure:
+    figure = go.Figure()
+    for column, name, color in (
+        ("aar_observed", "Observed AAR", SERIES[0]), ("aar_pred", "Predicted AAR", SERIES[1])
+    ):
+        figure.add_scatter(
+            x=rows["target_hour_utc"], y=rows[column], name=name, mode="lines",
+            line={"color": color, "width": 2},
+        )
+    return _layout(figure, f"{icao}: held-out AAR at +{horizon} h", "Arrivals per hour")
+
+
 def trend_lines(rollup: pd.DataFrame, column: str, title: str, y_title: str, percent=False) -> go.Figure:
     figure = go.Figure()
     for icao, color in AIRPORT_COLORS.items():

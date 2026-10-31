@@ -106,6 +106,17 @@ def _check_forecast(df: pd.DataFrame) -> list[str]:
     return problems
 
 
+def _check_traffic(df: pd.DataFrame) -> list[str]:
+    problems = []
+    if (df["coverage"] != "reporting_carriers").any():
+        problems.append("traffic_hourly must be coverage='reporting_carriers'")
+    if not df["direction"].isin(("arrival", "departure")).all():
+        problems.append("direction must be arrival or departure")
+    if (df[["scheduled_count", "actual_count"]] < 0).any().any():
+        problems.append("traffic counts are negative")
+    return problems
+
+
 PREDICTION_COLUMNS = (
     "flight_id", *SNAPSHOT_KEY, "probability_severe_delay", "threshold", "model_kind",
     "model_version", "run_id", "source_id", "coverage", "status",
@@ -158,6 +169,14 @@ DECISION_TABLES = {
     ),
 }
 CAPACITY_TABLES = {
+    "traffic_hourly": TableSpec(
+        "artifacts/capacity/traffic_hourly.parquet",
+        (
+            "airport", "hour_utc", "direction", "scheduled_count", "actual_count", "coverage",
+            "population", "source_id", "run_id",
+        ),
+        ("airport", "hour_utc", "direction"), ("hour_utc",), _check_traffic,
+    ),
     "flights": TableSpec(
         "data/processed/flights.parquet", FLIGHT_COLUMNS, ("flight_id",),
         ("scheduled_dep_utc", "scheduled_arr_utc"),
@@ -372,6 +391,10 @@ def _capabilities(tables, docs, groups) -> list[Capability]:
         ),
         _capability(
             "Flight traffic", "flights" in tables, capacity.problems.get("flights", []), capacity
+        ),
+        _capability(
+            "Reporting-carrier traffic", "traffic_hourly" in tables,
+            capacity.problems.get("traffic_hourly", []), capacity,
         ),
     ]
     recommendations = docs.get("recommendations") or {}
