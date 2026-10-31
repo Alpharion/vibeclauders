@@ -123,9 +123,8 @@ def hub_categories(bundle: Bundle, snapshot: Snapshot) -> dict[str, str]:
 
 
 def on_map_airport() -> None:
-    choice = st.session_state["ops-map"].airport
-    if choice in AIRPORTS:
-        st.session_state["airport"] = choice
+    # Connected airports provide context; the toolbar alone selects the focal airport.
+    pass
 
 
 def on_map_horizon() -> None:

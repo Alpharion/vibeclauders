@@ -40,7 +40,7 @@ def airport_name(icao: str) -> str:
 
 def header() -> str:
     with st.container(key="app-header", horizontal=True, vertical_alignment="center", horizontal_alignment="distribute"):
-        codes = " / ".join(info["iata"] for info in AIRPORTS.values())
+        codes = "Airport operations"
         html(f'<div class="brand">{theme.icon("globe")}<b>Weather &amp; Traffic</b><span>{escape(codes)}</span></div>')
         st.session_state.setdefault("mode", HISTORICAL)
         return st.segmented_control("Mode", [HISTORICAL, LIVE], key="mode", required=True, label_visibility="collapsed")
@@ -204,11 +204,7 @@ def replay_mode() -> None:
     st.session_state.setdefault("tab", "Weather")
     reveal = st.session_state["reveal"]
     with st.container(key="app-body", horizontal=True, gap=None):
-        with st.container(key="rail", width=268):
-            rail(bundle, snapshot, reveal)
         with st.container(key="main"):
-            from src.dashboard.flight_watchlist import render as render_flight_watchlist
-            render_flight_watchlist(bundle, snapshot)
             preview = bool(st.session_state.get("preview-held"))
             replay.render(bundle, snapshot, window, reveal, preview)
             html(f'<div class="footnote">{FOOTER}</div>')

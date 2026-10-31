@@ -61,12 +61,9 @@ def panel(replay_mode: str, footer: str, interval: int | None) -> None:
         icao = toolbar(now)
         feed = st.session_state.get("live_feed")
         with st.container(key="app-body", horizontal=True, gap=None):
-            with st.container(key="rail", width=268):
-                html(f'<div class="side-line" style="font-size:14px;font-weight:500">Weather stations ({len(AIRPORTS)})</div>')
-                components.watchlist([station_card(feed, name, name == icao, now) for name in AIRPORTS], "live-watchlist", select_station)
             with st.container(key="main"):
                 with st.container(horizontal=True, vertical_alignment="center"):
-                    theme.title("Live weather", "Latest observations · Current conditions and source freshness.")
+                    theme.title(f"{AIRPORTS[icao]['iata']} · Live weather", "Selected airport · current conditions and outlook")
                     st.space("stretch")
                     st.button("Return to replay →", key="live-return", on_click=return_to_replay, args=(replay_mode,), width="content")
                 if feed is None:
@@ -75,12 +72,11 @@ def panel(replay_mode: str, footer: str, interval: int | None) -> None:
                     current_conditions(feed, icao, now)
                     from src.dashboard.live_prediction import render as render_prediction
                     render_prediction(feed, icao, now)
-                    left, right = st.columns([68, 32], gap="small")
-                    with left, card("live-map"):
+                    with card("live-map"):
                         map_section(feed, icao, now)
-                    with right:
+                    with st.expander("Source freshness and observation history"):
                         status_column(feed, icao, now)
-                    recent_section(feed, icao)
+                        recent_section(feed, icao)
                 html(f'<div class="footnote">{footer}</div>')
 
     body()
@@ -88,7 +84,7 @@ def panel(replay_mode: str, footer: str, interval: int | None) -> None:
 
 def toolbar(now: pd.Timestamp) -> str:
     with st.container(key="toolbar", horizontal=True, vertical_alignment="center", gap="small"):
-        icao = st.selectbox("Airport", list(AIRPORTS), key="live-airport", format_func=airport_name, label_visibility="collapsed", width=248)
+        icao = st.selectbox("Airport", list(AIRPORTS), key="airport", format_func=airport_name, label_visibility="collapsed", width=248)
         feed = st.session_state.get("live_feed")
         stamp = stamp_label(feed["retrieved_at_utc"]) if feed else "Not fetched"
         html(f'<div class="tb-target">Weather snapshot<b>{now:%d %b %Y · %H:%M} UTC</b></div>')
