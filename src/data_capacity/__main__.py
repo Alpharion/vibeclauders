@@ -26,13 +26,16 @@ def main(argv=None) -> int:
     run.add_argument("--aar-file", nargs="*", help="genuine ASPM AAR export(s); default data/public/aspm/*.csv")
     run.add_argument("--aar-time-basis", choices=["local", "utc"], help="hour basis when the export has date+hour columns")
     run.add_argument("--no-storms", action="store_true", help="skip NOAA storm-event annotation")
-    run.add_argument("--bts-months", nargs="*", default=[], help="also ingest BTS PREZIP months, e.g. 2023-01 2023-02")
+    run.add_argument("--bts-months", nargs="*", default=None,
+                     help="BTS PREZIP months to ingest for traffic_hourly (default: every month in --start..--end)")
+    run.add_argument("--no-bts", action="store_true", help="skip BTS ingestion; traffic_hourly is then unavailable")
 
     acc = sub.add_parser("access", help="probe public source reachability and print JSON (no artifacts written)")
 
     bt = sub.add_parser("bts", help="download + filter BTS monthly on-time archives only")
     common(bt)
     bt.add_argument("--months", nargs="+", required=True, help="YYYY-MM ...")
+    bt.add_argument("--workers", type=int, default=4, help="parallel downloads (BTS throttles per connection)")
 
     args = p.parse_args(argv)
     try:
@@ -41,7 +44,7 @@ def main(argv=None) -> int:
 
             m = run_all(args.airports, args.start, args.end, cache_only=args.cache_only, refresh=args.refresh,
                         flights_csv=args.flights_csv, aar_files=args.aar_file, aar_time_basis=args.aar_time_basis,
-                        with_storms=not args.no_storms, bts_months=args.bts_months)
+                        with_storms=not args.no_storms, bts_months=[] if args.no_bts else args.bts_months)
             print(json.dumps({"run_id": m["run_id"], "status": m["status"],
                               "capabilities": {k: v["status"] for k, v in m["capabilities"].items()}}, indent=2))
         elif args.cmd == "access":
@@ -54,10 +57,10 @@ def main(argv=None) -> int:
             from .config import resolve_airports
 
             aps = resolve_airports(args.airports)
-            for ym in args.months:
-                y, m = map(int, ym.split("-"))
-                r = bts.acquire_month(y, m, aps, cache_only=args.cache_only, refresh=args.refresh)
-                print(ym, r["status"], r.get("filtered_rows"), r.get("error") or "")
+            recs = bts.acquire_months(args.months, aps, cache_only=args.cache_only, refresh=args.refresh,
+                                      workers=args.workers, log=lambda m: print(m, flush=True))
+            failed = [r["month"] for r in recs if r["status"] == "failed"]
+            print(f"done: {len(recs) - len(failed)} ok, failed months: {failed or 'none'}")
     except UnsupportedAirport as exc:
         print(f"unsupported airport: {exc}", file=sys.stderr)
         return 2

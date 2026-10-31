@@ -44,6 +44,8 @@ FORECAST_COLUMNS = {
     "features_available_at_utc": "datetime64[ns, UTC]", "model_train_end_utc": "datetime64[ns, UTC]",
     "model_selection_end_utc": "datetime64[ns, UTC]", "run_id": "string", "model_version": "string",
     "coverage": "string", "split": "string", "aar_baseline": "float64",
+    # parallel-plan 2.3: genuine held-out label, shown by M3 only after outcome reveal
+    "aar_observed": "float64",
 }
 
 
@@ -267,6 +269,7 @@ def fit_evaluate(features: pd.DataFrame, labels: pd.DataFrame, airports: list[Ai
         "label_kind": LABEL_KIND, "features_available_at_utc": te["available_at_utc"],
         "model_train_end_utc": train_end, "model_selection_end_utc": select_end, "run_id": run_id,
         "model_version": MODEL_VERSION, "coverage": "held_out_test", "split": "test", "aar_baseline": te["aar_baseline"],
+        "aar_observed": te["aar"],
     }).astype({c: t for c, t in FORECAST_COLUMNS.items() if not t.startswith("datetime")})
     report = {
         "status": "available", "label_kind": LABEL_KIND, "split": {

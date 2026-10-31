@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
-  "run_id": "m1-20261031T050536Z-89e2f0",
-  "generated_at_utc": "2026-10-31T05:10:55+00:00",
+  "run_id": "m1-20261031T054026Z-670c8c",
+  "generated_at_utc": "2026-10-31T05:41:57+00:00",
   "producer": "member-1/data_capacity",
   "status": "partial",
   "decision": "AAR UNAVAILABLE: FAA ASPM hourly/quarter-hour AAR requires an authenticated ASPM account (Direct Login / MyAccess). No credentialed export is present. Weather (IEM METAR/TAF), BTS and NOAA sources are automatically accessible.",
@@ -83,139 +83,155 @@
   "acquisition": {
     "weather": [
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/ATL_20221230_20230101.csv",
-        "status": "downloaded",
-        "rows": 76
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/ATL_20221230_20230101.csv",
+        "status": "cached",
+        "rows": 76,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KATL_20221230_20230101.csv",
-        "status": "downloaded",
-        "rows": 170
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KATL_20221230_20230101.csv",
+        "status": "cached",
+        "rows": 170,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/ATL_20230101_20240101.csv",
-        "status": "downloaded",
-        "rows": 10306
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/ATL_20230101_20240101.csv",
+        "status": "cached",
+        "rows": 10306,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KATL_20230101_20240101.csv",
-        "status": "downloaded",
-        "rows": 22965
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KATL_20230101_20240101.csv",
+        "status": "cached",
+        "rows": 22965,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/ATL_20240101_20250101.csv",
-        "status": "downloaded",
-        "rows": 10156
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/ATL_20240101_20250101.csv",
+        "status": "cached",
+        "rows": 10156,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KATL_20240101_20250101.csv",
-        "status": "downloaded",
-        "rows": 23968
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KATL_20240101_20250101.csv",
+        "status": "cached",
+        "rows": 23968,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/ATL_20250101_20250802.csv",
-        "status": "downloaded",
-        "rows": 6021
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/ATL_20250101_20250802.csv",
+        "status": "cached",
+        "rows": 6021,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KATL_20250101_20250802.csv",
-        "status": "downloaded",
-        "rows": 14413
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KATL_20250101_20250802.csv",
+        "status": "cached",
+        "rows": 14413,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/DFW_20221230_20230101.csv",
-        "status": "downloaded",
-        "rows": 48
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/DFW_20221230_20230101.csv",
+        "status": "cached",
+        "rows": 48,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KDFW_20221230_20230101.csv",
-        "status": "downloaded",
-        "rows": 37
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KDFW_20221230_20230101.csv",
+        "status": "cached",
+        "rows": 37,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/DFW_20230101_20240101.csv",
-        "status": "downloaded",
-        "rows": 10159
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/DFW_20230101_20240101.csv",
+        "status": "cached",
+        "rows": 10159,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KDFW_20230101_20240101.csv",
-        "status": "downloaded",
-        "rows": 12177
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KDFW_20230101_20240101.csv",
+        "status": "cached",
+        "rows": 12170,
+        "dropped_empty_groups": 7
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/DFW_20240101_20250101.csv",
-        "status": "downloaded",
-        "rows": 10323
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/DFW_20240101_20250101.csv",
+        "status": "cached",
+        "rows": 10323,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KDFW_20240101_20250101.csv",
-        "status": "downloaded",
-        "rows": 12599
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KDFW_20240101_20250101.csv",
+        "status": "cached",
+        "rows": 12599,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/DFW_20250101_20250802.csv",
-        "status": "downloaded",
-        "rows": 5929
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/DFW_20250101_20250802.csv",
+        "status": "cached",
+        "rows": 5929,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KDFW_20250101_20250802.csv",
-        "status": "downloaded",
-        "rows": 7663
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KDFW_20250101_20250802.csv",
+        "status": "cached",
+        "rows": 7662,
+        "dropped_empty_groups": 1
       }
     ],
     "bts": [
       {
         "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_1.zip",
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/bts/ontime_2023_01.zip",
-        "retrieved_at_utc": "2026-10-31T05:07:24+00:00",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_01.zip",
+        "retrieved_at_utc": "2026-10-31T04:45:42+00:00",
         "sha256": "327924faa362d360747e9e4cf37f461c877441916321754f1789fadd61fd403a",
         "bytes": 27068766,
-        "status": "downloaded",
+        "status": "cached",
         "attempts": 1,
         "source_id": "bts_ontime_prezip",
         "month": "2023-01",
-        "filtered_path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_01.parquet",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_01.parquet",
         "filtered_rows": 93215
       }
     ],
     "storms": [
       {
         "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2022_c20260625.csv.gz",
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2022_c20260625.csv.gz",
-        "retrieved_at_utc": "2026-10-31T05:10:23+00:00",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2022_c20260625.csv.gz",
+        "retrieved_at_utc": "2026-10-31T04:46:26+00:00",
         "sha256": "7d6b79d0049a6edec96b061738289daddba90be26fc9afe7b0a6fd617f21452e",
         "bytes": 11817849,
-        "status": "downloaded",
+        "status": "cached",
         "attempts": 1,
         "year": 2022
       },
       {
         "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2023_c20260323.csv.gz",
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2023_c20260323.csv.gz",
-        "retrieved_at_utc": "2026-10-31T05:10:27+00:00",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2023_c20260323.csv.gz",
+        "retrieved_at_utc": "2026-10-31T04:46:30+00:00",
         "sha256": "713784bed40d9e5a95b1d6240a654f865f3ef97703713105c7b35437270da134",
         "bytes": 12888092,
-        "status": "downloaded",
+        "status": "cached",
         "attempts": 1,
         "year": 2023
       },
       {
         "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2024_c20260728.csv.gz",
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2024_c20260728.csv.gz",
-        "retrieved_at_utc": "2026-10-31T05:10:32+00:00",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2024_c20260728.csv.gz",
+        "retrieved_at_utc": "2026-10-31T04:46:35+00:00",
         "sha256": "2070b83eccab041b36360ab73645b9a249c3eefc5b92b5b3fc0cbba4d9fcc09c",
         "bytes": 12693243,
-        "status": "downloaded",
+        "status": "cached",
         "attempts": 1,
         "year": 2024
       },
       {
         "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2025_c20260819.csv.gz",
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2025_c20260819.csv.gz",
-        "retrieved_at_utc": "2026-10-31T05:10:38+00:00",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2025_c20260819.csv.gz",
+        "retrieved_at_utc": "2026-10-31T04:46:39+00:00",
         "sha256": "d9b46b4c6aae554723cadbb9691f3d5258371c02e530ba815d6fe41e4550149f",
         "bytes": 12585209,
-        "status": "downloaded",
+        "status": "cached",
         "attempts": 1,
         "year": 2025
       }

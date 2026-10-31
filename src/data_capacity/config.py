@@ -32,19 +32,20 @@ METAR_LATENCY_MIN = 10
 # A routine TAF is issued every 6 h; anything older than this at cutoff is stale.
 TAF_MAX_AGE_H = 12
 METAR_MAX_AGE_H = 2
-# Conservative validity bound for a TAF product when the validity period is not
-# in the archive (US TAFs at ATL/DFW cover 30 h; 24 h never overstates them).
-TAF_ASSUMED_VALID_H = 24
+# TAF period length. The IEM archive omits the TAF validity header; US TAFs at
+# large hubs (ATL, DFW) cover 30 h from their 00/06/12/18Z cycle, and every
+# archived FM group for both airports starts within 30 h of issuance.
+TAF_VALIDITY_H = 30
 
 
 @dataclass(frozen=True)
 class Airport:
     icao: str
-    iata: str
-    timezone: str
-    runway_heading_deg: float
-    metar_station: str  # IEM ASOS identifier
-    taf_station: str  # IEM TAF identifier
+    iata: str | None
+    timezone: str | None
+    runway_heading_deg: float | None  # None = unknown: the airport is refused, never guessed
+    metar_station: str | None  # IEM ASOS identifier
+    taf_station: str | None  # IEM TAF identifier
     lat: float | None = None
     lon: float | None = None
 
@@ -63,50 +64,72 @@ def registry_source() -> str:
 
         if hasattr(shared, "AIRPORTS"):
             return "src.shared.AIRPORTS"
-    except Exception:
+    except ImportError:
         pass
     return "src.data_capacity.config fallback (src.shared absent)"
 
 
-def load_registry() -> dict[str, Airport]:
-    """Return {ICAO: Airport}. Prefer the shared registry when present."""
-    try:
-        from src.shared import AIRPORTS  # type: ignore
+def airport_from_record(key: str, rec) -> Airport:
+    """Build an Airport from a registry record (dict or object). Missing fields
+    stay None so resolve_airports can refuse the airport with a reason."""
+    def get(k):
+        return rec.get(k) if isinstance(rec, dict) else getattr(rec, k, None)
 
-        out = {}
-        for key, rec in AIRPORTS.items():
-            get = rec.get if isinstance(rec, dict) else (lambda k, d=None, r=rec: getattr(r, k, d))
-            icao = get("icao") or key
-            out[icao] = Airport(
-                icao=icao,
-                iata=get("iata"),
-                timezone=get("timezone") or get("tz"),
-                runway_heading_deg=float(get("heading") if get("heading") is not None else get("runway_heading_deg")),
-                metar_station=get("metar_station") or get("iata"),
-                taf_station=get("taf_station") or icao,
-                lat=get("lat"),
-                lon=get("lon"),
-            )
-        return out
-    except Exception:
-        return dict(_FALLBACK_REGISTRY)
+    icao = (get("icao") or key).upper()
+    iata = get("iata")
+    heading = get("heading") if get("heading") is not None else get("runway_heading_deg")
+    return Airport(
+        icao=icao,
+        iata=iata,
+        timezone=get("timezone") or get("tz"),
+        runway_heading_deg=float(heading) if heading is not None else None,
+        metar_station=get("metar_station") or iata,
+        taf_station=get("taf_station") or icao,
+        lat=get("lat"),
+        lon=get("lon"),
+    )
+
+
+def load_registry(records: dict | None = None) -> dict[str, Airport]:
+    """Return {ICAO: Airport}. ``records`` overrides the registry (tests use a
+    test-only registry this way); otherwise the shared registry is used, and
+    the built-in fallback only when src.shared cannot be imported."""
+    if records is None:
+        try:
+            from src.shared import AIRPORTS as records  # type: ignore
+        except ImportError:
+            return dict(_FALLBACK_REGISTRY)
+    out = {}
+    for key, rec in records.items():
+        ap = airport_from_record(key, rec)
+        out[ap.icao] = ap
+    return out
 
 
 class UnsupportedAirport(KeyError):
     pass
 
 
-def resolve_airports(codes: list[str]) -> list[Airport]:
-    reg = load_registry()
-    by_iata = {a.iata: a for a in reg.values()}
+REQUIRED_FIELDS = {"timezone": "timezone", "runway_heading_deg": "runway heading", "iata": "IATA code",
+                   "metar_station": "METAR station", "taf_station": "TAF station"}
+
+
+def resolve_airports(codes: list[str], registry: dict[str, Airport] | None = None) -> list[Airport]:
+    """Resolve ICAO/IATA codes. Unknown airports, or airports missing any field
+    the pipeline needs (timezone, runway heading, ...), raise UnsupportedAirport
+    instead of falling back to a guessed default."""
+    reg = registry if registry is not None else load_registry()
+    by_iata = {a.iata: a for a in reg.values() if a.iata}
     out = []
     for code in codes:
         code = code.upper()
         ap = reg.get(code) or by_iata.get(code)
-        if ap is None or not ap.timezone:
-            raise UnsupportedAirport(
-                f"{code}: no registry metadata (timezone/heading); unsupported rather than guessed"
-            )
+        if ap is None:
+            raise UnsupportedAirport(f"{code}: not in the airport registry; unsupported rather than guessed")
+        missing = [label for field, label in REQUIRED_FIELDS.items() if getattr(ap, field) in (None, "")]
+        if missing:
+            raise UnsupportedAirport(f"{ap.icao}: registry entry lacks {', '.join(missing)}; "
+                                     "unsupported rather than guessed")
         out.append(ap)
     return out
 
