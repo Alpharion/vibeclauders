@@ -56,6 +56,13 @@ def test_missing_inputs_replace_stale_advice_with_typed_empty_queue(tmp_path):
     verify_manifest(args.output / "decision_manifest.json", [args.output / "queue.parquet", args.output / "recommendations.json"])
 
 
+def test_decision_json_is_lf_only_so_hashes_survive_any_checkout(tmp_path):
+    args = decision_inputs(tmp_path)
+    decide(args)
+    for name in ["recommendations.json", "decision_manifest.json"]:
+        assert b"\r" not in (args.output / name).read_bytes(), name
+
+
 def test_decision_rejects_corrupted_source_even_if_parquet_readable(tmp_path):
     args = decision_inputs(tmp_path)
     table = pd.read_parquet(args.capacity)
