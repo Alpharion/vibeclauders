@@ -27,3 +27,7 @@ Commands were checked against the argument parsers in `src/data_capacity/__main_
 On 31 October 2026 an isolated Python 3.14 virtual environment was created at `tmp/presentation-clean-env`, without system site packages. `python -m pip install -r requirements-observed.txt` completed successfully; `python -m pip check` reported no broken requirements. The final extracted-release gate uses this environment.
 
 A real browser loaded the redesigned Historical replay and Evaluation screens. The six-cell capacity-proxy RMSE table, selected support, equal-alert comparison and automation/non-LLM explanation were visible. The initial Overview rendered map imagery and airport/route labels; this is a spot check, not proof of all remote tiles or the full browser matrix. The timed presenter rehearsal, submission and supervisor sign-off remain pending.
+
+## Final release evidence
+
+Fresh isolated environment: **506 tests passed**, risk verifier passed, and all 13 app smoke cases passed. Each of the 12 airport/lead/reveal combinations traversed all five tabs (60 tab checks). Runtime fingerprint: `35e1dc89978133687d5d09bb1b3eff8b13572d09273ce5d7f815c682ca4779cc`. Final archive is rebuilt after documentation freeze; its adjacent receipt records the commit and hash. Models and published inputs are unchanged.

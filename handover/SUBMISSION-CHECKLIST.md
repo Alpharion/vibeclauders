@@ -43,7 +43,7 @@ Confirm `execution_evidence_matches` is true and verification status is `verifie
 |---|---|
 | Tested runtime commit | Current runtime fingerprint in verification.json; final documentation-frozen commit in archive receipt. `0fe4385` is historical. |
 | Member 1 publication run | `m1-capest-20261031T072310Z-a27968` (included and hash-verified) |
-| Automated gate result/report | Read current `output/delivery/verification.json` and confirm its runtime fingerprint matches the final package; previous 501-test result is historical. |
+| Automated gate result/report | Verified in a fresh pinned environment: 506 tests, risk verifier, 13 app cases with all five tabs per combination; fingerprint in `output/delivery/verification.json`. |
 | Final ZIP SHA256 | Adjacent `challenge-5-implementation.sha256` and receipt after documentation freeze |
 | Fresh-environment install | Record actual command/result separately; the release gate alone does not test installation |
 | Browser review and reviewer | Pending |

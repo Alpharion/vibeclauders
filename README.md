@@ -100,3 +100,5 @@ python -m tools.delivery.verify_release
 ```
 
 This tests a fresh package extraction and requires the capacity-estimate publication. It records actual results in `output/delivery/verification.json` and `VERIFICATION.md`; failed tests, app errors or changing runtime inputs return a nonzero exit and do not replace the last release ZIP. `--baseline` permits absence of the estimator but never waives failures. Successful automatic checks still require browser review and supervisor acceptance. A clean dependency install is not tested by this command.
+
+The presentation-readiness integration was also checked in an isolated environment installed from `requirements-observed.txt`: dependency check clean, 506 tests passed and all five tabs passed across the airport/lead/reveal matrix. See `handover/presentation-gap-resolution.md` for exact scope and remaining human gates.
