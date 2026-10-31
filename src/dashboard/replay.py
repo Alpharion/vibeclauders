@@ -228,11 +228,12 @@ def capacity_card(bundle: Bundle, snapshot: Snapshot) -> None:
 
 
 def weather_risk_card(bundle: Bundle, snapshot: Snapshot) -> None:
-    probabilities, reason = outputs.weather_probabilities(bundle, snapshot.airport, snapshot.asof_utc)
+    probabilities, reason = outputs.display_probabilities(bundle, snapshot.airport, snapshot.asof_utc)
     weather = bundle.table("weather")
     with card("weather-risk"):
         if probabilities is not None:
-            card_title("Weather risk", f"FORECAST · +{snapshot.horizon_hours}h · {window_label(snapshot)}", glyph="cloud")
+            tag = outputs.PLACEHOLDER_LABEL if outputs.is_placeholder(probabilities) else "FORECAST"
+            card_title("Weather risk", f"{tag} · +{snapshot.horizon_hours}h · {window_label(snapshot)}", glyph="cloud")
             html(theme.bars({c: outputs.probability(probabilities, c, snapshot.horizon_hours) for c in outputs.PROBABILITY_CONDITIONS}))
         elif weather is not None:
             card_title("Weather base rates", "Past frequency, same season and hour. Not a forecast.", glyph="cloud")
@@ -281,16 +282,18 @@ def review_brief_download(bundle: Bundle, snapshot: Snapshot) -> None:
 
 
 def weather_tab(bundle: Bundle, snapshot: Snapshot) -> None:
-    probabilities, reason = outputs.weather_probabilities(bundle, snapshot.airport, snapshot.asof_utc)
+    probabilities, reason = outputs.display_probabilities(bundle, snapshot.airport, snapshot.asof_utc)
     row, feature_reason = views.weather_feature_row(bundle, snapshot)
     outlook = views.airport_outlook(bundle, snapshot.airport.icao, snapshot.asof_utc)
     with st.container(horizontal=True, vertical_alignment="bottom"):
         theme.title("Weather outlook", f"{snapshot.airport.iata} · Probability of conditions across +3h, +6h, +12h")
         st.space("stretch")
-        source = "Probabilities from weather model" if probabilities is not None else "No weather probability model published"
+        source = "Placeholder values, not a weather model" if outputs.is_placeholder(probabilities) else "Probabilities from weather model"
         html(f'<div class="card-note" style="white-space:nowrap">Forecast cutoff {clock(snapshot.asof_utc)} UTC · {source}</div>')
     if snapshot.airport.heading is None:
         row, feature_reason = None, f"{snapshot.airport.icao} has no configured runway heading, so runway-relative wind is refused."
+    if outputs.is_placeholder(probabilities):
+        theme.notice(f"<b>{outputs.PLACEHOLDER_LABEL}.</b> Probabilities, category shares and the ceiling range on this page are fixed proof-of-concept values. They do not change with airport, cutoff or weather.")
     probability_tiles(row, probabilities, snapshot, feature_reason, reason)
     from src.dashboard.weather_actions import render_weather_actions
     render_weather_actions(row, snapshot, bundle)
@@ -322,7 +325,8 @@ def probability_tiles(row, probabilities, snapshot: Snapshot, feature_reason, re
         share = outputs.probability(probabilities, condition, snapshot.horizon_hours)
         if share is not None:
             tone = "red" if share >= outputs.ALERT_THRESHOLD else "amber"
-            html(tile(condition, f"{share:.0%}", f"FORECAST · {lead}", tone, icons[condition], badge("FORECAST")), column)
+            tag = badge("ILLUSTRATIVE", "amber") if outputs.is_placeholder(probabilities) else badge("FORECAST")
+            html(tile(condition, f"{share:.0%}", f"{'ILLUSTRATIVE' if outputs.is_placeholder(probabilities) else 'FORECAST'} · {lead}", tone, icons[condition], tag), column)
         else:
             state = outputs.taf_state(row, condition) if row is not None else "Unknown"
             html(tile(condition, "—", f"Model probability unavailable · TAF: {state}", "muted", icons[condition], badge("UNAVAILABLE")), column)
@@ -413,7 +417,8 @@ def category_section(probabilities, histories: dict, snapshot: Snapshot) -> None
 def ceiling_section(probabilities, outlook: dict) -> None:
     modelled = None if probabilities is None else probabilities[probabilities["condition"] == "Ceiling"].sort_values("horizon_hours")
     if modelled is not None and not modelled.empty:
-        card_title("Ceiling forecast & uncertainty", "Probability-model forecast · median and 80% interval (P10–P90)", glyph="trend")
+        kind = outputs.PLACEHOLDER_LABEL if outputs.is_placeholder(probabilities) else "Probability-model forecast"
+        card_title("Ceiling forecast & uncertainty", f"{kind} · median and 80% interval (P10–P90)", glyph="trend")
         labels = [f"+{lead}h" for lead in modelled["horizon_hours"]]
         figure = plots.ceiling_by_lead(labels, list(modelled["value"]), list(modelled["lower"]), list(modelled["upper"]))
         st.plotly_chart(figure, key="ceiling", **CHART)

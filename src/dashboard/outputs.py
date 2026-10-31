@@ -44,6 +44,36 @@ def weather_probabilities(bundle: Bundle, airport: Airport, asof_utc: pd.Timesta
     return rows, None
 
 
+PLACEHOLDER_VERSION = "Illustrative placeholder, not a model"
+PLACEHOLDER_LABEL = "ILLUSTRATIVE · NOT A MODEL"
+# Fixed proof-of-concept values from the UI handoff. They ignore the airport, cutoff and weather.
+PLACEHOLDER_SHARES = {
+    3: {"Thunderstorm": .70, "IFR / LIFR": .55, "Visibility < 3 SM": .35, "Gusts ≥ 25 kt": .60, "VFR": .20, "MVFR": .25, "IFR": .45, "LIFR": .10},
+    6: {"Thunderstorm": .45, "IFR / LIFR": .30, "Visibility < 3 SM": .20, "Gusts ≥ 25 kt": .35, "VFR": .35, "MVFR": .35, "IFR": .25, "LIFR": .05},
+    12: {"Thunderstorm": .20, "IFR / LIFR": .10, "Visibility < 3 SM": .10, "Gusts ≥ 25 kt": .15, "VFR": .70, "MVFR": .20, "IFR": .08, "LIFR": .02},
+}
+PLACEHOLDER_CEILING = {3: (900, 500, 1800), 6: (2500, 1200, 3800), 12: (4000, 2500, 6500)}
+
+
+def is_placeholder(rows: pd.DataFrame | None) -> bool:
+    return rows is not None and (rows["model_version"] == PLACEHOLDER_VERSION).all()
+
+
+def display_probabilities(bundle: Bundle, airport: Airport, asof_utc: pd.Timestamp) -> tuple[pd.DataFrame, None]:
+    """Real output when published, else placeholders for display. Compare never reads these."""
+    rows, _ = weather_probabilities(bundle, airport, asof_utc)
+    if rows is not None:
+        return rows, None
+    records = [
+        {"condition": condition, "horizon_hours": lead, "probability": share, "value": None, "lower": None, "upper": None, "model_version": PLACEHOLDER_VERSION}
+        for lead, shares in PLACEHOLDER_SHARES.items() for condition, share in shares.items()
+    ] + [
+        {"condition": "Ceiling", "horizon_hours": lead, "probability": None, "value": v, "lower": lo, "upper": hi, "model_version": PLACEHOLDER_VERSION}
+        for lead, (v, lo, hi) in PLACEHOLDER_CEILING.items()
+    ]
+    return pd.DataFrame(records), None
+
+
 def probability(rows: pd.DataFrame | None, condition: str, horizon: int) -> float | None:
     if rows is None:
         return None
