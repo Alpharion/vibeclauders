@@ -212,7 +212,9 @@ def test_history_pools_a_day_split_across_cohorts():
         ("visibility_sm", 6.01, "Over 6"),
         ("visibility_sm", 2.5, "2.5"),
         ("ceiling_ft_agl", 30000, "No ceiling"),
-        ("ceiling_ft_agl", 1200, "1,200"),
+        ("ceiling_ft_agl", 1200, "1,200 ft"),
+        ("obs_ceiling_ft_agl", 20000, "20,000 ft"),
+        ("obs_ceiling_ft_agl", 30000, "No ceiling"),
         ("wind_gust_kt", 6.0, "No gust"),
         ("wind_gust_kt", 21.0, "21.0"),
         ("precip_flag", 1, "Forecast"),
@@ -260,3 +262,26 @@ def test_calibration_note_says_when_not_adopted():
     document = {"calibration_experiment": {"status": "available", "adopted": False, "method": "Platt", "validation_relative_gain": 0.0007, "decision_rule": "1% gain"}}
     assert "Not adopted, so probabilities are uncalibrated (0.07%" in views.calibration_note(document)
     assert views.calibration_note({}) is None
+
+
+@pytest.mark.parametrize(
+    ("visibility", "ceiling", "category"),
+    [(10, 30000, "VFR"), (5, 30000, "MVFR"), (10, 3000, "MVFR"), (2.5, 30000, "IFR"), (10, 800, "IFR"), (0.5, 30000, "LIFR"), (10, 400, "LIFR"), (None, 3000, "Unknown"), (10, None, "Unknown")],
+)
+def test_flight_category(visibility, ceiling, category):
+    assert views.flight_category(visibility, ceiling) == category
+
+
+def test_forecast_vs_actual_never_counts_cancelled_as_on_time():
+    rows = pd.DataFrame({"flight_id": list("abcde"), "probability_severe_delay": [0.9, 0.9, 0.1, 0.1, 0.9], "threshold": 0.5})
+    flights = pd.DataFrame({"flight_id": list("abcde"), "dep_delay_min": [50.0, 5.0, 50.0, 5.0, None], "cancelled": [False, False, False, False, True]})
+    table, counts = views.forecast_vs_actual(rows, flights)
+    assert counts == {"alerts": 3, "matched": 1, "false": 1, "missed": 1, "excluded": 1}
+    assert table["result"].iloc[4].startswith("Excluded")
+
+
+def test_flagged_routes_use_scored_flights_only():
+    flights = pd.DataFrame({"flight_id": ["a", "b"], "origin": ["ATL", "ATL"], "dest": ["LAS", "ORD"]})
+    rows = pd.DataFrame({"flight_id": ["a", "b"], "probability_severe_delay": [0.9, 0.1], "threshold": 0.5})
+    assert views.flagged_routes(rows, flights) == {("ATL", "LAS")}
+    assert views.flagged_routes(None, flights) == set()

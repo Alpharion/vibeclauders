@@ -172,6 +172,15 @@ def planning_movements(
     }
 
 
+def flagged_routes(rows: pd.DataFrame | None, flights: pd.DataFrame) -> set[tuple[str, str]]:
+    """Airport pairs with a departure above threshold in the target hour."""
+    if rows is None or rows.empty:
+        return set()
+    ids = rows.loc[flagged(rows), "flight_id"]
+    pairs = flights.loc[flights["flight_id"].isin(ids), ["origin", "dest"]]
+    return set(pairs.itertuples(index=False, name=None))
+
+
 def route_counts(
     flights: pd.DataFrame, airport: Airport, asof_utc: pd.Timestamp, window_hours: int
 ) -> pd.DataFrame:
@@ -226,11 +235,37 @@ def weather_display(name: str, row: pd.Series) -> str:
         return "Forecast" if value == 1 else "Not forecast"
     if name == "visibility_sm" and value == VISIBILITY_OVER_6_SM:
         return "Over 6"
-    if name == "ceiling_ft_agl" and value == NO_CEILING_FT:
-        return "No ceiling"
+    if name.endswith("ceiling_ft_agl"):
+        return "No ceiling" if value == NO_CEILING_FT else f"{value:,.0f} ft"
     if name == "wind_gust_kt" and value == row["wind_speed_kt"]:
         return "No gust"
-    return f"{value:,.0f}" if name == "ceiling_ft_agl" else f"{value:.1f}"
+    return f"{value:.1f}"
+
+
+def flight_category(visibility_sm, ceiling_ft) -> str:
+    """Standard FAA categories. Both inputs are needed; missing means Unknown, not VFR."""
+    if pd.isna(visibility_sm) or pd.isna(ceiling_ft):
+        return "Unknown"
+    if visibility_sm < 1 or ceiling_ft < 500:
+        return "LIFR"
+    if visibility_sm < 3 or ceiling_ft < 1000:
+        return "IFR"
+    if visibility_sm <= 5 or ceiling_ft <= 3000:
+        return "MVFR"
+    return "VFR"
+
+
+def airport_outlook(bundle: Bundle, icao: str, asof_utc: pd.Timestamp) -> dict[int, pd.Series]:
+    """Exact-cutoff weather rows by scored lead; a usable row was available by the cutoff."""
+    features = bundle.table("weather_features")
+    if features is None:
+        return {}
+    rows = features[
+        (features["airport"] == icao)
+        & (features["asof_utc"] == asof_utc)
+        & (features["available_at_utc"] <= asof_utc)
+    ]
+    return {int(row["horizon_hours"]): row for _, row in rows.iterrows() if row["horizon_hours"] in SCORED_HORIZONS}
 
 
 def bulletins_as_of(weather: pd.DataFrame, snapshot: Snapshot) -> pd.DataFrame:
@@ -346,6 +381,28 @@ def supported_recommendations(
     return items, withheld
 
 
+def forecast_vs_actual(rows: pd.DataFrame, flights: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
+    """Score each flagged decision against its outcome. Cancelled or unlabelled flights are not on time."""
+    outcomes = flights[["flight_id", "dep_delay_min", "cancelled"]]
+    table = rows.merge(outcomes, how="left", on="flight_id")
+    table["alert"] = flagged(table)
+    known = table["dep_delay_min"].notna() & (table["cancelled"] == False)  # noqa: E712
+    severe = table["dep_delay_min"] > 45
+    table["result"] = "Excluded: cancelled or no label"
+    table.loc[known & table["alert"] & severe, "result"] = "Matched alert"
+    table.loc[known & table["alert"] & ~severe, "result"] = "False alert"
+    table.loc[known & ~table["alert"] & severe, "result"] = "Missed event"
+    table.loc[known & ~table["alert"] & ~severe, "result"] = "Correctly quiet"
+    counts = table["result"].value_counts()
+    return table, {
+        "alerts": int(table["alert"].sum()),
+        "matched": int(counts.get("Matched alert", 0)),
+        "false": int(counts.get("False alert", 0)),
+        "missed": int(counts.get("Missed event", 0)),
+        "excluded": int((~known).sum()),
+    }
+
+
 def history_rollup(metrics: pd.DataFrame, period: str = "W") -> pd.DataFrame:
     """Pool daily cohorts, recomputing rates from counts rather than averaging rates."""
     rows = metrics.copy()
@@ -425,6 +482,31 @@ def failure_cards(*documents: dict | None) -> list:
                 seen.add(key)
                 cards.append(case)
     return cards
+
+
+def integrity_checks(bundle: Bundle, snapshot: Snapshot | None, reveal: bool) -> list[tuple[str, str, str]]:
+    """Checks run on what is loaded now, as (label, pass/fail/none, result)."""
+    problems = sum(
+        1
+        for group in bundle.groups.values()
+        for name, reasons in group.problems.items()
+        if any("rejected" in reason for reason in reasons)
+    )
+    checks = [("Published artifacts verified", "fail" if problems else "pass", f"{problems} rejected" if problems else "Passed")]
+    if snapshot is None or bundle.table("weather_features") is None:
+        checks.append(("Forecast inputs available by cutoff", "none", "Not checked"))
+    else:
+        rows = snapshot.rows(bundle.table("weather_features"))
+        if rows.empty:
+            checks.append(("Forecast inputs available by cutoff", "none", "No row at this key"))
+        else:
+            late = int((rows["available_at_utc"] > snapshot.asof_utc).sum())
+            checks.append(("Forecast inputs available by cutoff", "fail" if late else "pass", f"{late} late" if late else "Passed"))
+    checks.append(("Realised outcomes", "pass", "Revealed by user" if reveal else "Hidden"))
+    predictions = bundle.table("predictions")
+    if predictions is not None:
+        checks.append(("Prediction probabilities and keys", "pass", f"{len(predictions):,} rows valid"))
+    return checks
 
 
 def find_failure_cases(document: dict | None) -> list:
