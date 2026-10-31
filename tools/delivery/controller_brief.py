@@ -10,6 +10,13 @@ from tools.delivery.package import collect, digest, json_bytes
 
 
 def summarize(rows, airport, asof, lead, run_id):
+    required = {"flight_id", "airport", "asof_utc", "horizon_hours", "run_id", "status",
+                "model_train_end_utc", "selection_end_utc", "weather_available_at_utc",
+                "model_kind", "target_hour_utc", "probability_severe_delay", "threshold"}
+    if not rows.columns.is_unique or not required.issubset(rows.columns):
+        raise ValueError("Prediction schema is missing required or has duplicate columns")
+    if not isinstance(run_id, str) or not run_id.strip():
+        raise ValueError("Missing producer run ID")
     cutoff = pd.Timestamp(asof)
     if cutoff.tzinfo is None:
         raise ValueError("Cutoff must include a timezone")
@@ -18,6 +25,8 @@ def summarize(rows, airport, asof, lead, run_id):
         raise ValueError("Choose KATL/KDFW and a 3/6/12-hour lead")
     selected = rows[(rows.airport == airport) & (rows.asof_utc == cutoff)
                     & (rows.horizon_hours == lead)].copy()
+    if selected.flight_id.map(lambda value: not isinstance(value, str) or not value.strip()).any():
+        raise ValueError("Missing flight identity at the requested snapshot")
     if selected.flight_id.duplicated().any():
         raise ValueError("Duplicate flights at the requested snapshot")
     for _, row in selected.iterrows():
@@ -41,7 +50,7 @@ def summarize(rows, airport, asof, lead, run_id):
         ["probability_severe_delay", "flight_id"], ascending=[False, True])
     priorities = [{"flight_id": r.flight_id, "probability": float(r.probability_severe_delay),
                    "threshold": float(r.threshold), "model_kind": r.model_kind,
-                   "reason": "Published probability exceeds its validation-selected alert threshold",
+                   "reason": "Published probability meets or exceeds its validation-selected alert threshold",
                    "recommended_review": "Review current weather and airline/inbound-aircraft status before deciding whether intervention is warranted"}
                   for _, r in flagged.iterrows()]
     return {"schema_version": "1.0", "status": "available" if len(selected) else "unavailable",
@@ -63,8 +72,12 @@ def create_brief(root, airport, asof, lead):
     files, _ = collect(root)
     path = "artifacts/risk/predictions.parquet"
     manifest = json.loads(files["artifacts/risk/manifest.json"])
+    if manifest.get("status") not in ("available", "partial"):
+        raise ValueError("Risk publication is not usable")
     if path.split("/")[-1] not in manifest["artifact_hashes"]:
         raise ValueError("Risk predictions are not declared by their producer")
+    if digest(files[path]) != manifest["artifact_hashes"]["predictions.parquet"]:
+        raise ValueError("Risk prediction hash does not match its producer")
     result = summarize(pd.read_parquet(BytesIO(files[path])), airport, asof, lead, manifest["run_id"])
     result["evidence"] = {"predictions": path, "predictions_sha256": digest(files[path]),
                           "manifest_sha256": digest(files["artifacts/risk/manifest.json"])}

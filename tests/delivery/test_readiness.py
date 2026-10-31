@@ -82,3 +82,60 @@ def test_combined_release_needs_estimate_but_baseline_does_not():
 def test_neither_mode_waives_failures_or_changed_inputs(baseline):
     assert release_blockers([{"name": "full_suite", "exit_code": 1}], [publication()], False, baseline)
     assert release_blockers([{"name": "full_suite", "exit_code": 0}], [publication()], True, baseline)
+
+@pytest.mark.parametrize("column", ["flight_id", "run_id", "weather_available_at_utc", "threshold"])
+def test_missing_required_evidence_rejected(predictions, column):
+    with pytest.raises(ValueError, match="schema"):
+        brief(predictions.drop(columns=column))
+
+
+@pytest.mark.parametrize("identity", [None, "", "  ", float("nan")])
+def test_missing_flight_identity_rejected(predictions, identity):
+    predictions["flight_id"] = identity
+    with pytest.raises(ValueError, match="identity"):
+        brief(predictions)
+
+
+def test_threshold_boundary_and_exact_keys(predictions):
+    predictions["probability_severe_delay"] = predictions["threshold"]
+    other_airport = predictions.assign(airport="KDFW", flight_id="other-airport")
+    other_lead = predictions.assign(horizon_hours=6, flight_id="other-lead")
+    other_cutoff = predictions.assign(asof_utc=pd.Timestamp("2025-07-12T19:00Z"), flight_id="other-cutoff")
+    result = brief(pd.concat([predictions, other_airport, other_lead, other_cutoff]))
+    assert result["sampled_flights_scored"] == 1
+    assert [row["flight_id"] for row in result["review_priorities"]] == ["high"]
+    assert "meets or exceeds" in result["review_priorities"][0]["reason"]
+
+
+@pytest.mark.parametrize("column", ["model_train_end_utc", "selection_end_utc", "weather_available_at_utc"])
+def test_all_evidence_clocks_must_be_known_at_cutoff(predictions, column):
+    predictions[column] = pd.Timestamp("2025-07-12T20:00:01Z")
+    with pytest.raises(ValueError, match="future"):
+        brief(predictions)
+
+
+def test_brief_checks_producer_hash_and_status(predictions, monkeypatch):
+    from io import BytesIO
+    from tools.delivery import controller_brief
+    from tools.delivery.package import digest, json_bytes
+
+    buffer = BytesIO()
+    predictions.to_parquet(buffer)
+    payload = buffer.getvalue()
+    manifest = {"run_id": "r1", "status": "partial",
+                "artifact_hashes": {"predictions.parquet": digest(payload)}}
+    files = {"artifacts/risk/predictions.parquet": payload}
+
+    def collect_fixture(root):
+        return {**files, "artifacts/risk/manifest.json": json_bytes(manifest)}, []
+
+    monkeypatch.setattr(controller_brief, "collect", collect_fixture)
+    result = controller_brief.create_brief(None, "KATL", "2025-07-12T20:00Z", 3)
+    assert result["evidence"]["predictions_sha256"] == digest(payload)
+    assert result["evidence"]["manifest_sha256"] == digest(json_bytes(manifest))
+    manifest["artifact_hashes"]["predictions.parquet"] = "0" * 64
+    with pytest.raises(ValueError, match="hash"):
+        controller_brief.create_brief(None, "KATL", "2025-07-12T20:00Z", 3)
+    manifest["status"] = "unavailable"
+    with pytest.raises(ValueError, match="not usable"):
+        controller_brief.create_brief(None, "KATL", "2025-07-12T20:00Z", 3)
