@@ -1,10 +1,11 @@
 from pathlib import Path
 import json
+import pytest
 
 import pandas as pd
 from streamlit.testing.v1 import AppTest
 
-from src.dashboard.readiness import capacity_rmse, impact_text
+from src.dashboard.readiness import capacity_rmse, impact_text, relative_error_reduction
 from src.dashboard.views import Snapshot, resolve_airport
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -43,4 +44,23 @@ render_readiness(load_bundle(Path.cwd()), Snapshot(resolve_airport('KATL'), pd.T
     assert len(app.dataframe[0].value) == 6
     assert any("estimate-capacity --from-published" in x.value for x in app.code)
     assert any("No LLM" in x.value for x in app.markdown)
+    visible = " ".join(x.value for x in app.markdown)
+    assert "not percent accuracy" in visible
+    assert "90th-percentile frontier" in visible and "at least 30" in visible
+    assert "Pinball loss" in visible and "Brier score" in visible
+    assert len(app.latex) == 2
+    assert "Acquire distinct populations" in visible and "Publish and validate" in visible
+    assert any("--cache-only" in item.value for item in app.code)
+    assert any("recorded producer command" in item.value for item in app.caption)
+    assert "1.71%" in visible
     assert any("80.0" in x.value and "476" in x.value for x in app.markdown)
+
+
+def test_relative_rmse_reduction_is_not_percent_accuracy():
+    assert relative_error_reduction(8, 10) == pytest.approx(20)
+    assert relative_error_reduction(12, 10) == pytest.approx(-20)
+    assert relative_error_reduction(0, 10) == pytest.approx(100)
+    for model, baseline in [(0, 0), (1, None), (1, float("nan")), (float("inf"), 2), (-1, 2), (True, 2)]:
+        assert relative_error_reduction(model, baseline) is None
+    doc = {"metrics": [{"split": "test", "metric": "high_demand_throughput_rmse", "airport": "KATL", "horizon_hours": 3, "n": 4, "value": 1, "baseline_value": 0}]}
+    assert capacity_rmse(doc)["RMSE reduction vs baseline (%)"].isna().all()

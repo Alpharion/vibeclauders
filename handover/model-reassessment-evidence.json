@@ -1,0 +1,211 @@
+{
+  "status": "passed",
+  "method": "Rebuild in memory from hash-verified published inputs; compare full forecast, fitted model and evaluation metrics",
+  "run_id": "m1-capest-20261031T072310Z-a27968",
+  "forecast_rows": 30477,
+  "forecast_matches": true,
+  "model_matches": true,
+  "metrics_match": true,
+  "publication_changed": false,
+  "sources": {
+    "capacity_manifest": "artifacts/capacity/manifest.json",
+    "capacity_manifest_sha256": "e41f85fb26d73d4cddef33c2f5ed146199ef5d0207a505cae4bb424b152b2656",
+    "upstream_run_id": "m1-20261031T065014Z-eacdd5",
+    "inputs": [
+      {
+        "name": "traffic_hourly",
+        "path": "artifacts/capacity/traffic_hourly.parquet",
+        "sha256": "bd14ee2bfc7aab93276306c248562e78b2723549ad9e2fe0911afb0c5cbedcde",
+        "upstream_run_id": "m1-20261031T065014Z-eacdd5"
+      },
+      {
+        "name": "weather_features",
+        "path": "artifacts/capacity/weather_features.parquet",
+        "sha256": "6c4374d1c4ed5816b7b6feba100852ddef250947c301e6a12fd9ffd7faf7fd81",
+        "upstream_run_id": "m1-20261031T065014Z-eacdd5"
+      }
+    ]
+  },
+  "test_metrics": [
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "high_demand_throughput_rmse",
+      "value": 22.666040042788282,
+      "baseline_value": 23.0610094574084,
+      "n": 827,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.0525876662636033,
+      "baseline_value": 2.085489721886336,
+      "n": 827,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.9721886336154776,
+      "baseline_value": 0.9746070133010882,
+      "n": 827,
+      "units": "share"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "high_demand_throughput_rmse",
+      "value": 22.764348757765404,
+      "baseline_value": 23.0610094574084,
+      "n": 827,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.0627327690447395,
+      "baseline_value": 2.085489721886336,
+      "n": 827,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.9721886336154776,
+      "baseline_value": 0.9746070133010882,
+      "n": 827,
+      "units": "share"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "high_demand_throughput_rmse",
+      "value": 22.77474175452868,
+      "baseline_value": 23.073285707007386,
+      "n": 826,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.0686440677966096,
+      "baseline_value": 2.0870460048426147,
+      "n": 826,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.9709443099273608,
+      "baseline_value": 0.9745762711864406,
+      "n": 826,
+      "units": "share"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "high_demand_throughput_rmse",
+      "value": 22.286785805264632,
+      "baseline_value": 22.935600814073947,
+      "n": 1412,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.3668980169971667,
+      "baseline_value": 2.4119688385269122,
+      "n": 1412,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.8696883852691218,
+      "baseline_value": 0.8739376770538244,
+      "n": 1412,
+      "units": "share"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "high_demand_throughput_rmse",
+      "value": 22.0677953603886,
+      "baseline_value": 22.935600814073947,
+      "n": 1412,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.3736260623229457,
+      "baseline_value": 2.4119688385269122,
+      "n": 1412,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.8654390934844193,
+      "baseline_value": 0.8739376770538244,
+      "n": 1412,
+      "units": "share"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "high_demand_throughput_rmse",
+      "value": 21.82480207964331,
+      "baseline_value": 22.92610701751877,
+      "n": 1410,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.366241134751773,
+      "baseline_value": 2.4114184397163116,
+      "n": 1410,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.8638297872340426,
+      "baseline_value": 0.873758865248227,
+      "n": 1410,
+      "units": "share"
+    }
+  ]
+}
