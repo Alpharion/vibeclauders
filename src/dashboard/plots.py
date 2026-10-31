@@ -11,7 +11,7 @@ AIRPORT_COLORS = dict(zip(AIRPORTS, SERIES))
 INK = "#f0efec"
 INK_SECONDARY = "#c3c2b7"
 GRID = "#3a3a37"
-SURFACE = "#1a1a19"
+SURFACE = "#10151D"
 
 
 def _layout(figure: go.Figure, title: str, y_title: str, height: int = 320) -> go.Figure:

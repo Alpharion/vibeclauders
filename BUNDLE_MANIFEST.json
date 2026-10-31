@@ -1,0 +1,273 @@
+{
+  "package": "challenge-5-implementation",
+  "created_at_utc": "2026-10-31T04:46:39.767247+00:00",
+  "capability_status": "partial; schedule-only Member 2 outputs; Members 1/3 pending",
+  "payload_files": 53,
+  "files": [
+    {
+      "path": ".streamlit/config.toml",
+      "bytes": 216,
+      "sha256": "70d47571f8c27b2f4d7fd35f17dffc7e09719bcb0f7abdbaf85fd00c583212df"
+    },
+    {
+      "path": "BUNDLE_README.md",
+      "bytes": 4174,
+      "sha256": "49c65609171dcd63a80c7169c30e3d7c03c484d071f4617415f65cd0f4fd9da3"
+    },
+    {
+      "path": "app.py",
+      "bytes": 43,
+      "sha256": "5b5fd70c97ad119266275cce3a3d7342ecdfa60cef1bd612e5f755c2679f3533"
+    },
+    {
+      "path": "artifacts/risk/decision_manifest.json",
+      "bytes": 1632,
+      "sha256": "a0ec6157d7be6c43006ab670d71104a01c389abf3b0916ce10f89e5e149f6560"
+    },
+    {
+      "path": "artifacts/risk/evaluation.json",
+      "bytes": 24964,
+      "sha256": "243c106517eb4cc58c71f64e47773a1103fb79d39fbfbfc58efc3619b4cd3008"
+    },
+    {
+      "path": "artifacts/risk/manifest.json",
+      "bytes": 4033,
+      "sha256": "6a1721722ed60e27b89e22c1c91261f07d3115e4648bd36da8674894b5139e84"
+    },
+    {
+      "path": "artifacts/risk/model.joblib",
+      "bytes": 116939,
+      "sha256": "08f39f90ca5638b8755707163bb744157965661565e502e0af11c58415335022"
+    },
+    {
+      "path": "artifacts/risk/normalized_metrics.parquet",
+      "bytes": 46961,
+      "sha256": "44a595975f5033e17f8b6aa3fbd9239e68b546eea65022dd8968310547191a77"
+    },
+    {
+      "path": "artifacts/risk/predictions.parquet",
+      "bytes": 264063,
+      "sha256": "3dddf574411eca51e2be298b0f34168bcf4bf49dd2b9c1ddb2ad438f29002556"
+    },
+    {
+      "path": "artifacts/risk/queue.parquet",
+      "bytes": 5530,
+      "sha256": "36df452094d3e3ca5d9ede65321aac9ad6dc427245390d338681db3b06a2af60"
+    },
+    {
+      "path": "artifacts/risk/recommendations.json",
+      "bytes": 1506,
+      "sha256": "3f41bcb315a27a101bf4b66edbae345c6eca9adb987dfe7370cef7da6613411d"
+    },
+    {
+      "path": "data/reference/airports.json",
+      "bytes": 1210304,
+      "sha256": "e196ec4ba0be683a8126506335a4c30597293ea1d8f7b37f908396fa69010c2b"
+    },
+    {
+      "path": "data/weather/Flight_Data_With_Weather_Final.csv",
+      "bytes": 63972945,
+      "sha256": "9a9d80659da6e9833c8360583476d71e42937ccf5e42870902b90b57c2c99ba7"
+    },
+    {
+      "path": "data/weather/preliminary-audit.json",
+      "bytes": 9140,
+      "sha256": "cba24429a636637bb3664368afb9168854f8b955feee8f192675407f0f9f795e"
+    },
+    {
+      "path": "handover/README.md",
+      "bytes": 8078,
+      "sha256": "3fd3c5258b8539833cecdda145f59424cf2572b7df6567d081e47f0d2c7a0131"
+    },
+    {
+      "path": "handover/agent-1-data-capacity.md",
+      "bytes": 15120,
+      "sha256": "e1adb77ec8d45dd89ed01df95853a19c9fafad6626db96671d6ffbe8aa966463"
+    },
+    {
+      "path": "handover/agent-2-flight-risk.md",
+      "bytes": 6308,
+      "sha256": "ea0176152380fdda1d943596e9b844068ad2666db93eef0f2f209cf95991fa31"
+    },
+    {
+      "path": "handover/agent-3-dashboard-integration.md",
+      "bytes": 14479,
+      "sha256": "e534ef99fac0458ed34efbf4c900c7ffb9ae9a9e07f9f945af1fec3e2e8084f3"
+    },
+    {
+      "path": "handover/member-2-results.md",
+      "bytes": 6178,
+      "sha256": "017a36f7df8c9f61c851ababeab241dc867d5432437ed87c3a803c768b836a7a"
+    },
+    {
+      "path": "handover/shared-contract.md",
+      "bytes": 15946,
+      "sha256": "2c1412da5fb06a49c7153b0fb73f223315576e6636f1cf6314da59813dc6086f"
+    },
+    {
+      "path": "handover/status-member-2.json",
+      "bytes": 3374,
+      "sha256": "14765c8e33bc946109b4d1b03d703e147841b7962a6a48546ad13b081ec73240"
+    },
+    {
+      "path": "implementation-plan.md",
+      "bytes": 15420,
+      "sha256": "2947f09d1d68af597cfda0fa023ec9fa17c19cc1c7f1c0260a09e6d011c0d8c4"
+    },
+    {
+      "path": "output/dashboard-concepts/challenge-5-flight-map.png",
+      "bytes": 1552230,
+      "sha256": "c3a26a593844bb72b80f3b2fabff8cdde78f0bff2522c0411a431d566310e73c"
+    },
+    {
+      "path": "output/dashboard-concepts/challenge-5-location-forecasts-impact.png",
+      "bytes": 2032017,
+      "sha256": "0c1b791f92bdbfa275c5c1e8dd0a2135e3a9d73758ecf7aef7416b808c5eeb81"
+    },
+    {
+      "path": "output/dashboard-concepts/challenge-5-traffic-volumes.png",
+      "bytes": 2030818,
+      "sha256": "e1ed568e2bacd21d8b1cf39ff2ae9bd40ecfe18043b9bf89458c6ba4d5e5ddd3"
+    },
+    {
+      "path": "output/dashboard-concepts/challenge-5-weather-traffic-expanded.png",
+      "bytes": 1878366,
+      "sha256": "6e01a1dd57247779ac02014789ce0ed338431feb3be7de62c765f515e5ca172b"
+    },
+    {
+      "path": "output/dashboard-concepts/challenge-5-weather.png",
+      "bytes": 1482107,
+      "sha256": "ccef72636ba6b6fd8709f7200ac217ec75570a240648312e9aed91d620aa8ae5"
+    },
+    {
+      "path": "output/dashboard-concepts/flight-map-prompt.txt",
+      "bytes": 3801,
+      "sha256": "70c3fdf5b38f8299574b3df5aade196880f1e366ee3c9c3e9b626a6507b10c37"
+    },
+    {
+      "path": "output/dashboard-concepts/location-forecasts-impact-prompt.txt",
+      "bytes": 6571,
+      "sha256": "01b1ec3addd5989b2ef8a392d9a2a714d66bf9a658c477e63fb39ca401028884"
+    },
+    {
+      "path": "output/dashboard-concepts/traffic-volumes-prompt.txt",
+      "bytes": 5270,
+      "sha256": "a167793c5c1cc8553f944f8f3ed7e78757df71f512f7e874b632ee0c6ecb1116"
+    },
+    {
+      "path": "output/dashboard-concepts/weather-traffic-expanded-prompt.txt",
+      "bytes": 5538,
+      "sha256": "93679e853c74879e80a4011e172d9ee0e615729ea6b9ec511bce16a0516293ac"
+    },
+    {
+      "path": "output/delivery/build-package.py",
+      "bytes": 8105,
+      "sha256": "dff93366242eac1aac24e559285f71a9a6560d8812f255da57fc75d7358bdd45"
+    },
+    {
+      "path": "reference/Autonomous SG 2026_Airbus Track.pdf",
+      "bytes": 393508,
+      "sha256": "540ac5bc79d8ed9906c00da11a5bc215362f4d2e9f9be50590931e1397875a6c"
+    },
+    {
+      "path": "requirements-observed.txt",
+      "bytes": 279,
+      "sha256": "eec9f81a2aeb432f963bece89c8d1a324766d6d07c8b2101125357a6cdbdc528"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 133,
+      "sha256": "a86fb87d22920fb1864c61a34723a82ceb9fa749c88ca1ab937cf3dfe14e8fe1"
+    },
+    {
+      "path": "src/__init__.py",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "src/dashboard/__init__.py",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "src/dashboard/app.py",
+      "bytes": 25378,
+      "sha256": "1cfce24e014747b56005a4c81260ef24027946615c81c4a9ce3a04ab7ea81a56"
+    },
+    {
+      "path": "src/dashboard/data.py",
+      "bytes": 7050,
+      "sha256": "5c5f1c0eecf7dbb876b7f4787d921ee3cbab1129a8377fb7b487a313f8a5aaab"
+    },
+    {
+      "path": "src/dashboard/plots.py",
+      "bytes": 4631,
+      "sha256": "072c801282ab4625619f6cf85420c97b97383917e5d1ef6d062d92e59e7b55ce"
+    },
+    {
+      "path": "src/flight_risk/__main__.py",
+      "bytes": 13550,
+      "sha256": "397ff353aeb642d7604e4fafb81a115e360c8189a22501160bd9d354c5dd8924"
+    },
+    {
+      "path": "src/flight_risk/data.py",
+      "bytes": 13302,
+      "sha256": "c5950af3da44164686b45f057558958f0eb89de2459b3597e843c2c86a248524"
+    },
+    {
+      "path": "src/flight_risk/metrics.py",
+      "bytes": 3344,
+      "sha256": "3f0b50885b4232eb6b45f344f941163ffe848089a3514270c97a3ddcdfba2cb2"
+    },
+    {
+      "path": "src/flight_risk/model.py",
+      "bytes": 4819,
+      "sha256": "5f50c31bd7d57ad46f426faa0268419e4dcc78a687dc72467ae9ec33a9bcdc43"
+    },
+    {
+      "path": "src/flight_risk/pipeline.py",
+      "bytes": 17552,
+      "sha256": "49471f5bfd907f1edc5b424e664a7526b5dba2ee8bbf9da493bb53fa1f51ca12"
+    },
+    {
+      "path": "src/flight_risk/recommendations.py",
+      "bytes": 3855,
+      "sha256": "54cd2e82399bdb5a84aebccd7e244ffb3c3a863bbd6a5230e33bb334fe2dee67"
+    },
+    {
+      "path": "src/flight_risk/simulation.py",
+      "bytes": 13640,
+      "sha256": "f8aade82dd359607d7280613085d120c8e768d69fcf47c59c840c22150ff15a8"
+    },
+    {
+      "path": "src/shared.py",
+      "bytes": 891,
+      "sha256": "74bd72477d9c5e2458e7b66dbcc7c9e04dd89e5f669d67d44ad26f7924e8b174"
+    },
+    {
+      "path": "tests/flight_risk/test_cli.py",
+      "bytes": 6420,
+      "sha256": "684dea716ab3401117a7f2f92eb64e19be27a503dc3bdd15f6aaa23c9785bebe"
+    },
+    {
+      "path": "tests/flight_risk/test_data.py",
+      "bytes": 6495,
+      "sha256": "17d7c80cd4fc6b6e8054253dc0f3ed6e968d9bcd349d574fa4b8fcbfae228d8e"
+    },
+    {
+      "path": "tests/flight_risk/test_model.py",
+      "bytes": 6708,
+      "sha256": "ac8afd3c1bebc04a50bc18c76ec73db1b3065da8e2b28f97c33d12fc0232bb17"
+    },
+    {
+      "path": "tests/flight_risk/test_recommendations.py",
+      "bytes": 3609,
+      "sha256": "49b964d5f89b296bb919071b212a10e9361fec99fc876b7893f82c7a7f630768"
+    },
+    {
+      "path": "tests/flight_risk/test_simulation.py",
+      "bytes": 8464,
+      "sha256": "fb9f0ac489afa29c6007c5779fb2c760c12109b6305290414c52c3f39095aa4d"
+    }
+  ]
+}

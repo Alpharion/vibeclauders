@@ -12,7 +12,7 @@ from src.dashboard import plots, views
 from src.dashboard.data import (
     SCORED_HORIZONS, WEATHER_FEATURES, Bundle, fingerprint, is_schedule_only, load_bundle,
 )
-from src.dashboard.views import Snapshot
+from src.dashboard.views import Snapshot, resolve_airport
 from src.shared import AIRPORTS
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -47,7 +47,7 @@ def sidebar(bundle: Bundle) -> tuple[Snapshot | None, int, bool]:
     index = views.replay_index(bundle)
     choices = [icao for icao in AIRPORTS if icao in set(index["airport"])] or list(AIRPORTS)
     icao = st.sidebar.selectbox("Airport", choices, key="airport")
-    airport = AIRPORTS[icao]
+    airport = resolve_airport(icao)
     horizon = st.sidebar.radio(
         "Forecast lead (hours)", SCORED_HORIZONS, index=0, horizontal=True, key="horizon",
     )
@@ -96,7 +96,7 @@ def header(bundle: Bundle, snapshot: Snapshot | None) -> None:
 
 def forecast_tab(bundle: Bundle, snapshot: Snapshot, reveal: bool) -> None:
     st.subheader("Weather at the target hour")
-    st.caption(f"Runway-relative wind uses the fixed heading {snapshot.airport.runway_heading_deg:03d}°.")
+    st.caption(f"Runway-relative wind uses the fixed heading {snapshot.airport.heading:03d}°.")
     row, reason = views.weather_feature_row(bundle, snapshot)
     if row is None:
         unavailable("Cutoff-safe weather", reason)

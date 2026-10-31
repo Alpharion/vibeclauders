@@ -1,0 +1,82 @@
+# Member 2 verified results and handback
+
+## Completion boundary
+
+The local risk-model, normalized-metric, queue-validation and advisory implementation is complete and tested. It has now been refreshed with Member 1's verified canonical flights and cutoff-safe weather features (capacity run `m1-20261031T050536Z-89e2f0`). Current project capability is still **partial**: no genuine AAR, complete demand or cutoff backlog is published, so queue/advice remain unavailable. Member 3's dashboard integration has not started in this repository. This is not a claim that Challenge 5 is fully satisfied.
+
+## Published real outputs
+
+- `artifacts/risk/model.joblib`: selected weather-enhanced histogram gradient-boosting model, schedule-only fallback and historical baseline.
+- `artifacts/risk/predictions.parquet`: **10,604** held-out flight/horizon predictions covering **3,537** unique test flights, KATL/KDFW and leads 3/6/12. 10,599 rows are `weather_enhanced`; 5 rows without an accepted weather snapshot fall back to `schedule_only`.
+- `artifacts/risk/normalized_metrics.parquet`: daily UTC observed delay/cancellation/missingness cohorts with explicit denominators and outcome-reveal flags.
+- `artifacts/risk/evaluation.json`: candidate comparison, thresholds, per-airport/horizon metrics, weather vs schedule matched-cohort comparison, reliability bins, exclusions and an actual failure example.
+- `artifacts/risk/manifest.json`: schema, runtime, source hashes, artifact hashes, row counts and capability status.
+- `artifacts/risk/input_snapshots/<snapshot-id>/`: immutable copies of the verified upstream flights/weather bytes used for training, with upstream run provenance.
+- `artifacts/risk/recommendations.json`, `queue.parquet`, `decision_manifest.json`: verified unavailable result at KATL / 2025-07-15T12:00:00Z / six-hour window because demand, capacity and initial backlog are missing. Queue is empty with typed columns; no invented benefit or flight action.
+
+The run used 15,947 eligible labels from 25,299 canonical rows (16,151 target departures): 6,064 training, 6,346 validation and 3,537 test departures. All 204 cancelled departures were excluded, including seven with nonmissing delay labels. No invalid schedule, duplicate or naive-UTC rows. Seven test flight/horizon combinations were excluded because their cutoff preceded selection completion (2025-01-01T06:00Z).
+
+Weather consumer audit: 135,786 feature rows offered, 135,735 accepted, 51 rejected for non-available status, 0 rejected for timing/source/duplicate/numeric problems; 47,826 flight/horizon rows matched across all splits.
+
+## Measured held-out test performance (matched cohorts)
+
+Weather-enhanced and schedule-only models are compared on the identical flight/horizon rows that have accepted weather. Each model uses its own validation-selected threshold (weather `0.146025`, schedule `0.157434`).
+
+| Airport | Lead | n | Weather AP | Schedule AP | Baseline AP | Weather precision / recall | Schedule precision / recall | Weather Brier |
+|---|---:|---:|---:|---:|---:|---|---|---:|
+| KATL | 3h | 1,763 | 0.2620 | 0.2496 | 0.2081 | 0.261 / 0.522 | 0.319 / 0.285 | 0.1063 |
+| KATL | 6h | 1,760 | 0.2747 | 0.2496 | 0.2081 | 0.292 / 0.500 | 0.319 / 0.285 | 0.1065 |
+| KATL | 12h | 1,758 | 0.2579 | 0.2496 | 0.2082 | 0.312 / 0.320 | 0.319 / 0.285 | 0.1081 |
+| KDFW | 3h | 1,774 | 0.2485 | 0.2276 | 0.1960 | 0.235 / 0.489 | 0.249 / 0.477 | 0.1227 |
+| KDFW | 6h | 1,774 | 0.2567 | 0.2276 | 0.1960 | 0.255 / 0.500 | 0.249 / 0.477 | 0.1220 |
+| KDFW | 12h | 1,770 | 0.2714 | 0.2276 | 0.1961 | 0.263 / 0.498 | 0.249 / 0.479 | 0.1212 |
+
+Baseline AP is the training-only airport/local-hour smoothed severe-delay rate, evaluated on the full test cohort for that airport/lead.
+
+Weather features improve average precision over the schedule-only model in every airport/lead cell (gains of 0.008 to 0.044) and over the historical baseline. The signal remains weak: AP is below 0.28 against a prevalence of about 13-15%. At ATL the weather model's higher recall comes with lower precision than the schedule model. Lead-specific differences are now measured, because weather inputs differ by cutoff, but the sample is small and no lead-time trend should be claimed. The weather capability is reported **partial** because 5 of 10,604 test rows lacked accepted weather and fall back to schedule-only.
+
+Probabilities are **not post-hoc calibrated**; Brier/reliability quantify calibration. No AAR, delay-minute, fuel or causal benefit claims follow from these results.
+
+Failure example in evaluation: flight `bdb9ee9ae44b59a25d79` at KDFW, 3-hour lead, cutoff 2025-01-01T18:00Z, predicted probability 0.087 below threshold 0.146, observed departure delay 65 minutes (severe, missed). Display only when outcomes are revealed. No cause of this error is inferred.
+
+## Verification performed
+
+```powershell
+python -m src.data_capacity run --bts-months 2023-01
+python -m src.flight_risk train
+python -m src.flight_risk decide --airport KATL --asof 2025-07-15T12:00:00Z --window-hours 6
+python -m src.flight_risk verify
+python -m pytest tests/flight_risk -q --basetemp=tmp/pytest-m2-refresh-01
+python -m pytest tests/data_capacity -q --basetemp=tmp/pytest-m1-03
+```
+
+All commands exited 0. **85 Member 2 tests passed; 42 Member 1 tests passed.** `verify` reported `passed`, model status `partial`, decision status `unavailable`, 10,604 predictions / 3,537 flights / both airports / leads 3, 6, 12. The `tmp/` directory must exist before running pytest with `--basetemp=tmp/...`.
+
+Member 2 test coverage includes leakage under changed test outcomes, original-date/2400 splits, daylight-saving ambiguity, cancelled labels, source/availability/feature validity, queue conservation, stale/mismatched populations, complete hourly windows, capacity target provenance, model selection timing, manifest tampering, generation mismatch, typed unavailable outputs and CLI publication. Test fixtures stay under tests/tmp and are not passed off as real data.
+
+The verifier reads hashes and tables without deserializing model code. A passed integrity check does not change unavailable capability to available.
+
+## Integration fixes applied during refresh
+
+Member 1's first published manifest (`m1-20261031T045159Z-3df67d`) lacked the contract's `artifact_hashes` field, so `train` correctly refused it, and it used provisional 16-character flight IDs because `src/shared.py` was absent in that checkout. With the user's authorization, Member 2 made the following changes in Member 1's scope:
+
+- `src/data_capacity/pipeline.py` now writes `artifact_hashes` (manifest-directory-relative paths, e.g. `weather_features.parquet`, `../../data/processed/flights.parquet`) alongside the existing `outputs` list.
+- `tests/data_capacity/test_manifest.py` checks those keys and hashes.
+- The Member 1 pipeline was rerun with network downloads. It now uses `src.shared.flight_key` (20-character IDs) and `src.shared.AIRPORTS`. All 3,537 Member 2 test flight IDs join to the canonical flights.
+
+## Runtime and provenance
+
+Model run: `b3747032ae754cc9be967b9e4ab681b9`; generated `2026-10-31T05:11:47.438072+00:00`.
+Decision run: `b82893a4224744aa8c4a54228060f1f0`.
+Upstream capacity run: `m1-20261031T050536Z-89e2f0`.
+Python `3.14.6`; numpy 2.4.6, pandas 3.0.3, scikit-learn 1.9.0, pyarrow 23.0.1.
+
+The old root requirements constrain pandas below 3, while the verified runtime uses pandas 3.0.3. Member 3 owns dependency reconciliation. Serialized model reuse requires compatible versions or retraining.
+
+## Member 1 handback needed
+
+Genuine AAR remains an unmet core requirement: an FAA ASPM hourly/quarter-hour export for ATL/DFW must be placed in `data/public/aspm/` (spec in its README), followed by `python -m src.data_capacity run --cache-only`. For queue/advice also publish contiguous-hour AAR forecasts, complete arrival demand and known cutoff backlog for the same population. Three isolated scored leads are insufficient for a queue.
+
+## Member 3 handback needed
+
+Use the dedicated handoff and runbook. Fix target-hour selection and available replay keys; verify manifests; integrate normalized history with outcome masking; distinguish weather-enhanced, schedule-only fallback and sample coverage. Show the matched-cohort comparison above, not schedule-only numbers as weather-model performance, and do not present weather gains as operationally validated.

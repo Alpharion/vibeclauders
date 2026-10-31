@@ -3,11 +3,11 @@ import pytest
 
 from src.dashboard import views
 from src.dashboard.data import load_bundle
-from src.dashboard.views import Snapshot
-from src.shared import AIRPORTS
+from src.dashboard.views import Snapshot, resolve_airport
 from tests.dashboard import conftest as c
 
-KATL = AIRPORTS["KATL"]
+KATL = resolve_airport("KATL")
+KDFW = resolve_airport("KDFW")
 
 
 def snap(horizon=6, asof=c.ASOF, airport=KATL):
@@ -103,7 +103,7 @@ def test_unsafe_aar_row_is_refused(root, column, value, message):
 @pytest.mark.parametrize(
     ("kwargs", "fragment"),
     [
-        ({"airport": AIRPORTS["KDFW"]}, "published for KATL"),
+        ({"airport": KDFW}, "published for KATL"),
         ({"asof_utc": c.ASOF + pd.Timedelta(hours=1)}, "cutoff"),
         ({"window_hours": 3}, "6-hour window"),
     ],

@@ -1,0 +1,88 @@
+{
+  "member": 2,
+  "schema_version": "2.0",
+  "updated_at_utc": "2026-10-31T05:13:50.512816+00:00",
+  "state": "ready_for_review",
+  "completed": [
+    "Revised comprehensive plan and v2 shared contract",
+    "Prepared externally supervised Member 1 and Member 3 handoffs",
+    "Implemented and trained local schedule-risk model",
+    "Implemented optional verified-weather consumer and matched evaluation",
+    "Published normalized history and held-out failure evidence",
+    "Implemented gated arrival queue and review advisory",
+    "Verified CLI and 85 passing tests",
+    "Merged Member 1 run and added contract artifact_hashes to its manifest writer (user-authorized)",
+    "Refreshed with verified canonical flights and weather features; weather-enhanced model selected"
+  ],
+  "artifacts": [
+    {
+      "path": "artifacts/risk/manifest.json",
+      "run_id": "b3747032ae754cc9be967b9e4ab681b9",
+      "status": "partial",
+      "coverage": "KATL/KDFW, leads 3/6/12, test 2025-01-01..2025-07-31; 10,599/10,604 rows weather-enhanced"
+    },
+    {
+      "path": "artifacts/risk/decision_manifest.json",
+      "run_id": "b82893a4224744aa8c4a54228060f1f0",
+      "status": "unavailable",
+      "coverage": null
+    },
+    {
+      "path": "handover/member-2-results.md",
+      "run_id": null,
+      "status": "available",
+      "coverage": null
+    }
+  ],
+  "commands_tested": [
+    "python -m src.data_capacity run --bts-months 2023-01",
+    "python -m src.flight_risk train",
+    "python -m src.flight_risk decide --airport KATL --asof 2025-07-15T12:00:00Z --window-hours 6",
+    "python -m src.flight_risk verify",
+    "python -m pytest tests/flight_risk -q --basetemp=tmp/pytest-m2-refresh-01",
+    "python -m pytest tests/data_capacity -q --basetemp=tmp/pytest-m1-03"
+  ],
+  "test_results": [
+    {
+      "command": "python -m pytest tests/flight_risk -q --basetemp=tmp/pytest-m2-refresh-01",
+      "result": "passed",
+      "evidence": "85 passed; exit 0"
+    },
+    {
+      "command": "python -m pytest tests/data_capacity -q --basetemp=tmp/pytest-m1-03",
+      "result": "passed",
+      "evidence": "42 passed; exit 0"
+    },
+    {
+      "command": "python -m src.flight_risk verify",
+      "result": "passed",
+      "evidence": "10,604 predictions / 3,537 flights / KATL,KDFW / leads 3,6,12; model partial, decisions unavailable; exit 0"
+    }
+  ],
+  "blockers": [
+    {
+      "requirement": "Supported arrival queues and AAR forecasting",
+      "reason": "Genuine capacity, complete arrival demand and cutoff backlog absent",
+      "evidence": [
+        "demand: verified input table unavailable",
+        "capacity: verified input table unavailable",
+        "initial_backlog: verified input table unavailable"
+      ],
+      "next_action": "Acquire real matched inputs or retain explicit unmet capability",
+      "owner": "Member 1"
+    },
+    {
+      "requirement": "End-to-end dashboard and reproducible dependency install",
+      "reason": "Existing UI uses v1 windows/readers; old requirements differ from verified runtime",
+      "evidence": "handover/agent-3-dashboard-integration.md",
+      "next_action": "Migrate UI, reconcile dependencies, verify and demonstrate",
+      "owner": "Member 3"
+    }
+  ],
+  "next_steps": [
+    "Obtain genuine FAA ASPM AAR extract (Member 1 supervisor) and rerun data_capacity, then train/decide/verify",
+    "Member 3 integrates refreshed run b3747032ae754cc9be967b9e4ab681b9 into the v2 dashboard",
+    "Final whole-project acceptance"
+  ],
+  "contract_changes_requested": []
+}

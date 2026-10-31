@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 from src.dashboard.data import SCORED_HORIZONS, Bundle
-from src.shared import Airport, resolve_airport
+from src.shared import AIRPORTS, airport_icao
 
 # Allowlist: a new producer column stays hidden until someone decides it is safe.
 UNREVEALED_FLIGHT_COLUMNS = [
@@ -15,6 +15,20 @@ UNREVEALED_FLIGHT_COLUMNS = [
     "scheduled_arr_utc", "coverage",
 ]
 OUTCOME_COLUMNS = ["dep_delay_min", "arr_delay_min", "cancelled", "diverted"]
+
+
+@dataclass(frozen=True)
+class Airport:
+    icao: str
+    iata: str
+    heading: int
+
+
+def resolve_airport(code: str) -> Airport | None:
+    """Find a registry airport by ICAO or IATA; None means unsupported, not a default."""
+    icao = airport_icao(code)
+    info = AIRPORTS.get(icao)
+    return Airport(icao, info["iata"], info["heading"]) if info else None
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,36 @@
+{
+  "schema_version": "2.0",
+  "producer": "member-2-decision-support",
+  "run_id": "b82893a4224744aa8c4a54228060f1f0",
+  "generated_at_utc": "2026-10-31T05:12:09.428536+00:00",
+  "status": "unavailable",
+  "airport": "KATL",
+  "asof_utc": "2025-07-15T12:00:00+00:00",
+  "window_hours": 6,
+  "row_counts": {
+    "queue.parquet": 0
+  },
+  "artifact_hashes": {
+    "queue.parquet": "36df452094d3e3ca5d9ede65321aac9ad6dc427245390d338681db3b06a2af60",
+    "recommendations.json": "8a88086107c39b2e0a27d99de93eb0cecbea8ab09def861a9f1dd256203870c7"
+  },
+  "upstream_run_id": "m1-20261031T050536Z-89e2f0",
+  "input_hashes": {
+    "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\capacity\\forecast.parquet": "95d1492700f05d681f72dc91f319958cec577f53b81f59e83edbcdecf67fc7c0"
+  },
+  "missing_inputs": [
+    "demand: verified input table unavailable",
+    "capacity: verified input table unavailable",
+    "initial_backlog: verified input table unavailable"
+  ],
+  "limitations": [
+    "Discrete one-hour arrival queue: Q_next = max(0, Q_start + demand - floor(AAR)).",
+    "AAR serves arrivals only; departure capacity and joint-runway constraints are not modelled.",
+    "Demand is newly due arrivals in each interval; initial backlog is separate and must not be counted again.",
+    "Queue order, within-hour timing, aircraft eligibility and individual delay are not modelled.",
+    "Backlog area sums end-of-hour backlog; it is not measured delay or an intervention benefit.",
+    "Advisories require a qualified controller's review; no operational instructions are executed.",
+    "Flight rescheduling is withheld: no verified flight-state, eligibility and allocation comparison is supplied.",
+    "No total-delay, fuel, diversion or causal benefit improvement is claimed."
+  ]
+}

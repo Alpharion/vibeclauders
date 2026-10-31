@@ -22,8 +22,8 @@ The app reads producer output from the repository root. Set `DASHBOARD_DATA_ROOT
 
 | Path | Purpose |
 |---|---|
-| `src/shared.py` | Airport registry access and `flight_key` |
-| `data/reference/airports.json` | Airport configuration; add an airport here |
+| `src/shared.py` | Scored airport registry (`AIRPORTS`) and `flight_key` |
+| `data/reference/airports.json` | Airport reference data |
 | `src/dashboard/data.py` | Manifest, hash, schema and key validation; capability states |
 | `src/dashboard/views.py` | Exact-snapshot selection and evidence gates |
 | `src/dashboard/plots.py`, `app.py` | Charts and UI |

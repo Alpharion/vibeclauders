@@ -1,8 +1,5 @@
-import json
-
-import pytest
-
-from src.shared import AIRPORTS, flight_key, load_airports, resolve_airport
+from src.dashboard.views import resolve_airport
+from src.shared import AIRPORTS, flight_key
 
 
 def test_flight_key_reproduces_member_2_published_id():
@@ -11,14 +8,11 @@ def test_flight_key_reproduces_member_2_published_id():
 
 
 def test_registry_configures_both_airports():
-    assert (AIRPORTS["KATL"].iata, AIRPORTS["KATL"].runway_heading_deg) == ("ATL", 80)
-    assert (AIRPORTS["KDFW"].iata, AIRPORTS["KDFW"].runway_heading_deg) == ("DFW", 180)
-    assert resolve_airport("DFW") is AIRPORTS["KDFW"]
+    assert (AIRPORTS["KATL"]["iata"], AIRPORTS["KATL"]["heading"]) == ("ATL", 80)
+    assert (AIRPORTS["KDFW"]["iata"], AIRPORTS["KDFW"]["heading"]) == ("DFW", 180)
+
+
+def test_resolve_airport_accepts_both_codes_and_refuses_unknown():
+    assert resolve_airport("DFW") == resolve_airport("KDFW")
+    assert resolve_airport("DFW").heading == 180
     assert resolve_airport("XXX") is None
-
-
-def test_unknown_metadata_is_refused(tmp_path):
-    path = tmp_path / "airports.json"
-    path.write_text(json.dumps({"airports": [{"icao": "KXXX", "iata": "XXX", "station": "KXXX"}]}))
-    with pytest.raises(ValueError, match="timezone"):
-        load_airports(path)

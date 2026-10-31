@@ -1,0 +1,311 @@
+{
+  "schema_version": "2.0",
+  "run_id": "m1-20261031T050536Z-89e2f0",
+  "generated_at_utc": "2026-10-31T05:10:57+00:00",
+  "producer": "member-1/data_capacity",
+  "status": "partial",
+  "started_at_utc": "2026-10-31T05:05:36+00:00",
+  "command": "python -m src.data_capacity run --bts-months 2023-01",
+  "parameters": {
+    "airports": [
+      "KATL",
+      "KDFW"
+    ],
+    "start": "2023-01-01",
+    "end": "2025-07-31",
+    "horizons": [
+      3,
+      6,
+      12
+    ],
+    "cache_only": false
+  },
+  "environment": {
+    "python": "3.14.6",
+    "pandas": "3.0.3",
+    "numpy": "2.4.6",
+    "scikit_learn": "1.9.0",
+    "pyarrow": "23.0.1"
+  },
+  "flight_key_impl": "src.shared.flight_key",
+  "airport_registry": "src.shared.AIRPORTS",
+  "outputs": [
+    {
+      "name": "flights",
+      "path": "data/processed/flights.parquet",
+      "rows": 25299,
+      "sha256": "6e446d7c1948333d122bb1fb64b6dd5546537c343e3defbfcf4b07c83ee9b4de",
+      "schema_version": "2.0"
+    },
+    {
+      "name": "weather",
+      "path": "artifacts/capacity/weather.parquet",
+      "rows": 147010,
+      "sha256": "88c79609ae9d82561b3e25582e3413bf123c7e2a99867300b883e2108b11bf2f",
+      "schema_version": "2.0"
+    },
+    {
+      "name": "weather_features",
+      "path": "artifacts/capacity/weather_features.parquet",
+      "rows": 135786,
+      "sha256": "5d7fce98d0c80938398d7e0a6af55a9bd15d8410bf7b656be244099e560c29bd",
+      "schema_version": "2.0"
+    },
+    {
+      "name": "storm_events",
+      "path": "data/processed/storm_events.parquet",
+      "rows": 1839,
+      "sha256": "526cae770223b82dd52fd38aa421afac00938b39f2931d538127d71d73718d04",
+      "schema_version": "2.0"
+    },
+    {
+      "name": "forecast",
+      "path": "artifacts/capacity/forecast.parquet",
+      "rows": 0,
+      "sha256": "95d1492700f05d681f72dc91f319958cec577f53b81f59e83edbcdecf67fc7c0",
+      "schema_version": "2.0"
+    },
+    {
+      "name": "evaluation",
+      "path": "artifacts/capacity/evaluation.json",
+      "rows": null,
+      "sha256": "e8a4ee09b36510ec909c178b7f6f650eb7c14bbccdfa42813cae5c11ef8201ff",
+      "schema_version": "2.0"
+    },
+    {
+      "name": "data_access",
+      "path": "artifacts/capacity/data_access.json",
+      "rows": null,
+      "sha256": "b77590dd80df4b6c0afa4c600ee950cd07a1b7bc34183f8c01acfbfc39bcdf43",
+      "schema_version": "2.0"
+    },
+    {
+      "name": "provenance",
+      "path": "data/processed/provenance.json",
+      "rows": null,
+      "sha256": "ed8e6e757803e0b2bc3642de67eba28b5bced3548364d3992c9b3389038ccec2",
+      "schema_version": "2.0"
+    }
+  ],
+  "artifact_hashes": {
+    "../../data/processed/flights.parquet": "6e446d7c1948333d122bb1fb64b6dd5546537c343e3defbfcf4b07c83ee9b4de",
+    "weather.parquet": "88c79609ae9d82561b3e25582e3413bf123c7e2a99867300b883e2108b11bf2f",
+    "weather_features.parquet": "5d7fce98d0c80938398d7e0a6af55a9bd15d8410bf7b656be244099e560c29bd",
+    "../../data/processed/storm_events.parquet": "526cae770223b82dd52fd38aa421afac00938b39f2931d538127d71d73718d04",
+    "forecast.parquet": "95d1492700f05d681f72dc91f319958cec577f53b81f59e83edbcdecf67fc7c0",
+    "evaluation.json": "e8a4ee09b36510ec909c178b7f6f650eb7c14bbccdfa42813cae5c11ef8201ff",
+    "data_access.json": "b77590dd80df4b6c0afa4c600ee950cd07a1b7bc34183f8c01acfbfc39bcdf43",
+    "../../data/processed/provenance.json": "ed8e6e757803e0b2bc3642de67eba28b5bced3548364d3992c9b3389038ccec2"
+  },
+  "split": {
+    "basis": "airport-local date",
+    "train": "2023",
+    "validate": "2024",
+    "test": "2025-01-01..2025-07-31"
+  },
+  "coverage": {
+    "flights": {
+      "ATL": {
+        "departures": 8415,
+        "arrivals": 5429,
+        "departures_by_year": {
+          "2023": 3293,
+          "2024": 3334,
+          "2025": 1788
+        },
+        "arrivals_by_year": {
+          "2023": 2115,
+          "2024": 2024,
+          "2025": 1290
+        }
+      },
+      "DFW": {
+        "departures": 7736,
+        "arrivals": 4032,
+        "departures_by_year": {
+          "2023": 2828,
+          "2024": 3091,
+          "2025": 1817
+        },
+        "arrivals_by_year": {
+          "2023": 1504,
+          "2024": 1579,
+          "2025": 949
+        }
+      }
+    },
+    "weather_features": {
+      "KATL/h3": {
+        "rows": 22631,
+        "available": 22619,
+        "partial": 12,
+        "unavailable": 0,
+        "first_target_utc": "2023-01-01T05:00:00+00:00",
+        "last_target_utc": "2025-08-01T03:00:00+00:00",
+        "null_share": {
+          "crosswind_kt": 0.0475,
+          "tailwind_kt": 0.0475,
+          "wind_speed_kt": 0.0,
+          "wind_gust_kt": 0.0,
+          "visibility_sm": 0.0,
+          "ceiling_ft_agl": 0.0,
+          "temperature_c": 0.0006,
+          "precip_flag": 0.0,
+          "thunderstorm_flag": 0.0
+        }
+      },
+      "KATL/h6": {
+        "rows": 22631,
+        "available": 22619,
+        "partial": 12,
+        "unavailable": 0,
+        "first_target_utc": "2023-01-01T05:00:00+00:00",
+        "last_target_utc": "2025-08-01T03:00:00+00:00",
+        "null_share": {
+          "crosswind_kt": 0.0487,
+          "tailwind_kt": 0.0487,
+          "wind_speed_kt": 0.0,
+          "wind_gust_kt": 0.0,
+          "visibility_sm": 0.0,
+          "ceiling_ft_agl": 0.0,
+          "temperature_c": 0.0006,
+          "precip_flag": 0.0,
+          "thunderstorm_flag": 0.0
+        }
+      },
+      "KATL/h12": {
+        "rows": 22631,
+        "available": 22619,
+        "partial": 12,
+        "unavailable": 0,
+        "first_target_utc": "2023-01-01T05:00:00+00:00",
+        "last_target_utc": "2025-08-01T03:00:00+00:00",
+        "null_share": {
+          "crosswind_kt": 0.0474,
+          "tailwind_kt": 0.0474,
+          "wind_speed_kt": 0.0,
+          "wind_gust_kt": 0.0,
+          "visibility_sm": 0.0,
+          "ceiling_ft_agl": 0.0,
+          "temperature_c": 0.0006,
+          "precip_flag": 0.0,
+          "thunderstorm_flag": 0.0
+        }
+      },
+      "KDFW/h3": {
+        "rows": 22631,
+        "available": 22626,
+        "partial": 5,
+        "unavailable": 0,
+        "first_target_utc": "2023-01-01T06:00:00+00:00",
+        "last_target_utc": "2025-08-01T04:00:00+00:00",
+        "null_share": {
+          "crosswind_kt": 0.0218,
+          "tailwind_kt": 0.0218,
+          "wind_speed_kt": 0.0,
+          "wind_gust_kt": 0.0,
+          "visibility_sm": 0.0,
+          "ceiling_ft_agl": 0.0,
+          "temperature_c": 0.0005,
+          "precip_flag": 0.0,
+          "thunderstorm_flag": 0.0
+        }
+      },
+      "KDFW/h6": {
+        "rows": 22631,
+        "available": 22626,
+        "partial": 5,
+        "unavailable": 0,
+        "first_target_utc": "2023-01-01T06:00:00+00:00",
+        "last_target_utc": "2025-08-01T04:00:00+00:00",
+        "null_share": {
+          "crosswind_kt": 0.0182,
+          "tailwind_kt": 0.0182,
+          "wind_speed_kt": 0.0,
+          "wind_gust_kt": 0.0,
+          "visibility_sm": 0.0,
+          "ceiling_ft_agl": 0.0,
+          "temperature_c": 0.0005,
+          "precip_flag": 0.0,
+          "thunderstorm_flag": 0.0
+        }
+      },
+      "KDFW/h12": {
+        "rows": 22631,
+        "available": 22626,
+        "partial": 5,
+        "unavailable": 0,
+        "first_target_utc": "2023-01-01T06:00:00+00:00",
+        "last_target_utc": "2025-08-01T04:00:00+00:00",
+        "null_share": {
+          "crosswind_kt": 0.0128,
+          "tailwind_kt": 0.0128,
+          "wind_speed_kt": 0.0,
+          "wind_gust_kt": 0.0,
+          "visibility_sm": 0.0,
+          "ceiling_ft_agl": 0.0,
+          "temperature_c": 0.0005,
+          "precip_flag": 0.0,
+          "thunderstorm_flag": 0.0
+        }
+      }
+    }
+  },
+  "capabilities": {
+    "canonical_flights": {
+      "status": "available",
+      "coverage": "sample"
+    },
+    "weather_decoded": {
+      "status": "available"
+    },
+    "weather_features": {
+      "status": "available",
+      "feature_semantics": {
+        "crosswind_kt": "Max |sustained crosswind| (kt) vs fixed runway heading across prevailing TAF groups overlapping the target hour; null if any overlapping group has unknown direction with wind.",
+        "tailwind_kt": "Max sustained tailwind magnitude (kt, >=0) vs runway heading; same aggregation/null rule.",
+        "wind_speed_kt": "Max prevailing forecast sustained wind (kt).",
+        "wind_gust_kt": "Max prevailing forecast gust (kt); equals sustained speed when no gust group is forecast.",
+        "visibility_sm": "Min prevailing forecast visibility (statute miles); TAF P6SM is encoded 6.01.",
+        "ceiling_ft_agl": "Min prevailing forecast ceiling (lowest BKN/OVC/VV, ft AGL); 30000 = no ceiling layer forecast.",
+        "temperature_c": "Latest METAR temperature available at cutoff (deg C) - observed, not forecast for target.",
+        "precip_flag": "1 if any prevailing group forecasts precipitation (RA/SN/DZ/PL/GR/GS/IC/UP/SG) at the station.",
+        "thunderstorm_flag": "1 if any prevailing group forecasts TS (including VCTS).",
+        "crosswind_upper_kt": "Upper bound of crosswind: unknown-direction groups count their full speed.",
+        "crosswind_gust_kt": "Max crosswind computed with gust speed.",
+        "cond_thunderstorm_flag": "1 if a TEMPO/PROB group overlapping the target hour forecasts TS.",
+        "cond_min_visibility_sm": "Min visibility in overlapping TEMPO/PROB groups (null if none).",
+        "cond_min_ceiling_ft_agl": "Min ceiling in overlapping TEMPO/PROB groups that report sky cover.",
+        "cond_max_gust_kt": "Max gust/speed in overlapping TEMPO/PROB groups.",
+        "cond_max_probability": "Max PROB value (0-1) among overlapping PROB groups; null for TEMPO-only or none.",
+        "obs_*": "Latest METAR available at cutoff (persistence), age <= 2 h; obs_age_min gives its age."
+      }
+    },
+    "aar_forecast": {
+      "status": "unavailable",
+      "reason": "no genuine ASPM AAR export found in data/public/aspm/*.csv"
+    },
+    "arrival_demand": {
+      "status": "unavailable",
+      "reason": "Only sampled schedules exist; no complete as-of-cutoff demand for a named population."
+    },
+    "initial_backlog": {
+      "status": "unavailable",
+      "reason": "No observed queue state at cutoff and no validated reconstruction."
+    },
+    "eligible_flights": {
+      "status": "unavailable",
+      "reason": "No as-of flight state (airborne/ground) data."
+    },
+    "storm_annotation": {
+      "status": "available",
+      "use": "retrospective evaluation cohorts only"
+    }
+  },
+  "limitations": [
+    "Unmet core Challenge 5 requirement: no genuine facility AAR labels, so no AAR model or RMSE. Sampled arrival counts are NOT relabelled as capacity."
+  ],
+  "missing_inputs": [
+    "genuine facility AAR labels (FAA ASPM export)"
+  ]
+}

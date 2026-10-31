@@ -1,0 +1,404 @@
+{
+  "rows": 148273,
+  "columns": 123,
+  "date_min": "2023-01-01",
+  "date_max": "2025-07-31",
+  "years": {
+    "2024": 58264,
+    "2023": 55915,
+    "2025": 34094
+  },
+  "months": {
+    "2025-07": 5300,
+    "2024-07": 5207,
+    "2025-06": 5155,
+    "2024-10": 5125,
+    "2025-05": 5096,
+    "2024-05": 5082,
+    "2024-08": 5053,
+    "2025-03": 5053,
+    "2024-06": 5008,
+    "2023-10": 4977,
+    "2023-08": 4929,
+    "2024-03": 4898,
+    "2024-12": 4884,
+    "2023-07": 4878,
+    "2025-04": 4875,
+    "2024-04": 4801,
+    "2024-09": 4763,
+    "2023-05": 4749,
+    "2023-03": 4735,
+    "2024-11": 4724,
+    "2023-12": 4698,
+    "2023-06": 4686,
+    "2023-09": 4656,
+    "2023-11": 4651,
+    "2023-04": 4595,
+    "2024-01": 4499,
+    "2025-01": 4471,
+    "2023-01": 4371,
+    "2024-02": 4220,
+    "2025-02": 4144,
+    "2023-02": 3990
+  },
+  "unique_dates": 943,
+  "full_duplicate_rows": 0,
+  "target_rows": 25299,
+  "non_target_rows": 122974,
+  "origins": 136,
+  "destinations": 350,
+  "target_origin_rows": {
+    "ATL": 8415,
+    "DFW": 7736
+  },
+  "target_dest_rows": {
+    "ATL": 5429,
+    "DFW": 4032
+  },
+  "ATL_DFW_direct_rows": 313,
+  "weather": {
+    "temp_ORIGIN": {
+      "missing_pct": 0.0,
+      "unique": 164,
+      "min": -22.2,
+      "max": 47.2,
+      "zero_pct": 0.51
+    },
+    "prcp_ORIGIN": {
+      "missing_pct": 0.0,
+      "unique": 85,
+      "min": 0.0,
+      "max": 39.9,
+      "zero_pct": 94.95
+    },
+    "wspd_ORIGIN": {
+      "missing_pct": 0.0,
+      "unique": 63,
+      "min": 0.0,
+      "max": 64.8,
+      "zero_pct": 8.75
+    },
+    "wpgt_ORIGIN": {
+      "missing_pct": 0.0,
+      "unique": 29,
+      "min": 0.0,
+      "max": 46.0,
+      "zero_pct": 97.78
+    },
+    "pres_ORIGIN": {
+      "missing_pct": 0.0,
+      "unique": 476,
+      "min": 979.8,
+      "max": 1045.6,
+      "zero_pct": 0.0
+    },
+    "snow_ORIGIN": {
+      "missing_pct": 0.0,
+      "unique": 1,
+      "min": 0.0,
+      "max": 0.0,
+      "zero_pct": 100.0
+    },
+    "coco_ORIGIN": {
+      "missing_pct": 0.0,
+      "unique": 19,
+      "min": 0.0,
+      "max": 25.0,
+      "zero_pct": 0.34
+    },
+    "temp_DEST": {
+      "missing_pct": 0.0,
+      "unique": 263,
+      "min": -25.6,
+      "max": 47.2,
+      "zero_pct": 0.53
+    },
+    "prcp_DEST": {
+      "missing_pct": 0.0,
+      "unique": 86,
+      "min": 0.0,
+      "max": 45.5,
+      "zero_pct": 94.7
+    },
+    "wspd_DEST": {
+      "missing_pct": 0.0,
+      "unique": 92,
+      "min": 0.0,
+      "max": 79.2,
+      "zero_pct": 9.38
+    },
+    "wpgt_DEST": {
+      "missing_pct": 0.0,
+      "unique": 39,
+      "min": 0.0,
+      "max": 54.0,
+      "zero_pct": 97.72
+    },
+    "pres_DEST": {
+      "missing_pct": 0.0,
+      "unique": 496,
+      "min": 981.2,
+      "max": 1044.2,
+      "zero_pct": 0.0
+    },
+    "snow_DEST": {
+      "missing_pct": 0.0,
+      "unique": 1,
+      "min": 0.0,
+      "max": 0.0,
+      "zero_pct": 100.0
+    },
+    "coco_DEST": {
+      "missing_pct": 0.0,
+      "unique": 19,
+      "min": 0.0,
+      "max": 25.0,
+      "zero_pct": 0.98
+    }
+  },
+  "outcomes": {
+    "DEP_DELAY": {
+      "missing": 336,
+      "min": -25.0,
+      "max": 2118.0,
+      "mean": 15.38673236389857
+    },
+    "ARR_DELAY": {
+      "missing": 423,
+      "min": -71.0,
+      "max": 2103.0,
+      "mean": 10.382416787264834
+    },
+    "CANCELLED": {
+      "missing": 0,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.013636902644373295
+    },
+    "DIVERTED": {
+      "missing": 0,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.0030831258152496147
+    },
+    "WEATHER_DELAY": {
+      "missing": 19616,
+      "min": 0.0,
+      "max": 899.0,
+      "mean": 5.4147457328875594
+    }
+  },
+  "target_stats": {
+    "ATL": {
+      "rows": 13844,
+      "dates": 943,
+      "departures": 8415,
+      "arrivals": 5429,
+      "cancelled": 126,
+      "diverted": 42,
+      "dep_labelled": 8343,
+      "dep_over45": 780,
+      "dep_over45_pct_labelled": 9.35,
+      "year_counts": {
+        "2023": 5408,
+        "2024": 5358,
+        "2025": 3078
+      },
+      "origin_weather_missing_pct": {
+        "temp_ORIGIN": 0.0,
+        "prcp_ORIGIN": 0.0,
+        "wspd_ORIGIN": 0.0,
+        "wpgt_ORIGIN": 0.0,
+        "pres_ORIGIN": 0.0,
+        "snow_ORIGIN": 0.0,
+        "coco_ORIGIN": 0.0
+      },
+      "dest_weather_missing_pct": {
+        "temp_DEST": 0.0,
+        "prcp_DEST": 0.0,
+        "wspd_DEST": 0.0,
+        "wpgt_DEST": 0.0,
+        "pres_DEST": 0.0,
+        "snow_DEST": 0.0,
+        "coco_DEST": 0.0
+      },
+      "mean_arrival_records_per_day": 5.76,
+      "arrival_days": 939,
+      "daily_arrival_min": 1,
+      "daily_arrival_max": 18,
+      "departure_cancelled": 74,
+      "dep_missing_labels": 72,
+      "carriers": {
+        "DL": 5849,
+        "WN": 833,
+        "9E": 478,
+        "F9": 290,
+        "NK": 282,
+        "OO": 234,
+        "AA": 217,
+        "UA": 217,
+        "B6": 9,
+        "OH": 5,
+        "YX": 1
+      },
+      "dep_labels_by_year": {
+        "2023": {
+          "label": 3269,
+          "severe": 271
+        },
+        "2024": {
+          "label": 3310,
+          "severe": 280
+        },
+        "2025": {
+          "label": 1764,
+          "severe": 229
+        }
+      },
+      "local_weather_zero_pct": {
+        "temp_ORIGIN": 0.44,
+        "prcp_ORIGIN": 94.3,
+        "wspd_ORIGIN": 7.47,
+        "wpgt_ORIGIN": 98.44,
+        "pres_ORIGIN": 0.0,
+        "snow_ORIGIN": 100.0,
+        "coco_ORIGIN": 0.04
+      },
+      "departure_weather_same_scheduled_hour_check": {
+        "multi_flight_groups": 1585,
+        "conflicting_groups": 0
+      },
+      "arrival_weather_same_scheduled_hour_check": {
+        "multi_flight_groups": 688,
+        "conflicting_groups": 0
+      }
+    },
+    "DFW": {
+      "rows": 11768,
+      "dates": 943,
+      "departures": 7736,
+      "arrivals": 4032,
+      "cancelled": 224,
+      "diverted": 36,
+      "dep_labelled": 7611,
+      "dep_over45": 991,
+      "dep_over45_pct_labelled": 13.02,
+      "year_counts": {
+        "2024": 4670,
+        "2023": 4332,
+        "2025": 2766
+      },
+      "origin_weather_missing_pct": {
+        "temp_ORIGIN": 0.0,
+        "prcp_ORIGIN": 0.0,
+        "wspd_ORIGIN": 0.0,
+        "wpgt_ORIGIN": 0.0,
+        "pres_ORIGIN": 0.0,
+        "snow_ORIGIN": 0.0,
+        "coco_ORIGIN": 0.0
+      },
+      "dest_weather_missing_pct": {
+        "temp_DEST": 0.0,
+        "prcp_DEST": 0.0,
+        "wspd_DEST": 0.0,
+        "wpgt_DEST": 0.0,
+        "pres_DEST": 0.0,
+        "snow_DEST": 0.0,
+        "coco_DEST": 0.0
+      },
+      "mean_arrival_records_per_day": 4.28,
+      "arrival_days": 926,
+      "daily_arrival_min": 1,
+      "daily_arrival_max": 14,
+      "departure_cancelled": 130,
+      "dep_missing_labels": 125,
+      "carriers": {
+        "AA": 4243,
+        "MQ": 1611,
+        "OO": 690,
+        "DL": 277,
+        "OH": 242,
+        "F9": 228,
+        "NK": 228,
+        "UA": 217
+      },
+      "dep_labels_by_year": {
+        "2023": {
+          "label": 2797,
+          "severe": 318
+        },
+        "2024": {
+          "label": 3037,
+          "severe": 408
+        },
+        "2025": {
+          "label": 1777,
+          "severe": 265
+        }
+      },
+      "local_weather_zero_pct": {
+        "temp_ORIGIN": 0.43,
+        "prcp_ORIGIN": 96.19,
+        "wspd_ORIGIN": 5.33,
+        "wpgt_ORIGIN": 96.54,
+        "pres_ORIGIN": 0.0,
+        "snow_ORIGIN": 100.0,
+        "coco_ORIGIN": 0.04
+      },
+      "departure_weather_same_scheduled_hour_check": {
+        "multi_flight_groups": 1436,
+        "conflicting_groups": 0
+      },
+      "arrival_weather_same_scheduled_hour_check": {
+        "multi_flight_groups": 456,
+        "conflicting_groups": 0
+      }
+    }
+  },
+  "duplicate_flight_keys": 0,
+  "unique_days_in_calendar_range": 943,
+  "weather_field_names": [
+    "temp_ORIGIN",
+    "prcp_ORIGIN",
+    "wspd_ORIGIN",
+    "wpgt_ORIGIN",
+    "pres_ORIGIN",
+    "snow_ORIGIN",
+    "coco_ORIGIN",
+    "temp_DEST",
+    "prcp_DEST",
+    "wspd_DEST",
+    "wpgt_DEST",
+    "pres_DEST",
+    "snow_DEST",
+    "coco_DEST"
+  ],
+  "all_empty_columns": [
+    "DIV3_AIRPORT",
+    "DIV3_AIRPORT_ID",
+    "DIV3_AIRPORT_SEQ_ID",
+    "DIV3_WHEELS_ON",
+    "DIV3_TOTAL_GTIME",
+    "DIV3_LONGEST_GTIME",
+    "DIV3_WHEELS_OFF",
+    "DIV3_TAIL_NUM",
+    "DIV4_AIRPORT",
+    "DIV4_AIRPORT_ID",
+    "DIV4_AIRPORT_SEQ_ID",
+    "DIV4_WHEELS_ON",
+    "DIV4_TOTAL_GTIME",
+    "DIV4_LONGEST_GTIME",
+    "DIV4_WHEELS_OFF",
+    "DIV4_TAIL_NUM",
+    "DIV5_AIRPORT",
+    "DIV5_AIRPORT_ID",
+    "DIV5_AIRPORT_SEQ_ID",
+    "DIV5_WHEELS_ON",
+    "DIV5_TOTAL_GTIME",
+    "DIV5_LONGEST_GTIME",
+    "DIV5_WHEELS_OFF",
+    "DIV5_TAIL_NUM"
+  ],
+  "source_url": "https://drive.google.com/file/d/1O9gcWoM_irmD14alDn_TZzKpyaKAJM2J/view",
+  "models_trained": false
+}
