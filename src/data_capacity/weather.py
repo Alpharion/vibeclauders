@@ -167,7 +167,7 @@ def metar_valid_to(observed: pd.Series) -> pd.Series:
     (two reports in the same minute must not create a zero-length interval)."""
     uniq = observed.dropna().drop_duplicates().sort_values()
     nxt = dict(zip(uniq, uniq.shift(-1)))
-    return observed.map(nxt).astype(observed.dtype)
+    return pd.to_datetime(observed.map(nxt), utc=True)
 
 
 GROUP_PERIOD_RE = re.compile(r"\b(\d{2})(\d{2})/(\d{2})(\d{2})\b")
