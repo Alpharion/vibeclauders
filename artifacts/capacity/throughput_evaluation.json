@@ -1,0 +1,485 @@
+{
+  "schema_version": "2.0",
+  "run_id": "m1-20261031T065014Z-eacdd5",
+  "generated_at_utc": "2026-10-31T06:52:10+00:00",
+  "producer": "member-1/data_capacity",
+  "limitations": [
+    "Forecast of observed reporting-carrier arrivals per hour (throughput). NOT the facility Airport Arrival Rate (AAR): counts are limited by demand, by BTS coverage and by upstream flow programmes, so they do not measure runway capacity. Never report this as AAR or AAR RMSE."
+  ],
+  "missing_inputs": [],
+  "status": "available",
+  "label_kind": "observed_reporting_carrier_arrivals",
+  "not_aar": "Forecast of observed reporting-carrier arrivals per hour (throughput). NOT the facility Airport Arrival Rate (AAR): counts are limited by demand, by BTS coverage and by upstream flow programmes, so they do not measure runway capacity. Never report this as AAR or AAR RMSE.",
+  "team_agreement": {
+    "status": "pending",
+    "required_by": "parallel-plan section 7 (all three members at Gate 2)",
+    "note": "Built at Member 1's request; Member 3 should not present it until agreement is recorded."
+  },
+  "assumptions": [
+    "Airline schedules are published well before the cutoff, so the target hour's scheduled count is treated as known at cutoff. BTS CRS times reconstruct that schedule (not an as-of snapshot) and include flights later cancelled.",
+    "Target = reporting-carrier arrivals with reconstructed wheels-on in the target hour; cancelled and diverted flights do not count; hours flagged uncertain in traffic_hourly are excluded.",
+    "Weather inputs are the cutoff-safe weather_features rows (available_at_utc <= asof_utc)."
+  ],
+  "split": {
+    "basis": "airport-local date of target hour",
+    "train": "2023",
+    "validate": "2024",
+    "test": "2025-01-01..2025-07-31",
+    "rows": {
+      "validate": 52704,
+      "train": 52560,
+      "test": 30465
+    },
+    "excluded_test_cutoffs_before_selection_end": true
+  },
+  "models": {
+    "schedule_only": {
+      "features": [
+        "scheduled_arrivals",
+        "scheduled_departures",
+        "target_hour_local",
+        "target_dow_local",
+        "target_month",
+        "horizon_hours",
+        "airport_code"
+      ],
+      "selected": {
+        "categorical_features": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ],
+        "early_stopping": "auto",
+        "interaction_cst": null,
+        "l2_regularization": 1.0,
+        "learning_rate": 0.1,
+        "loss": "squared_error",
+        "max_bins": 255,
+        "max_depth": 4,
+        "max_features": 1.0,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 20,
+        "monotonic_cst": null,
+        "n_iter_no_change": 10,
+        "quantile": null,
+        "random_state": 0,
+        "scoring": "loss",
+        "tol": 1e-07,
+        "validation_fraction": 0.1,
+        "verbose": 0,
+        "warm_start": false
+      },
+      "candidates": [
+        {
+          "max_depth": 4,
+          "learning_rate": 0.05,
+          "max_iter": 300,
+          "validation_rmse": 8.07723960749015
+        },
+        {
+          "max_depth": 4,
+          "learning_rate": 0.1,
+          "max_iter": 300,
+          "validation_rmse": 7.966857493779056
+        },
+        {
+          "max_depth": 6,
+          "learning_rate": 0.05,
+          "max_iter": 300,
+          "validation_rmse": 7.974739268812704
+        },
+        {
+          "max_depth": 6,
+          "learning_rate": 0.1,
+          "max_iter": 300,
+          "validation_rmse": 8.04578719230167
+        }
+      ]
+    },
+    "weather": {
+      "features": [
+        "scheduled_arrivals",
+        "scheduled_departures",
+        "target_hour_local",
+        "target_dow_local",
+        "target_month",
+        "horizon_hours",
+        "airport_code",
+        "crosswind_kt",
+        "tailwind_kt",
+        "wind_speed_kt",
+        "wind_gust_kt",
+        "visibility_sm",
+        "ceiling_ft_agl",
+        "temperature_c",
+        "precip_flag",
+        "thunderstorm_flag",
+        "crosswind_upper_kt",
+        "crosswind_gust_kt",
+        "frozen_precip_flag",
+        "cond_frozen_precip_flag",
+        "obs_frozen_precip_flag",
+        "cond_thunderstorm_flag",
+        "cond_min_visibility_sm",
+        "cond_min_ceiling_ft_agl",
+        "cond_max_gust_kt",
+        "obs_wind_speed_kt",
+        "obs_crosswind_kt",
+        "obs_tailwind_kt",
+        "obs_visibility_sm",
+        "obs_ceiling_ft_agl",
+        "obs_precip_flag",
+        "obs_thunderstorm_flag"
+      ],
+      "selected": {
+        "categorical_features": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "early_stopping": "auto",
+        "interaction_cst": null,
+        "l2_regularization": 1.0,
+        "learning_rate": 0.1,
+        "loss": "squared_error",
+        "max_bins": 255,
+        "max_depth": 6,
+        "max_features": 1.0,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 20,
+        "monotonic_cst": null,
+        "n_iter_no_change": 10,
+        "quantile": null,
+        "random_state": 0,
+        "scoring": "loss",
+        "tol": 1e-07,
+        "validation_fraction": 0.1,
+        "verbose": 0,
+        "warm_start": false
+      },
+      "candidates": [
+        {
+          "max_depth": 4,
+          "learning_rate": 0.05,
+          "max_iter": 300,
+          "validation_rmse": 7.941692832212082
+        },
+        {
+          "max_depth": 4,
+          "learning_rate": 0.1,
+          "max_iter": 300,
+          "validation_rmse": 7.807539954035591
+        },
+        {
+          "max_depth": 6,
+          "learning_rate": 0.05,
+          "max_iter": 300,
+          "validation_rmse": 7.792387850649923
+        },
+        {
+          "max_depth": 6,
+          "learning_rate": 0.1,
+          "max_iter": 300,
+          "validation_rmse": 7.770083098557356
+        }
+      ]
+    }
+  },
+  "baseline": "train-only airport x local-hour completion ratio x scheduled arrivals",
+  "overall": {
+    "n": 30465,
+    "rmse_weather": 9.257331553560743,
+    "rmse_schedule_only": 9.384075467576057,
+    "rmse_baseline": 15.430583309786764,
+    "mae_weather": 6.177076584384577,
+    "mean_observed": 35.04027572624323,
+    "interval_coverage": 0.8509437058920072
+  },
+  "weather_value": {
+    "weather_minus_schedule_only": {
+      "rmse_difference": -0.12674391401531437,
+      "ci95": [
+        -0.4048717545541717,
+        0.14320156468921938
+      ],
+      "resampled_unit": "target local date",
+      "n_boot": 200
+    },
+    "weather_minus_baseline": {
+      "rmse_difference": -6.173251756226021,
+      "ci95": [
+        -6.562160768160425,
+        -5.830922583668038
+      ],
+      "resampled_unit": "target local date",
+      "n_boot": 200
+    },
+    "weather_impacted_hours": {
+      "definition": "thunderstorm, frozen precipitation, ceiling < 1000 ft or visibility < 3 SM forecast at cutoff",
+      "n": 2932,
+      "weather_minus_schedule_only": {
+        "rmse_difference": -1.8319477273787133,
+        "ci95": [
+          -3.462935033715243,
+          -0.46363186463037903
+        ],
+        "resampled_unit": "target local date",
+        "n_boot": 200
+      }
+    },
+    "reading": "negative = the weather model has lower RMSE"
+  },
+  "metrics": [
+    {
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "unit": "observed reporting-carrier arrivals/hour",
+      "n": 5081,
+      "rmse_weather": 7.348511668753562,
+      "rmse_schedule_only": 7.563415831293176,
+      "rmse_baseline": 7.71526515043398,
+      "mae_weather": 4.966780989316562,
+      "mean_observed": 35.07478842747491,
+      "interval_coverage": 0.9132060617988584
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "unit": "observed reporting-carrier arrivals/hour",
+      "n": 5078,
+      "rmse_weather": 7.498228366458294,
+      "rmse_schedule_only": 7.56551520304666,
+      "rmse_baseline": 7.717104443088248,
+      "mae_weather": 5.036070285752808,
+      "mean_observed": 35.08999606144151,
+      "interval_coverage": 0.9117762898779047
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "unit": "observed reporting-carrier arrivals/hour",
+      "n": 5072,
+      "rmse_weather": 7.453300368501398,
+      "rmse_schedule_only": 7.567354908937545,
+      "rmse_baseline": 7.719588628454694,
+      "mae_weather": 4.983764744262122,
+      "mean_observed": 35.08280757097792,
+      "interval_coverage": 0.9128548895899053
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "unit": "observed reporting-carrier arrivals/hour",
+      "n": 5082,
+      "rmse_weather": 10.78585457309286,
+      "rmse_schedule_only": 10.90445365472198,
+      "rmse_baseline": 20.41013810242156,
+      "mae_weather": 7.369556329233203,
+      "mean_observed": 34.989767807949626,
+      "interval_coverage": 0.787288469106651
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "unit": "observed reporting-carrier arrivals/hour",
+      "n": 5079,
+      "rmse_weather": 10.726593979720262,
+      "rmse_schedule_only": 10.907644531706831,
+      "rmse_baseline": 20.416109273568082,
+      "mae_weather": 7.348920289176317,
+      "mean_observed": 35.00964756841898,
+      "interval_coverage": 0.787359716479622
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "unit": "observed reporting-carrier arrivals/hour",
+      "n": 5073,
+      "rmse_weather": 10.816788998791383,
+      "rmse_schedule_only": 10.897520580147225,
+      "rmse_baseline": 20.407094214983903,
+      "mae_weather": 7.356663281829054,
+      "mean_observed": 34.994677705499704,
+      "interval_coverage": 0.7932190025625863
+    }
+  ],
+  "cohorts": [
+    {
+      "cohort": "thunderstorm_forecast",
+      "n": 899,
+      "rmse_weather": 15.868738969983491,
+      "rmse_schedule_only": 17.244891080529328,
+      "rmse_baseline": 26.40950789681844,
+      "mae_weather": 11.228953408878066,
+      "mean_observed": 31.311457174638488,
+      "interval_coverage": 0.7686318131256952
+    },
+    {
+      "cohort": "frozen_precip_forecast",
+      "n": 146,
+      "rmse_weather": 22.10194070278891,
+      "rmse_schedule_only": 33.76958866439176,
+      "rmse_baseline": 36.99538118936681,
+      "mae_weather": 17.917373763324534,
+      "mean_observed": 13.465753424657533,
+      "interval_coverage": 0.5616438356164384
+    },
+    {
+      "cohort": "low_ceiling_lt_1000ft",
+      "n": 2101,
+      "rmse_weather": 10.776396708138707,
+      "rmse_schedule_only": 12.6268737597531,
+      "rmse_baseline": 20.334674140099047,
+      "mae_weather": 7.220487183833215,
+      "mean_observed": 32.90004759638268,
+      "interval_coverage": 0.9019514516896716
+    },
+    {
+      "cohort": "low_visibility_lt_3sm",
+      "n": 279,
+      "rmse_weather": 12.338689123851037,
+      "rmse_schedule_only": 17.722492868176822,
+      "rmse_baseline": 24.8878864718278,
+      "mae_weather": 7.946728993557833,
+      "mean_observed": 24.00716845878136,
+      "interval_coverage": 0.8637992831541219
+    },
+    {
+      "cohort": "crosswind_ge_15kt",
+      "n": 262,
+      "rmse_weather": 15.600732723554046,
+      "rmse_schedule_only": 16.993814095463744,
+      "rmse_baseline": 25.257838856704236,
+      "mae_weather": 11.088680242573965,
+      "mean_observed": 33.43511450381679,
+      "interval_coverage": 0.6335877862595419
+    },
+    {
+      "cohort": "peak_schedule_ge_train_p90",
+      "n": 2592,
+      "rmse_weather": 11.122227276639453,
+      "rmse_schedule_only": 11.807247068053764,
+      "rmse_baseline": 12.45031696712297,
+      "mae_weather": 7.56199449927807,
+      "mean_observed": 64.36689814814815,
+      "interval_coverage": 0.8275462962962963
+    },
+    {
+      "cohort": "benign",
+      "n": 24667,
+      "rmse_weather": 8.753718552514494,
+      "rmse_schedule_only": 8.558979392631162,
+      "rmse_baseline": 13.787919490888717,
+      "mae_weather": 5.856163283211298,
+      "mean_observed": 35.265172092269026,
+      "interval_coverage": 0.8542181862407264
+    },
+    {
+      "cohort": "noaa_storm_event_hour_retrospective",
+      "n": 558,
+      "rmse_weather": 21.253451968482786,
+      "rmse_schedule_only": 25.395034697600686,
+      "rmse_baseline": 31.855145729749918,
+      "mae_weather": 15.324311131713571,
+      "mean_observed": 18.510752688172044,
+      "interval_coverage": 0.5985663082437276
+    }
+  ],
+  "failure_case": {
+    "airport": "KATL",
+    "asof_utc": "2025-04-10T22:00:00+00:00",
+    "target_hour_utc": "2025-04-11T01:00:00+00:00",
+    "horizon_hours": 3,
+    "arrivals_observed": 8.0,
+    "pred_weather": 67.24722903652099,
+    "pred_schedule_only": 63.42393575431609,
+    "pred_baseline": 61.37540228948548,
+    "scheduled_arrivals": 77.0,
+    "lower": 56.034346740154994,
+    "upper": 78.46011133288698,
+    "thunderstorm_flag": 0,
+    "frozen_precip_flag": 0,
+    "precip_flag": 1,
+    "visibility_sm": 6.01,
+    "ceiling_ft_agl": 6000.0,
+    "crosswind_kt": 3.5,
+    "taf_bulletin_id": "202504102002-KFFC-FTUS42-TAFATL-AAA",
+    "storm_event_types": "Thunderstorm Wind",
+    "kind": "largest held-out error of the weather model",
+    "evidence": "Cutoff-time TAF 202504102002-KFFC-FTUS42-TAFATL-AAA: precip_flag=1, frozen_precip_flag=0, thunderstorm_flag=0, visibility 6.01 SM, ceiling 6000.0 ft. Retrospective NOAA events in the hour: Thunderstorm Wind. 77 arrivals scheduled, 8 observed.",
+    "explanation": "Arrivals can collapse far below schedule when airlines cancel in advance of a rare event; the model only sees the scheduled count (which includes those cancellations) and few comparable training hours. The error is a property of the throughput target, not evidence about runway capacity."
+  },
+  "uncertainty": {
+    "method": "Mondrian split-conformal absolute residual, 90% quantile on validation, per (horizon, weather-impacted) group",
+    "nominal": 0.9,
+    "half_width_by_group": [
+      {
+        "horizon_hours": 3,
+        "weather_impacted": false,
+        "half_width": 11.212882296365997
+      },
+      {
+        "horizon_hours": 3,
+        "weather_impacted": true,
+        "half_width": 18.836728458425707
+      },
+      {
+        "horizon_hours": 6,
+        "weather_impacted": false,
+        "half_width": 11.30020396898277
+      },
+      {
+        "horizon_hours": 6,
+        "weather_impacted": true,
+        "half_width": 17.56309941320435
+      },
+      {
+        "horizon_hours": 12,
+        "weather_impacted": false,
+        "half_width": 11.391464750781546
+      },
+      {
+        "horizon_hours": 12,
+        "weather_impacted": true,
+        "half_width": 16.845257994738777
+      }
+    ]
+  },
+  "model_train_end_utc": "2024-01-01T06:00:00+00:00",
+  "model_selection_end_utc": "2025-01-01T06:00:00+00:00"
+}

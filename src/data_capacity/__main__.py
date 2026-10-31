@@ -29,6 +29,8 @@ def main(argv=None) -> int:
     run.add_argument("--bts-months", nargs="*", default=None,
                      help="BTS PREZIP months to ingest for traffic_hourly (default: every month in --start..--end)")
     run.add_argument("--no-bts", action="store_true", help="skip BTS ingestion; traffic_hourly is then unavailable")
+    run.add_argument("--no-throughput", action="store_true",
+                     help="skip the observed-arrivals forecast (plan section 7 stretch; never AAR)")
 
     acc = sub.add_parser("access", help="probe public source reachability and print JSON (no artifacts written)")
 
@@ -44,7 +46,8 @@ def main(argv=None) -> int:
 
             m = run_all(args.airports, args.start, args.end, cache_only=args.cache_only, refresh=args.refresh,
                         flights_csv=args.flights_csv, aar_files=args.aar_file, aar_time_basis=args.aar_time_basis,
-                        with_storms=not args.no_storms, bts_months=[] if args.no_bts else args.bts_months)
+                        with_storms=not args.no_storms, bts_months=[] if args.no_bts else args.bts_months,
+                        with_throughput=not args.no_throughput)
             print(json.dumps({"run_id": m["run_id"], "status": m["status"],
                               "capabilities": {k: v["status"] for k, v in m["capabilities"].items()}}, indent=2))
         elif args.cmd == "access":

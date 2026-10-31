@@ -1,6 +1,6 @@
 # Member 1 handoff: public data, weather features, AAR capacity
 
-State: **ready_for_review**. Branch `zeph`. Current published run: `m1-20261031T062924Z-d9dfcd`. Live status: `handover/status-member-1.json`. Plan reference: `parallel-plan.md` section 3.
+State: **ready_for_review**. Branch `zeph`. Current published run: `m1-20261031T065014Z-eacdd5`. Live status: `handover/status-member-1.json`. Plan reference: `parallel-plan.md` section 3.
 
 **Challenge 5 is not complete: there is no AAR prediction.** Genuine facility AAR lives only in FAA ASPM, which needs an account login. The modelling code is built and tested on synthetic fixtures. Once someone drops a real export into `data/public/aspm/` (spec in that folder's README), a single `run --cache-only` produces real RMSE results. Each request and reply belongs in `data/public/aspm/attempts.json`; the run copies the log into `data_access.json`.
 
@@ -22,11 +22,12 @@ State: **ready_for_review**. Branch `zeph`. Current published run: `m1-20261031T
 python -m src.data_capacity --help
 python -m src.data_capacity run                 # full automatic run: downloads, publishes, manifest last
 python -m src.data_capacity run --cache-only    # offline rerun from cached downloads (about 4 min)
-python -m src.data_capacity run --no-bts        # skip BTS; traffic_hourly is then unavailable
+python -m src.data_capacity run --no-bts        # skip BTS; traffic_hourly and the arrivals forecast are then unavailable
+python -m src.data_capacity run --no-throughput # skip the observed-arrivals forecast
 python -m src.data_capacity bts --months 2023-01 2023-02 --workers 4   # BTS only
 python -m src.data_capacity access              # source reachability probe (JSON to stdout)
 python -m pytest tests/data_capacity -q         # Member 1 suite
-python -m pytest tests -q                       # whole repo: 252 passed
+python -m pytest tests -q                       # whole repo: 299 passed
 ```
 
 `--airports` accepts any ICAO/IATA code in the shared registry; airports that are missing or incomplete are refused, never guessed. `--start` and `--end` set the local date range, and BTS months follow it.
@@ -40,6 +41,8 @@ python -m pytest tests -q                       # whole repo: 252 passed
 | `artifacts/capacity/weather_features.parquet` | 135,786 | available (99.96% of rows) |
 | `artifacts/capacity/traffic_hourly.parquet` | 90,524 | available; `coverage='reporting_carriers'` |
 | `artifacts/capacity/forecast.parquet` | 0, typed, includes `aar_observed` | **unavailable**: no genuine AAR |
+| `artifacts/capacity/throughput_forecast.parquet` | 30,465 held-out rows | available; observed arrivals, **not AAR**; team agreement pending |
+| `artifacts/capacity/throughput_evaluation.json` | – | measured results, cohorts, failure case |
 | `artifacts/capacity/evaluation.json` | – | **unavailable**, includes the exact extract request |
 | `artifacts/capacity/data_access.json` | – | partial; probes, attempt log, acquisition records |
 | `data/processed/provenance.json` | – | partial |
@@ -47,6 +50,30 @@ python -m pytest tests -q                       # whole repo: 252 passed
 | `artifacts/capacity/manifest.json` | – | partial; hashes, coverage, capabilities |
 
 Not published, on purpose: `arrival_demand`, `initial_backlog` and `eligible_flights`. Full BTS counts don't change this. They are reconstructed after the fact for the reporting carriers only, so they are not demand known at a cutoff.
+
+## Observed-arrivals forecast (plan section 7 stretch, NOT AAR)
+
+Built at Member 1's request. **Agreement from Members 2 and 3, which section 7 requires, is still pending.** The evaluation records this, and Member 3 should not present it until it is agreed.
+
+- **What it is:** a forecast of reporting-carrier arrivals that land in the target hour (`actual_count` from `traffic_hourly`), at 3, 6 and 12 hours ahead. `label_kind = observed_reporting_carrier_arrivals`, with no `aar` columns. Throughput is limited by demand, by BTS coverage and by upstream flow programmes, so it is not runway capacity.
+- **Inputs:** cutoff-safe weather features, calendar fields, and the target hour's published schedule. Treating the schedule as known at the cutoff is a disclosed assumption: BTS CRS times reconstruct it and include flights later cancelled.
+- **Models:** on the same rows and the contract split, a training-only completion-ratio baseline, a schedule-only model and a schedule + weather model.
+
+Measured on the 2025-01..07 test set (30,465 snapshot rows; RMSE in arrivals/hour; mean observed 35.0):
+
+| | Weather model | Schedule only | Baseline |
+|---|---|---|---|
+| All hours | 9.26 | 9.38 | 15.43 |
+| Thunderstorm forecast (n = 899) | 15.87 | 17.24 | 26.41 |
+| Frozen precipitation forecast (n = 146) | 22.10 | 33.77 | 37.00 |
+| Ceiling < 1000 ft (n = 2,101) | 10.78 | 12.63 | 20.33 |
+| NOAA storm hours, retrospective (n = 558) | 21.25 | 25.40 | 31.86 |
+| Benign (n = 24,667) | 8.75 | 8.56 | 13.79 |
+
+- **What weather adds:** for weather-impacted hours, weather minus schedule-only = −1.83 RMSE, 95% date-block bootstrap interval [−3.46, −0.46], a clear gain. Over all hours it is −0.13 [−0.40, +0.14], not significant, because 81% of hours are benign.
+- **Intervals:** Mondrian split-conformal, 90% nominal. Empirical coverage is 0.91 at ATL but 0.79 at DFW, which looks like a 2024 → 2025 shift. Storm cohorts reach 0.56–0.77, so intervals are still too narrow in severe weather.
+- **Failure case:** ATL, cutoff 2025-04-10, 77 arrivals scheduled and 8 observed. The cutoff TAF forecast rain but no thunderstorm; NOAA logged Thunderstorm Wind. That convection was not forecastable at the cutoff.
+- **Fix found by an earlier failure:** for the Jan 2025 Atlanta winter storm (82 scheduled, 16 observed) the TAF did forecast `-SNPL`/`FZRA`, but `precip_flag` couldn't separate that from rain. The additive `frozen_precip_flag` (and its `cond_`/`obs_` versions) cut RMSE in frozen-precipitation hours from 33.8 (schedule-only) to 22.1.
 
 ## traffic_hourly semantics (for Member 3)
 
@@ -80,6 +107,6 @@ Not published, on purpose: `arrival_demand`, `initial_backlog` and `eligible_fli
 
 ## Unmet / next owner
 
-1. Genuine AAR (core requirement): **unmet at Gate 2.** The organisers provided none and ASPM needs credentials. If an export ever arrives, put it in `data/public/aspm/*.csv`, log it in `attempts.json`, then run `python -m src.data_capacity run --cache-only`. Plan section 7's stretch (forecasting observed throughput from `traffic_hourly`) needs all three members to agree. It would be a separately named artifact, never AAR, and it is not implemented.
+1. Genuine AAR (core requirement): **unmet at Gate 2.** The organisers provided none and ASPM needs credentials. If an export ever arrives, put it in `data/public/aspm/*.csv`, log it in `attempts.json`, then run `python -m src.data_capacity run --cache-only`. The section 7 stretch is now implemented as a separately named artifact (see above), pending team agreement.
 2. Demand and backlog: unobtainable from public sample or BTS data, so the queue and advice stay refusals (Member 2 and Member 3 report this).
 3. Linux check of hashes: JSON output is now LF-only and `.gitattributes` keeps artifacts byte-exact. The test suite has not been run on Linux from this machine.
