@@ -7,7 +7,7 @@ from src.dashboard import views, plots, theme
 
 def render(bundle, snapshot, window):
     from src.dashboard import replay
-    left, right = st.columns([1.05, 1], gap="small")
+    left, right = st.columns([1.05, 1], gap="medium")
     outlook = views.airport_outlook(bundle, snapshot.airport.icao, snapshot.asof_utc)
     with left, st.container(border=True):
         st.markdown(f"### {snapshot.airport.iata} · Location forecast")
@@ -50,7 +50,7 @@ def render(bundle, snapshot, window):
     with st.container(border=True):
         st.markdown("### Impact comparison · JFK → ATL · hypothetical")
         st.caption("ILLUSTRATIVE SCENARIO — NOT LIVE. Fixed reference-design examples; independent of selected airport and model outputs. No operational benefit is established.")
-        cols = st.columns([1,1,1,.85])
+        cols = st.columns(3, gap="medium")
         scenarios = [
             ('1. No adverse weather', 'Baseline example', '16:10Z',0,0,0,0),
             ('2. Weather · hold', 'Maintain route · illustrative hold', '17:05Z',55,0,300,18),
@@ -62,7 +62,7 @@ def render(bundle, snapshot, window):
                 st.caption(subtitle)
                 st.table(pd.DataFrame({'Field':['Arrival UTC','Added delay','Added distance','Added fuel','Connections at risk'],
                     'Example':[arrival,f'{delay} min',f'{distance} NM',f'{fuel} kg',str(connections)]}).set_index('Field'))
-        with cols[3]:
+        with st.container(border=True):
             st.markdown('**Reroute vs hold**')
             st.metric('Illustrative earlier arrival', '35 min')
             st.metric('Illustrative extra fuel', '350 kg')

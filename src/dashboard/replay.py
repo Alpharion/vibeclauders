@@ -65,7 +65,8 @@ def render(bundle: Bundle, snapshot: Snapshot | None, window: int, reveal: bool,
     for tab, name in zip(tabs, TABS):
         if tab.open:
             with tab:
-                render_examples(name, bundle, snapshot)
+                with st.expander("Additional illustrative numerical examples", expanded=False):
+                    render_examples(name, bundle, snapshot)
 
 
 def set_reveal(value: bool) -> None:

@@ -52,8 +52,8 @@ _ROOT = ":root{" + "".join(f"--{name}:{value};" for name, value in TOKENS.items(
 CSS = _ROOT + """
 .st-key-app-header,.st-key-toolbar{border-bottom:1px solid var(--border);padding:8px 16px;align-items:center}
 .st-key-rail{border-right:1px solid var(--border);padding:12px 16px 12px 16px}
-.st-key-main{padding:0 16px 8px;min-width:0}
-[class*="st-key-card-"]{background:var(--bg-card);padding:12px 16px}
+.st-key-main{padding:16px 28px 28px;min-width:0}
+[class*="st-key-card-"]{background:var(--bg-card);padding:20px 24px;margin-bottom:8px}
 [class*="st-key-tile-"]{background:var(--bg-card)}
 .brand{display:flex;align-items:center;gap:12px}
 .brand svg{width:30px;height:30px;stroke:var(--cyan)}
@@ -79,12 +79,12 @@ CSS = _ROOT + """
 .status-row span{flex:1;min-width:0}.status-row b{font-weight:400;color:var(--text-primary);white-space:nowrap}
 .dot{width:8px;height:8px;border-radius:50%;flex:none;background:var(--text-secondary)}
 .dot.available,.dot.green{background:var(--green)}.dot.partial,.dot.amber{background:var(--amber)}.dot.unavailable,.dot.red{background:var(--red)}
-.tile{display:flex;gap:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 16px;min-height:100px;height:100%}
+.tile{display:flex;gap:16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;min-height:128px;height:100%;box-sizing:border-box}
 .tile>svg{width:24px;height:24px;flex:none;color:var(--cyan)}
 .tile .body{min-width:0;flex:1}
-.tile .label{display:flex;justify-content:space-between;gap:8px;color:var(--text-secondary);font-size:14px;line-height:20px;font-weight:500}
+.tile .label{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--text-secondary);font-size:14px;line-height:22px;font-weight:500}
 .tile .value{color:var(--text-primary);font-size:26px;line-height:32px;font-weight:700;margin:4px 0;font-variant-numeric:tabular-nums}
-.tile .note{color:var(--text-secondary);font-size:12px;line-height:16px}
+.tile .note{color:var(--text-secondary);font-size:12px;line-height:19px;margin-top:8px}
 .tile.cyan .value,.tile.cyan>svg{color:var(--cyan)}.tile.violet .value,.tile.violet>svg{color:var(--violet)}.tile.red .value,.tile.red>svg{color:var(--red)}.tile.amber .value,.tile.amber>svg{color:var(--amber)}.tile.green .value,.tile.green>svg{color:var(--green)}
 .tile.muted .value{color:var(--text-secondary)}
 .strip{display:flex;align-items:center;gap:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:8px 16px;font-size:14px;line-height:20px;color:var(--text-secondary);flex-wrap:wrap}
@@ -144,6 +144,11 @@ CSS = _ROOT + """
 UNSTABLE_CSS = """
 .stMainBlockContainer,.block-container{padding:0!important;max-width:none!important}
 [data-testid=stHeader]{display:none}
+.st-key-main [data-testid=stHorizontalBlock]{gap:24px}
+.st-key-main [data-testid=stVerticalBlock]{row-gap:18px}
+.st-key-main [data-testid=stVerticalBlockBorderWrapper]{padding:6px}
+.st-key-main [data-baseweb=tab-panel]{padding-top:20px}
+@media(max-width:900px){.st-key-main{padding:12px 14px 20px}.st-key-main [data-testid=stHorizontalBlock]{gap:12px}[class*="st-key-card-"]{padding:16px}.tile{padding:16px}}
 """
 
 
