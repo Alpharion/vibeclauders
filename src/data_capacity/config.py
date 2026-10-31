@@ -32,9 +32,10 @@ METAR_LATENCY_MIN = 10
 # A routine TAF is issued every 6 h; anything older than this at cutoff is stale.
 TAF_MAX_AGE_H = 12
 METAR_MAX_AGE_H = 2
-# Conservative validity bound for a TAF product when the validity period is not
-# in the archive (US TAFs at ATL/DFW cover 30 h; 24 h never overstates them).
-TAF_ASSUMED_VALID_H = 24
+# TAF period length. The IEM archive omits the TAF validity header; US TAFs at
+# large hubs (ATL, DFW) cover 30 h from their 00/06/12/18Z cycle, and every
+# archived FM group for both airports starts within 30 h of issuance.
+TAF_VALIDITY_H = 30
 
 
 @dataclass(frozen=True)

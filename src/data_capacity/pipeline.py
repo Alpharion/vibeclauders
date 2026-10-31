@@ -11,7 +11,7 @@ import pandas as pd
 
 from . import PRODUCER, SCHEMA_VERSION, bts, capacity, features, flights, storms, weather
 from .config import (
-    CAPACITY_DIR, HORIZONS, METAR_LATENCY_MIN, PROCESSED_DIR, PUBLIC_DIR, REPO_ROOT, TAF_ASSUMED_VALID_H,
+    CAPACITY_DIR, HORIZONS, METAR_LATENCY_MIN, PROCESSED_DIR, PUBLIC_DIR, REPO_ROOT, TAF_VALIDITY_H,
     TAF_LATENCY_MIN, TAF_MAX_AGE_H, find_flight_csv, new_run_id, registry_source, resolve_airports, utcnow,
 )
 from .identity import FLIGHT_KEY_IMPL
@@ -218,7 +218,7 @@ def run_all(airports_codes, start, end, *, cache_only=False, refresh=False, flig
         "assumptions": [
             f"METAR available_at = observation time + {METAR_LATENCY_MIN} min (IEM archives no receipt time).",
             f"TAF available_at = issuance + {TAF_LATENCY_MIN} min (issuance-as-availability with latency margin).",
-            f"TAF prevailing group valid until the next prevailing group; last group capped at issuance + {TAF_ASSUMED_VALID_H} h.",
+            f"TAF prevailing group valid until the next prevailing group; last group until the TAF period end ({TAF_VALIDITY_H} h after the bulletin's 00/06/12/18Z cycle). TEMPO/PROB periods parsed from raw DDHH/DDHH.",
             f"TAF older than {TAF_MAX_AGE_H} h at cutoff is treated as stale (not used).",
             "Runway headings fixed by the challenge: ATL 080, DFW 180 (true).",
             "No-gust wind: gust = sustained speed. No BKN/OVC/VV layer: ceiling_ft_agl = 30000.",

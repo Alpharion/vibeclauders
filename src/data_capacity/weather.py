@@ -10,8 +10,9 @@ Timing semantics
 * TAF ``issued_at_utc`` = product issuance (from the product id);
   ``available_at_utc`` = issued + TAF_LATENCY_MIN (same assumption).
 * TAF prevailing groups (initial + FM) are valid from their start until the next
-  prevailing group of the same bulletin, the last one until issued +
-  TAF_ASSUMED_VALID_H. TEMPO/PROB groups keep their own half-open interval and
+  prevailing group of the same bulletin, the last one until the end of the TAF
+  period (TAF_VALIDITY_H after its 6-hourly cycle). TEMPO/PROB groups take their
+  half-open interval from the raw DDHH/DDHH text and
   never replace prevailing weather. A later amendment supersedes a bulletin only
   from the amendment's availability onward (selection happens in features.py).
 """
@@ -26,7 +27,7 @@ import numpy as np
 import pandas as pd
 
 from .config import (
-    METAR_LATENCY_MIN, PUBLIC_DIR, TAF_ASSUMED_VALID_H, TAF_LATENCY_MIN, Airport,
+    METAR_LATENCY_MIN, PUBLIC_DIR, TAF_LATENCY_MIN, TAF_VALIDITY_H, Airport,
 )
 from .io import fetch_cached, validate_csv_header
 
@@ -157,8 +158,49 @@ def decode_metar(text: str, ap: Airport, source_ref: str) -> pd.DataFrame:
         "raw_ref": source_ref,
     })
     out = out.sort_values("issued_at_utc").drop_duplicates(["airport", "issued_at_utc", "raw_text"])
-    out["valid_to_utc"] = out["issued_at_utc"].shift(-1)
+    out["valid_to_utc"] = metar_valid_to(out["issued_at_utc"])
     return out
+
+
+def metar_valid_to(observed: pd.Series) -> pd.Series:
+    """Each observation is valid until the next STRICTLY later observation
+    (two reports in the same minute must not create a zero-length interval)."""
+    uniq = observed.dropna().drop_duplicates().sort_values()
+    nxt = dict(zip(uniq, uniq.shift(-1)))
+    return observed.map(nxt).astype(observed.dtype)
+
+
+GROUP_PERIOD_RE = re.compile(r"\b(\d{2})(\d{2})/(\d{2})(\d{2})\b")
+
+
+def group_end_from_raw(raw: str, start: pd.Timestamp) -> pd.Timestamp:
+    """End of a TEMPO/PROB group from its DDHH/DDHH period, anchored on the
+    group start. IEM's fx_valid_end is wrong across month ends (3119/3124 in
+    May came back as May 18), so the raw text is authoritative."""
+    m = GROUP_PERIOD_RE.search(raw or "")
+    if m is None or pd.isna(start):
+        return pd.NaT
+    day, hour = int(m.group(3)), int(m.group(4))
+    month_start = start.normalize().replace(day=1)
+    for months_ahead in (0, 1):
+        anchor = month_start + pd.DateOffset(months=months_ahead)
+        try:
+            end = anchor.replace(day=day) + pd.Timedelta(hours=hour)
+        except ValueError:  # day does not exist in that month
+            continue
+        if end > start:
+            return end
+    return pd.NaT
+
+
+def taf_validity_end(issued: pd.Series) -> pd.Series:
+    """End of the TAF period: TAF_VALIDITY_H after the 6-hourly cycle the
+    bulletin belongs to. Routine TAFs are issued up to ~40 min before their
+    cycle hour and amendments keep the parent's end, so the cycle is the latest
+    00/06/12/18Z hour <= issued + 1 h."""
+    shifted = issued + pd.Timedelta(hours=1)
+    cycle = shifted.dt.floor("6h")
+    return cycle + pd.Timedelta(hours=TAF_VALIDITY_H)
 
 
 def _condition(ftype: str) -> tuple[str, float]:
@@ -233,12 +275,24 @@ def decode_taf(text: str, ap: Airport, source_ref: str) -> pd.DataFrame:
         "raw_ref": source_ref,
     })
     out = out.drop_duplicates(["bulletin_id", "condition", "valid_from_utc", "raw_text"])
-    # prevailing groups: valid until next prevailing group in the same bulletin
+    period_end = taf_validity_end(out["issued_at_utc"])
+    # conditional groups: period from the raw DDHH/DDHH text
+    cond_mask = out["condition"].isin(["TEMPO", "PROB"])
+    out.loc[cond_mask, "valid_to_utc"] = [group_end_from_raw(r, s)
+                                         for r, s in zip(out.loc[cond_mask, "raw_text"], out.loc[cond_mask, "valid_from_utc"])]
+    # prevailing groups: valid until the next prevailing group of the same
+    # bulletin; the last one until the end of the TAF period
     prev = out["condition"].isin(["initial", "FM", "BECMG"])
     p = out[prev].sort_values(["bulletin_id", "valid_from_utc"])
     nxt = p.groupby("bulletin_id")["valid_from_utc"].shift(-1)
-    cap = p["issued_at_utc"] + pd.Timedelta(hours=TAF_ASSUMED_VALID_H)
-    out.loc[p.index, "valid_to_utc"] = nxt.fillna(cap).where(nxt.fillna(cap) <= cap, cap)
+    end = period_end[p.index]
+    out.loc[p.index, "valid_to_utc"] = nxt.fillna(end).where(nxt.fillna(end) <= end, end)
+    # groups that never cover any time (an initial group superseded by an FM
+    # group at the same minute, or a group starting after the period end) are
+    # dropped; the count is reported by build_weather
+    empty = out["valid_to_utc"].notna() & (out["valid_to_utc"] <= out["valid_from_utc"])
+    out = out[~empty]
+    out.attrs["dropped_empty_groups"] = int(empty.sum())
     # a prevailing group that omits wind/vis/sky inherits nothing: values stay null
     return out.sort_values(["issued_at_utc", "valid_from_utc"]).reset_index(drop=True)
 
@@ -264,13 +318,21 @@ def build_weather(records: list[dict], airports: list[Airport]) -> tuple[pd.Data
         ref = path.relative_to(path.parents[2]).as_posix() if len(path.parents) > 2 else path.name
         ap = by_icao[rec["airport"]]
         df = decode_metar(text, ap, ref) if rec["source_id"] == "iem_metar" else decode_taf(text, ap, ref)
+        dropped = df.attrs.get("dropped_empty_groups", 0)
+        audit["dropped_empty_taf_groups"] = audit.get("dropped_empty_taf_groups", 0) + dropped
         frames.append(df)
-        audit["chunks"].append({"path": rec["path"], "status": rec["status"], "rows": int(len(df))})
+        audit["chunks"].append({"path": rec["path"], "status": rec["status"], "rows": int(len(df)),
+                                "dropped_empty_groups": dropped})
     if not frames:
         return pd.DataFrame(columns=WEATHER_COLUMNS), audit
     w = pd.concat(frames, ignore_index=True)[WEATHER_COLUMNS]
     w = w.drop_duplicates(["airport", "kind", "bulletin_id", "condition", "valid_from_utc", "raw_text"])
     w = w.sort_values(["airport", "kind", "issued_at_utc", "valid_from_utc"]).reset_index(drop=True)
+    # METAR validity across yearly chunk boundaries
+    for a in w["airport"].unique():
+        m = (w["airport"] == a) & (w["kind"] == "observation")
+        w.loc[m, "valid_to_utc"] = metar_valid_to(w.loc[m, "issued_at_utc"])
+    audit["inverted_validity_rows"] = int((w["valid_to_utc"].notna() & (w["valid_to_utc"] <= w["valid_from_utc"])).sum())
     for (a, k), g in w.groupby(["airport", "kind"]):
         audit["rows_by_airport_kind"][f"{a}/{k}"] = {
             "rows": int(len(g)),
