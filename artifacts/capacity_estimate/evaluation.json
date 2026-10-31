@@ -1,0 +1,628 @@
+{
+  "schema_version": "2.0",
+  "run_id": "m1-capest-20261031T072310Z-a27968",
+  "generated_at_utc": "2026-10-31T07:23:11+00:00",
+  "producer": "member-1/data_capacity",
+  "status": "partial",
+  "limitations": [
+    "Model-estimated capacity PROXY, not facility AAR: no independent facility AAR label exists for validation.",
+    "Population is BTS reporting carriers only; no scaling to whole-airport rates (cargo, GA, military and most international flights are excluded).",
+    "Throughput in high-demand hours is assumed informative about attainable rates; low demand, flow programmes and coverage limits mean the frontier can understate physical capacity.",
+    "Uncertainty bounds are not estimated (uncertainty_kind='unavailable').",
+    "Validation compares the frozen frontier to observed high-demand throughput, a proxy target - not AAR accuracy."
+  ],
+  "missing_inputs": [],
+  "label_kind": "model_estimated_capacity",
+  "validation_target": "high_demand_observed_reporting_carrier_arrivals",
+  "method": "high_demand_weather_frontier_v1",
+  "assumptions_id": "capacity-proxy-assumptions-v1",
+  "split": {
+    "train_end_utc": "2024-01-01T06:00:00+00:00",
+    "selection_end_utc": "2025-01-01T06:00:00+00:00",
+    "emitted_cutoffs": "asof_utc >= selection_end_utc (held-out replay only)"
+  },
+  "metrics": [
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "high_demand_throughput_rmse",
+      "value": 21.13538863118374,
+      "baseline_value": 21.37573561159148,
+      "n": 2605,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.2405374280230324,
+      "baseline_value": 2.248138195777351,
+      "n": 2605,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.9078694817658349,
+      "baseline_value": 0.9120921305182341,
+      "n": 2605,
+      "units": "share"
+    },
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "high_demand_throughput_rmse",
+      "value": 21.136830614954967,
+      "baseline_value": 21.37573561159148,
+      "n": 2605,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.24541650671785,
+      "baseline_value": 2.248138195777351,
+      "n": 2605,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.9074856046065259,
+      "baseline_value": 0.9120921305182341,
+      "n": 2605,
+      "units": "share"
+    },
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "high_demand_throughput_rmse",
+      "value": 21.115739915260036,
+      "baseline_value": 21.37573561159148,
+      "n": 2605,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.2411132437619954,
+      "baseline_value": 2.248138195777351,
+      "n": 2605,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.9074856046065259,
+      "baseline_value": 0.9120921305182341,
+      "n": 2605,
+      "units": "share"
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "high_demand_throughput_rmse",
+      "value": 21.172784509447386,
+      "baseline_value": 21.898556941417507,
+      "n": 2575,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.4604660194174754,
+      "baseline_value": 2.5479223300970872,
+      "n": 2575,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.8671844660194175,
+      "baseline_value": 0.86873786407767,
+      "n": 2575,
+      "units": "share"
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "high_demand_throughput_rmse",
+      "value": 20.96633158647871,
+      "baseline_value": 21.898556941417507,
+      "n": 2575,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.45237281553398,
+      "baseline_value": 2.5479223300970872,
+      "n": 2575,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.8633009708737864,
+      "baseline_value": 0.86873786407767,
+      "n": 2575,
+      "units": "share"
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "high_demand_throughput_rmse",
+      "value": 20.792250236636548,
+      "baseline_value": 21.898556941417507,
+      "n": 2575,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.4609708737864078,
+      "baseline_value": 2.5479223300970872,
+      "n": 2575,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.8590291262135923,
+      "baseline_value": 0.86873786407767,
+      "n": 2575,
+      "units": "share"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "high_demand_throughput_rmse",
+      "value": 22.666040042788282,
+      "baseline_value": 23.0610094574084,
+      "n": 827,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.0525876662636033,
+      "baseline_value": 2.085489721886336,
+      "n": 827,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.9721886336154776,
+      "baseline_value": 0.9746070133010882,
+      "n": 827,
+      "units": "share"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "high_demand_throughput_rmse",
+      "value": 22.764348757765404,
+      "baseline_value": 23.0610094574084,
+      "n": 827,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.0627327690447395,
+      "baseline_value": 2.085489721886336,
+      "n": 827,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.9721886336154776,
+      "baseline_value": 0.9746070133010882,
+      "n": 827,
+      "units": "share"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "high_demand_throughput_rmse",
+      "value": 22.77474175452868,
+      "baseline_value": 23.073285707007386,
+      "n": 826,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.0686440677966096,
+      "baseline_value": 2.0870460048426147,
+      "n": 826,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.9709443099273608,
+      "baseline_value": 0.9745762711864406,
+      "n": 826,
+      "units": "share"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "high_demand_throughput_rmse",
+      "value": 22.286785805264632,
+      "baseline_value": 22.935600814073947,
+      "n": 1412,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.3668980169971667,
+      "baseline_value": 2.4119688385269122,
+      "n": 1412,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.8696883852691218,
+      "baseline_value": 0.8739376770538244,
+      "n": 1412,
+      "units": "share"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "high_demand_throughput_rmse",
+      "value": 22.0677953603886,
+      "baseline_value": 22.935600814073947,
+      "n": 1412,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.3736260623229457,
+      "baseline_value": 2.4119688385269122,
+      "n": 1412,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.8654390934844193,
+      "baseline_value": 0.8739376770538244,
+      "n": 1412,
+      "units": "share"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "high_demand_throughput_rmse",
+      "value": 21.82480207964331,
+      "baseline_value": 22.92610701751877,
+      "n": 1410,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "pinball_loss_q0.90",
+      "value": 2.366241134751773,
+      "baseline_value": 2.4114184397163116,
+      "n": 1410,
+      "units": "reporting-carrier arrivals/hour"
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "share_high_demand_hours_at_or_below_frontier",
+      "value": 0.8638297872340426,
+      "baseline_value": 0.873758865248227,
+      "n": 1410,
+      "units": "share"
+    }
+  ],
+  "cohorts": [
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "weather_regime": "convective",
+      "n_snapshots": 2,
+      "n_unique_hours": 2,
+      "mean_estimate": 80.0,
+      "mean_observed": 51.5,
+      "high_demand_throughput_rmse": 38.242646351945886
+    },
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "weather_regime": "ifr",
+      "n_snapshots": 649,
+      "n_unique_hours": 256,
+      "mean_estimate": 82.40955315870572,
+      "mean_observed": 61.30970724191063,
+      "high_demand_throughput_rmse": 25.310471532220795
+    },
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "weather_regime": "mvfr",
+      "n_snapshots": 617,
+      "n_unique_hours": 304,
+      "mean_estimate": 80.69222042139386,
+      "mean_observed": 62.912479740680716,
+      "high_demand_throughput_rmse": 22.29318455931736
+    },
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "weather_regime": "vfr",
+      "n_snapshots": 6162,
+      "n_unique_hours": 2146,
+      "mean_estimate": 81.0,
+      "mean_observed": 64.05598831548198,
+      "high_demand_throughput_rmse": 20.88203913857253
+    },
+    {
+      "split": "validate",
+      "airport": "KATL",
+      "weather_regime": "wind",
+      "n_snapshots": 385,
+      "n_unique_hours": 169,
+      "mean_estimate": 71.47584415584414,
+      "mean_observed": 60.883116883116884,
+      "high_demand_throughput_rmse": 14.111454314036624
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "weather_regime": "convective",
+      "n_snapshots": 457,
+      "n_unique_hours": 210,
+      "mean_estimate": 66.83807439824945,
+      "mean_observed": 43.53172866520788,
+      "high_demand_throughput_rmse": 30.368481011563155
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "weather_regime": "ifr",
+      "n_snapshots": 261,
+      "n_unique_hours": 113,
+      "mean_estimate": 61.3448275862069,
+      "mean_observed": 50.13793103448276,
+      "high_demand_throughput_rmse": 16.40215386286192
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "weather_regime": "mvfr",
+      "n_snapshots": 650,
+      "n_unique_hours": 282,
+      "mean_estimate": 64.12338461538461,
+      "mean_observed": 51.8,
+      "high_demand_throughput_rmse": 16.690701234289342
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "weather_regime": "vfr",
+      "n_snapshots": 5687,
+      "n_unique_hours": 2010,
+      "mean_estimate": 74.0,
+      "mean_observed": 59.107438016528924,
+      "high_demand_throughput_rmse": 20.83024407082016
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "weather_regime": "wind",
+      "n_snapshots": 660,
+      "n_unique_hours": 270,
+      "mean_estimate": 71.84454545454545,
+      "mean_observed": 57.03636363636364,
+      "high_demand_throughput_rmse": 19.696935617686144
+    },
+    {
+      "split": "validate",
+      "airport": "KDFW",
+      "weather_regime": "winter",
+      "n_snapshots": 10,
+      "n_unique_hours": 5,
+      "mean_estimate": 67.8,
+      "mean_observed": 52.0,
+      "high_demand_throughput_rmse": 17.578395831246947
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "weather_regime": "convective",
+      "n_snapshots": 64,
+      "n_unique_hours": 49,
+      "mean_estimate": 80.359375,
+      "mean_observed": 56.03125,
+      "high_demand_throughput_rmse": 26.91102237002526
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "weather_regime": "ifr",
+      "n_snapshots": 156,
+      "n_unique_hours": 61,
+      "mean_estimate": 82.4,
+      "mean_observed": 65.37179487179488,
+      "high_demand_throughput_rmse": 20.695670301557506
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "weather_regime": "mvfr",
+      "n_snapshots": 150,
+      "n_unique_hours": 75,
+      "mean_estimate": 80.63199999999999,
+      "mean_observed": 63.74666666666667,
+      "high_demand_throughput_rmse": 20.051480410849134
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "weather_regime": "vfr",
+      "n_snapshots": 1993,
+      "n_unique_hours": 711,
+      "mean_estimate": 81.0,
+      "mean_observed": 61.13647767185148,
+      "high_demand_throughput_rmse": 23.066082340546977
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "weather_regime": "wind",
+      "n_snapshots": 113,
+      "n_unique_hours": 53,
+      "mean_estimate": 71.55309734513274,
+      "mean_observed": 57.11504424778761,
+      "high_demand_throughput_rmse": 17.689617473865322
+    },
+    {
+      "split": "test",
+      "airport": "KATL",
+      "weather_regime": "winter",
+      "n_snapshots": 4,
+      "n_unique_hours": 2,
+      "mean_estimate": 80.25,
+      "mean_observed": 28.0,
+      "high_demand_throughput_rmse": 56.28720991486432
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "weather_regime": "convective",
+      "n_snapshots": 223,
+      "n_unique_hours": 106,
+      "mean_estimate": 66.80269058295963,
+      "mean_observed": 40.70403587443946,
+      "high_demand_throughput_rmse": 32.216142236894264
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "weather_regime": "ifr",
+      "n_snapshots": 206,
+      "n_unique_hours": 94,
+      "mean_estimate": 61.33495145631068,
+      "mean_observed": 51.12135922330097,
+      "high_demand_throughput_rmse": 16.433153796192634
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "weather_regime": "mvfr",
+      "n_snapshots": 270,
+      "n_unique_hours": 134,
+      "mean_estimate": 64.08814814814815,
+      "mean_observed": 54.41851851851852,
+      "high_demand_throughput_rmse": 16.404958599968083
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "weather_regime": "vfr",
+      "n_snapshots": 3064,
+      "n_unique_hours": 1096,
+      "mean_estimate": 74.0,
+      "mean_observed": 58.32865535248042,
+      "high_demand_throughput_rmse": 20.88527814854369
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "weather_regime": "wind",
+      "n_snapshots": 450,
+      "n_unique_hours": 191,
+      "mean_estimate": 71.89422222222221,
+      "mean_observed": 52.89555555555555,
+      "high_demand_throughput_rmse": 24.85190446536353
+    },
+    {
+      "split": "test",
+      "airport": "KDFW",
+      "weather_regime": "winter",
+      "n_snapshots": 21,
+      "n_unique_hours": 7,
+      "mean_estimate": 67.66666666666667,
+      "mean_observed": 4.0,
+      "high_demand_throughput_rmse": 64.14752342768006
+    }
+  ],
+  "row_status_counts": {
+    "available": 30147,
+    "partial": 330
+  },
+  "backoff_counts": {
+    "regime": 30168,
+    "group": 309
+  },
+  "baseline": "train-only airport high-demand 0.90 quantile (no weather)",
+  "interpretation": "Metrics compare a frozen proxy with observed high-demand reporting-carrier throughput. They are not facility AAR accuracy."
+}

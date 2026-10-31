@@ -165,7 +165,13 @@ def reporting_chart(rows: pd.DataFrame, title: str, color: str, asof: pd.Timesta
             line={"color": color, "width": 2}, marker={"size": 8},
         )
     high = rows["scheduled_count"].max()
-    figure.add_vline(x=asof, line={"color": INK, "dash": "dot", "width": 1}, annotation_text="Cutoff", annotation_font_color=INK)
+    # add_vline's annotation does Timestamp + int arithmetic that pandas rejects; draw the same
+    # dotted cutoff line as a shape and position its label separately
+    cutoff_x = pd.Timestamp(asof).isoformat()
+    figure.add_shape(type="line", x0=cutoff_x, x1=cutoff_x, y0=0, y1=1, xref="x", yref="paper",
+                     line={"color": INK, "dash": "dot", "width": 1})
+    figure.add_annotation(x=cutoff_x, y=1, xref="x", yref="paper", text="Cutoff", showarrow=False,
+                          xanchor="left", yanchor="bottom", font={"color": INK})
     figure.add_bar(
         x=[target], y=[rows.loc[rows["hour_utc"] == target, "scheduled_count"].max()], name="Target hour",
         marker={"color": color, "cornerradius": 3}, hoverinfo="skip", width=2_700_000,
