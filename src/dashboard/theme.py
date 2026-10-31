@@ -148,8 +148,8 @@ CSS = _ROOT + """
 .st-key-card-flight-watchlist{border-left:3px solid var(--cyan)!important;background:linear-gradient(110deg,#183039,#1B2023)}
 .st-key-card-response,.st-key-card-scenarios{border-left:3px solid var(--amber)!important;background:linear-gradient(110deg,#302A1B,#1B2023)}
 .st-key-card-coverage,.st-key-card-integrity{border-left:3px solid #8BBBD6!important;background:linear-gradient(110deg,#222C34,#1B2023)}
-.flight-risk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;padding:2px 6px 4px 0;overflow:visible}
-.flight-risk-card{--risk:#ADBAC5;background:#1B2023;border:1px solid #364149;border-left:4px solid var(--risk);border-radius:6px;padding:16px;color:#EDF1F4}
+.flight-risk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;padding:2px 6px 4px 0;max-height:200px;overflow-y:auto}
+.flight-risk-card{--risk:#ADBAC5;background:#1B2023;border:1px solid #364149;border-left:4px solid var(--risk);border-radius:6px;padding:10px 12px;color:#EDF1F4}
 .flight-risk-card.red{--risk:#FF4B4B;background:linear-gradient(115deg,#352226,#1B2023)}
 .flight-risk-card.amber{--risk:#FFCD38;background:linear-gradient(115deg,#322E20,#1B2023)}
 .flight-risk-card.cyan{--risk:#00D4F5;background:linear-gradient(115deg,#1B2B32,#1B2023)}

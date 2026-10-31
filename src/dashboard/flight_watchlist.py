@@ -30,7 +30,7 @@ def render(bundle, snapshot):
     if snapshot is None:
         return
     with st.container(border=True, key="card-flight-watchlist"):
-        st.markdown(f"### {snapshot.airport.iata} · Flight watchlist")
+        theme.card_title(f"{snapshot.airport.iata} · Flight watchlist")
         st.caption(f"Cutoff {snapshot.asof_utc:%d %b %H:%M} UTC · +{snapshot.horizon_hours}h · departures {snapshot.target_hour_utc:%d %b %H:%M}–{snapshot.target_hour_utc + pd.Timedelta(hours=1):%H:%M} UTC · sampled flights, not all airport traffic")
         scored = views.risk_rows(bundle, snapshot)
         flights = bundle.table("flights")
