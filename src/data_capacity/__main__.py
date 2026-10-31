@@ -32,6 +32,10 @@ def main(argv=None) -> int:
     run.add_argument("--no-throughput", action="store_true",
                      help="skip the observed-arrivals forecast (plan section 7 stretch; never AAR)")
 
+    est = sub.add_parser("estimate-capacity", help="weather-conditioned capacity PROXY from published inputs (not AAR)")
+    est.add_argument("--from-published", action="store_true", required=True,
+                     help="read only committed traffic_hourly/weather_features after verifying manifest hashes")
+
     acc = sub.add_parser("access", help="probe public source reachability and print JSON (no artifacts written)")
 
     bt = sub.add_parser("bts", help="download + filter BTS monthly on-time archives only")
@@ -50,6 +54,16 @@ def main(argv=None) -> int:
                         with_throughput=not args.no_throughput)
             print(json.dumps({"run_id": m["run_id"], "status": m["status"],
                               "capabilities": {k: v["status"] for k, v in m["capabilities"].items()}}, indent=2))
+        elif args.cmd == "estimate-capacity":
+            from .capacity_estimate import EstimateError, publish
+
+            try:
+                r = publish()
+            except EstimateError as exc:
+                print(f"capacity estimate refused: {exc}", file=sys.stderr)
+                return 3
+            print(json.dumps({"run_id": r["run_id"], "rows": r["rows"], "status_counts": r["status_counts"],
+                              "backoff_counts": r["backoff_counts"]}, indent=2, default=str))
         elif args.cmd == "access":
             from .io import _jsonable
             from .pipeline import probe_access

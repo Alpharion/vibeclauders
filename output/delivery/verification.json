@@ -1,0 +1,454 @@
+{
+  "schema_version": "1.0",
+  "status": "verified",
+  "scope": "combined_runtime",
+  "generated_at_utc": "2026-10-31T07:39:25.863833+00:00",
+  "source": {
+    "commit": "ddc7b24a520b0a4776440240dfccaa72fb14f953",
+    "dirty": true,
+    "status": "M output/delivery/VERIFICATION.md\n M output/delivery/controller-brief.json\n M output/delivery/verification.json",
+    "branch": "codex/challenge5-readiness-reviewed"
+  },
+  "runtime_fingerprint": "8303c9cb6eb5126446e8af66dd225863ce5cd70bdfae14161bf0784450989c15",
+  "runtime_unchanged": true,
+  "tested_archive": {
+    "archive": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\tested.zip",
+    "sha256": "17cef3d04aafa89f6ac700ad82049f84a72870eeb54d49031032737e494ad966",
+    "payload_files": 148,
+    "archive_bytes": 32372659,
+    "source": {
+      "commit": "ddc7b24a520b0a4776440240dfccaa72fb14f953",
+      "dirty": true,
+      "status": "M output/delivery/controller-brief.json",
+      "branch": "codex/challenge5-readiness-reviewed"
+    },
+    "runtime_fingerprint": "8303c9cb6eb5126446e8af66dd225863ce5cd70bdfae14161bf0784450989c15",
+    "verification_status": "unverified_or_stale_execution_evidence",
+    "producer_runs": [
+      "m1-20261031T065014Z-eacdd5",
+      "m1-capest-20261031T072310Z-a27968",
+      "a7b89e44c69449d1a7ecfbf0cb8ff3b5",
+      "0949771a54bb4e49b4e215528eb5d46b"
+    ]
+  },
+  "checks": [
+    {
+      "name": "risk_verify",
+      "command": [
+        "-m",
+        "src.flight_risk",
+        "verify"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 3.34,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\risk_verify.log",
+      "log_sha256": "9de83d24e4d4b385b14018ebc56f605deb56ee465060b822e7c38b418c54a6c5"
+    },
+    {
+      "name": "full_suite",
+      "command": [
+        "-m",
+        "pytest",
+        "tests",
+        "-q",
+        "--tb=short",
+        "--basetemp",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\pytest",
+        "--junitxml",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\pytest.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 68.61,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\full_suite.log",
+      "log_sha256": "79bb38eb9e209da2d23ea641a4820a1e0dbae4c38d6fea9209c24da643441d13",
+      "test_counts": {
+        "tests": 395,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 395
+      }
+    },
+    {
+      "name": "app_smoke",
+      "command": [
+        "-m",
+        "tools.delivery.smoke_app",
+        "--report",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\app.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 19.06,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\app_smoke.log",
+      "log_sha256": "7e4ce6ddaeb8e68fb4441916c57378a5100b546975bb15bf709d085504762f50",
+      "app_result": {
+        "status": "passed",
+        "checks": [
+          {
+            "case": "initial",
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 3,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 3,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 6,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 6,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 12,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 12,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 3,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 3,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 6,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 6,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 12,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 12,
+            "reveal": true,
+            "exceptions": []
+          }
+        ]
+      }
+    }
+  ],
+  "blockers": [],
+  "publications": [
+    {
+      "manifest": "artifacts/capacity/manifest.json",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "partial",
+      "payloads": [
+        "artifacts/capacity/data_access.json",
+        "artifacts/capacity/evaluation.json",
+        "artifacts/capacity/forecast.parquet",
+        "artifacts/capacity/throughput_evaluation.json",
+        "artifacts/capacity/throughput_forecast.parquet",
+        "artifacts/capacity/traffic_hourly.parquet",
+        "artifacts/capacity/weather.parquet",
+        "artifacts/capacity/weather_features.parquet",
+        "data/processed/flights.parquet",
+        "data/processed/provenance.json",
+        "data/processed/storm_events.parquet"
+      ],
+      "capabilities": {
+        "canonical_flights": {
+          "status": "available",
+          "coverage": "sample"
+        },
+        "weather_decoded": {
+          "status": "available"
+        },
+        "weather_features": {
+          "status": "available",
+          "feature_semantics": {
+            "crosswind_kt": "Max |sustained crosswind| (kt) vs fixed runway heading across prevailing TAF groups overlapping the target hour; null if any overlapping group has unknown direction with wind.",
+            "tailwind_kt": "Max sustained tailwind magnitude (kt, >=0) vs runway heading; same aggregation/null rule.",
+            "wind_speed_kt": "Max prevailing forecast sustained wind (kt).",
+            "wind_gust_kt": "Max prevailing forecast gust (kt); equals sustained speed when no gust group is forecast.",
+            "visibility_sm": "Min prevailing forecast visibility (statute miles); TAF P6SM is encoded 6.01.",
+            "ceiling_ft_agl": "Min prevailing forecast ceiling (lowest BKN/OVC/VV, ft AGL); 30000 = no ceiling layer forecast.",
+            "temperature_c": "Latest METAR temperature available at cutoff (deg C) - observed, not forecast for target.",
+            "precip_flag": "1 if any prevailing group forecasts precipitation (RA/SN/DZ/PL/GR/GS/IC/UP/SG) at the station.",
+            "thunderstorm_flag": "1 if any prevailing group forecasts TS (including VCTS).",
+            "crosswind_upper_kt": "Upper bound of crosswind: unknown-direction groups count their full speed.",
+            "crosswind_gust_kt": "Max crosswind computed with gust speed.",
+            "frozen_precip_flag": "1 if any prevailing group forecasts frozen/freezing precipitation (SN/PL/FZ/IC/GS/SG).",
+            "cond_thunderstorm_flag": "1 if a TEMPO/PROB group overlapping the target hour forecasts TS.",
+            "cond_frozen_precip_flag": "1 if a TEMPO/PROB group overlapping the target hour forecasts frozen/freezing precipitation.",
+            "cond_min_visibility_sm": "Min visibility in overlapping TEMPO/PROB groups (null if none).",
+            "cond_min_ceiling_ft_agl": "Min ceiling in overlapping TEMPO/PROB groups that report sky cover.",
+            "cond_max_gust_kt": "Max gust/speed in overlapping TEMPO/PROB groups.",
+            "cond_max_probability": "Max PROB value (0-1) among overlapping PROB groups; null for TEMPO-only or none.",
+            "obs_*": "Latest METAR available at cutoff (persistence), age <= 2 h; obs_age_min gives its age."
+          }
+        },
+        "aar_forecast": {
+          "status": "unavailable",
+          "reason": "no genuine ASPM AAR export found in data/public/aspm/*.csv"
+        },
+        "arrival_demand": {
+          "status": "unavailable",
+          "reason": "Only sampled schedules exist; no complete as-of-cutoff demand for a named population."
+        },
+        "initial_backlog": {
+          "status": "unavailable",
+          "reason": "No observed queue state at cutoff and no validated reconstruction."
+        },
+        "eligible_flights": {
+          "status": "unavailable",
+          "reason": "No as-of flight state (airborne/ground) data."
+        },
+        "arrival_throughput_forecast": {
+          "status": "available",
+          "label_kind": "observed_reporting_carrier_arrivals",
+          "not_aar": "Forecast of observed reporting-carrier arrivals per hour (throughput). NOT the facility Airport Arrival Rate (AAR): counts are limited by demand, by BTS coverage and by upstream flow programmes, so they do not measure runway capacity. Never report this as AAR or AAR RMSE.",
+          "team_agreement": {
+            "status": "pending",
+            "required_by": "parallel-plan section 7 (all three members at Gate 2)",
+            "note": "Built at Member 1's request; Member 3 should not present it until agreement is recorded."
+          },
+          "reason": null
+        },
+        "traffic_hourly": {
+          "status": "available",
+          "months": [
+            "2023-01",
+            "2023-02",
+            "2023-03",
+            "2023-04",
+            "2023-05",
+            "2023-06",
+            "2023-07",
+            "2023-08",
+            "2023-09",
+            "2023-10",
+            "2023-11",
+            "2023-12",
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04",
+            "2024-05",
+            "2024-06",
+            "2024-07",
+            "2024-08",
+            "2024-09",
+            "2024-10",
+            "2024-11",
+            "2024-12",
+            "2025-01",
+            "2025-02",
+            "2025-03",
+            "2025-04",
+            "2025-05",
+            "2025-06",
+            "2025-07"
+          ],
+          "flight_audit": {
+            "input_rows": 3255141,
+            "flight_key_impl": "src.shared.flight_key",
+            "excluded_out_of_date_range": 0,
+            "excluded_no_selected_airport": 0,
+            "rows_touching_selected_airports": 3255141,
+            "excluded_invalid_schedule_fields": 2,
+            "excluded_nonexistent_local_time": 0,
+            "excluded_unresolved_arrival_date": 41,
+            "flagged_dst_ambiguous": 5,
+            "flagged_crs_2400": 0,
+            "collapsed_exact_duplicates": 0,
+            "excluded_conflicting_duplicate_keys": 0,
+            "published_rows": 3255098,
+            "unknown_cancellation_status": 0,
+            "missing_dep_delay_noncancelled": 0,
+            "coverage_by_airport": {
+              "ATL": {
+                "departures": 860406,
+                "arrivals": 860267,
+                "departures_by_year": {
+                  "2023": 336463,
+                  "2024": 341910,
+                  "2025": 182033
+                },
+                "arrivals_by_year": {
+                  "2023": 336450,
+                  "2024": 341801,
+                  "2025": 182016
+                }
+              },
+              "DFW": {
+                "departures": 783963,
+                "arrivals": 783907,
+                "departures_by_year": {
+                  "2023": 285243,
+                  "2024": 313582,
+                  "2025": 185138
+                },
+                "arrivals_by_year": {
+                  "2023": 285217,
+                  "2024": 313567,
+                  "2025": 185123
+                }
+              }
+            },
+            "coverage_note": "Sampled flights; not complete airport demand. Movements: a flight between two selected airports counts once per airport."
+          },
+          "by_airport": {
+            "KATL": {
+              "arrival": {
+                "hours": 22631,
+                "scheduled_total": 860227,
+                "actual_total": 848808,
+                "median_scheduled_per_hour": 45.0,
+                "max_scheduled_per_hour": 112
+              },
+              "departure": {
+                "hours": 22631,
+                "scheduled_total": 860406,
+                "actual_total": 851074,
+                "median_scheduled_per_hour": 45.0,
+                "max_scheduled_per_hour": 96
+              }
+            },
+            "KDFW": {
+              "arrival": {
+                "hours": 22631,
+                "scheduled_total": 783882,
+                "actual_total": 763764,
+                "median_scheduled_per_hour": 31.0,
+                "max_scheduled_per_hour": 98
+              },
+              "departure": {
+                "hours": 22631,
+                "scheduled_total": 783963,
+                "actual_total": 767406,
+                "median_scheduled_per_hour": 38.0,
+                "max_scheduled_per_hour": 100
+              }
+            }
+          },
+          "early_spill_masked_hours": 2,
+          "failed_months": [],
+          "coverage": "reporting_carriers",
+          "population": "BTS On-Time Reporting Carrier On-Time Performance: domestic scheduled flights of reporting carriers; excludes non-reporting airlines, cargo, general aviation, military and most international flights",
+          "use": "retrospective traffic context; never queue demand, never AAR"
+        },
+        "storm_annotation": {
+          "status": "available",
+          "use": "retrospective evaluation cohorts only"
+        }
+      }
+    },
+    {
+      "manifest": "artifacts/capacity_estimate/manifest.json",
+      "run_id": "m1-capest-20261031T072310Z-a27968",
+      "status": "partial",
+      "payloads": [
+        "artifacts/capacity_estimate/assumptions.json",
+        "artifacts/capacity_estimate/evaluation.json",
+        "artifacts/capacity_estimate/forecast.parquet",
+        "artifacts/capacity_estimate/model.json"
+      ],
+      "capabilities": {
+        "capacity_estimate": {
+          "status": "partial",
+          "reason": "Model-estimated capacity proxy for reporting carriers, not facility AAR; no uncertainty bounds."
+        }
+      }
+    },
+    {
+      "manifest": "artifacts/risk/decision_manifest.json",
+      "run_id": "a7b89e44c69449d1a7ecfbf0cb8ff3b5",
+      "status": "unavailable",
+      "payloads": [
+        "artifacts/risk/queue.parquet",
+        "artifacts/risk/recommendations.json"
+      ],
+      "capabilities": {}
+    },
+    {
+      "manifest": "artifacts/risk/manifest.json",
+      "run_id": "0949771a54bb4e49b4e215528eb5d46b",
+      "status": "partial",
+      "payloads": [
+        "artifacts/risk/evaluation.json",
+        "artifacts/risk/model.joblib",
+        "artifacts/risk/normalized_metrics.parquet",
+        "artifacts/risk/predictions.parquet"
+      ],
+      "capabilities": {
+        "schedule_risk": {
+          "status": "available",
+          "test_rows": 10604
+        },
+        "weather_risk": {
+          "status": "partial",
+          "weather_enhanced_prediction_rows": 10599,
+          "reason": "Weather model fitted, but held-out weather coverage is incomplete; no performance claim for missing snapshots"
+        },
+        "weather_model_evaluation": {
+          "status": "partial",
+          "matched_test_cohorts": 6
+        },
+        "normalized_observed_delays": {
+          "status": "available",
+          "requires_outcome_reveal": true
+        },
+        "storm_cohort_evaluation": {
+          "status": "available",
+          "use": "retrospective evaluation only"
+        }
+      }
+    }
+  ],
+  "environment": {
+    "python": "3.14.6",
+    "packages": {
+      "streamlit": "1.58.0",
+      "pandas": "3.0.3",
+      "numpy": "2.4.6",
+      "plotly": "6.7.0",
+      "scikit-learn": "1.9.0",
+      "pytest": "9.0.3"
+    }
+  },
+  "manual_acceptance": "pending",
+  "limitations": [
+    "Runtime verification is not judge/supervisor acceptance or a claim of model accuracy.",
+    "Browser radar/basemap availability and the three-minute presentation require manual review.",
+    "No clean environment install, public data refresh, retraining or operational benefit simulation performed.",
+    "Baseline mode does not require the optional capacity estimate; it cannot certify the combined release."
+  ]
+}

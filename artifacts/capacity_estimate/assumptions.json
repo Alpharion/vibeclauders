@@ -1,0 +1,61 @@
+{
+  "schema_version": "2.0",
+  "run_id": "m1-capest-20261031T072310Z-a27968",
+  "generated_at_utc": "2026-10-31T07:23:11+00:00",
+  "producer": "member-1/data_capacity",
+  "status": "partial",
+  "limitations": [
+    "Model-estimated capacity PROXY, not facility AAR: no independent facility AAR label exists for validation.",
+    "Population is BTS reporting carriers only; no scaling to whole-airport rates (cargo, GA, military and most international flights are excluded).",
+    "Throughput in high-demand hours is assumed informative about attainable rates; low demand, flow programmes and coverage limits mean the frontier can understate physical capacity.",
+    "Uncertainty bounds are not estimated (uncertainty_kind='unavailable').",
+    "Validation compares the frozen frontier to observed high-demand throughput, a proxy target - not AAR accuracy."
+  ],
+  "missing_inputs": [],
+  "assumptions_id": "capacity-proxy-assumptions-v1",
+  "population": "BTS On-Time Reporting Carrier On-Time Performance: domestic scheduled flights of reporting carriers; excludes non-reporting airlines, cargo, general aviation, military and most international flights",
+  "demand_screen": {
+    "rule": "scheduled arrivals >= airport 2023 percentile",
+    "percentile": 0.75,
+    "deduplication": "one row per (airport, target hour) before thresholds"
+  },
+  "method": {
+    "name": "high_demand_weather_frontier_v1",
+    "frontier_quantile": 0.9,
+    "min_support_hours": 30,
+    "cells": "lead-specific (airport, horizon, regime); leads are never pooled",
+    "backoff": [
+      "(airport, lead, regime)",
+      "(airport, lead, degraded|vfr)",
+      "(airport, lead, all)"
+    ],
+    "unknown_regime": "all-regime cell, status partial"
+  },
+  "weather_regimes": {
+    "priority": [
+      "convective",
+      "winter",
+      "ifr",
+      "wind",
+      "mvfr",
+      "vfr"
+    ],
+    "definitions": {
+      "convective": "thunderstorm_flag == 1",
+      "winter": "frozen_precip_flag == 1",
+      "ifr": "ceiling < 1000 ft or visibility < 3 SM",
+      "wind": "crosswind >= 15 kt or tailwind >= 10 kt",
+      "mvfr": "ceiling < 3000 ft or visibility < 5 SM",
+      "vfr": "otherwise",
+      "unknown": "ceiling or visibility missing"
+    }
+  },
+  "runway_assumption": "crosswind/tailwind from weather_features, computed against fixed challenge headings ATL 080 / DFW 180",
+  "splits": {
+    "train": "2023 (fit)",
+    "validate": "2024 (reported only)",
+    "test": "2025-01-01..2025-07-31",
+    "basis": "airport-local date of target hour"
+  },
+  "scaling": "none: no division by sample fraction, no whole-airport extrapolation"
+}

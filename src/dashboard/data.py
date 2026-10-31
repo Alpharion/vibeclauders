@@ -292,6 +292,51 @@ FORECAST_TABLES = {
 }
 
 
+ESTIMATE_LABEL = "model_estimated_capacity"
+ESTIMATE_COLUMNS = (
+    *FORECAST_COLUMNS, "aar_observed", "population", "estimation_method", "assumptions_id",
+    "validation_target", "uncertainty_kind", "support_n",
+)
+
+
+def _check_estimate(df: pd.DataFrame) -> list[str]:
+    """Optional capacity-proxy group: never facility AAR, never an observed label."""
+    problems = _check_forecast(df)
+    if (df["label_kind"] != ESTIMATE_LABEL).any():
+        problems.append(f"label_kind must be {ESTIMATE_LABEL!r}")
+    if df["aar_observed"].notna().any():
+        problems.append("aar_observed must be null for a model estimate")
+    if not df["status"].isin(STATUSES).all():
+        problems.append("status is not a contract status")
+    usable = df["status"].isin(("available", "partial"))
+    for column in ("features_available_at_utc", "model_train_end_utc", "model_selection_end_utc"):
+        if df.loc[usable, column].isna().any():
+            problems.append(f"usable rows with null {column}")
+        elif (df.loc[usable, column] > df.loc[usable, "asof_utc"]).any():
+            problems.append(f"usable rows with {column} after the cutoff")
+    no_bounds = df["uncertainty_kind"] == "unavailable"
+    if df.loc[no_bounds, ["aar_lower", "aar_upper"]].notna().any().any():
+        problems.append("bounds present although uncertainty_kind is unavailable")
+    return problems
+
+
+ESTIMATE_TABLES = {
+    "capacity_estimate": TableSpec(
+        "artifacts/capacity_estimate/forecast.parquet", ESTIMATE_COLUMNS, tuple(SNAPSHOT_KEY),
+        (
+            "asof_utc", "target_hour_utc", "features_available_at_utc",
+            "model_train_end_utc", "model_selection_end_utc",
+        ),
+        _check_estimate,
+    ),
+}
+ESTIMATE_DOCUMENTS = {
+    "capacity_estimate_evaluation": "artifacts/capacity_estimate/evaluation.json",
+    "capacity_estimate_assumptions": "artifacts/capacity_estimate/assumptions.json",
+    "capacity_estimate_model": "artifacts/capacity_estimate/model.json",
+}
+
+
 def read_json(path: Path) -> dict:
     def reject(token: str):
         raise ArtifactError(f"{token} is not valid contract JSON")
@@ -503,6 +548,17 @@ def _capabilities(tables, docs, groups) -> list[Capability]:
             capacity.problems.get("traffic_hourly", []), capacity,
         ),
     ]
+    estimate = groups.get("capacity_estimate", Group())
+    capabilities.append(
+        _capability(
+            "Capacity estimate (proxy)",
+            "capacity_estimate" in tables and "capacity_estimate_evaluation" in docs,
+            estimate.problems.get("capacity_estimate", [])
+            + estimate.problems.get("capacity_estimate_evaluation", [])
+            or ["artifacts/capacity_estimate/manifest.json is not published"],
+            estimate, "capacity_estimate",
+        )
+    )
     recommendations = docs.get("recommendations") or {}
     queue = tables.get("queue")
     missing = [str(m) for m in recommendations.get("missing_inputs", [])]
@@ -564,8 +620,10 @@ def _watched_paths() -> list[str]:
         "artifacts/capacity/throughput_evaluation.json", "artifacts/forecast/manifest.json",
         "artifacts/capacity/data_access.json", "data/processed/provenance.json",
     ]
-    for specs in (RISK_TABLES, DECISION_TABLES, CAPACITY_TABLES, FORECAST_TABLES):
+    for specs in (RISK_TABLES, DECISION_TABLES, CAPACITY_TABLES, ESTIMATE_TABLES, FORECAST_TABLES):
         paths.extend(spec.path for spec in specs.values())
+    paths.extend(ESTIMATE_DOCUMENTS.values())
+    paths.append("artifacts/capacity_estimate/manifest.json")
     return paths
 
 
@@ -577,7 +635,7 @@ def fingerprint(root: Path) -> str:
         if path.exists():
             stat = path.stat()
             parts.append(f"{relative}:{stat.st_mtime_ns}:{stat.st_size}")
-    for relative in _watched_paths()[:3]:
+    for relative in [*_watched_paths()[:3], "artifacts/capacity_estimate/manifest.json"]:
         path = root / relative
         if path.exists():
             parts.append(hashlib.sha256(path.read_bytes()).hexdigest())
@@ -606,6 +664,10 @@ def load_bundle(root: Path) -> Bundle:
             tables, docs,
         ),
         "forecast": _load_group(root, "artifacts/forecast/manifest.json", FORECAST_TABLES, {}, tables, docs),
+        # optional, independently hashed; absence leaves the baseline app unchanged
+        "capacity_estimate": _load_group(
+            root, "artifacts/capacity_estimate/manifest.json", ESTIMATE_TABLES, ESTIMATE_DOCUMENTS, tables, docs,
+        ),
     }
     for name, relative in (
         ("provenance", "data/processed/provenance.json"),

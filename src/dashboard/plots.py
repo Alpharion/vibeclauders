@@ -193,7 +193,13 @@ def hourly_volume(rows: pd.DataFrame, name: str, color: str, asof: pd.Timestamp,
             line={"color": INK, "width": 2, "dash": "dot"}, marker={"size": 8, "color": TOKENS["bg-card"], "line": {"color": INK, "width": 2}},
             hovertemplate="Actual %{y:.0f}<extra></extra>",
         )
-    figure.add_vline(x=asof - pd.Timedelta(minutes=30), line={"color": INK_SECONDARY, "dash": "dot", "width": 1}, annotation_text="Cutoff", annotation_font_color=INK_SECONDARY)
+    # add_vline's annotation does Timestamp + int arithmetic that pandas rejects; draw the same
+    # dotted cutoff line as a shape and position its label separately
+    cutoff_x = (pd.Timestamp(asof) - pd.Timedelta(minutes=30)).isoformat()
+    figure.add_shape(type="line", x0=cutoff_x, x1=cutoff_x, y0=0, y1=1, xref="x", yref="paper",
+                     line={"color": INK_SECONDARY, "dash": "dot", "width": 1})
+    figure.add_annotation(x=cutoff_x, y=1, xref="x", yref="paper", text="Cutoff", showarrow=False,
+                          xanchor="left", yanchor="bottom", font={"color": INK_SECONDARY})
     figure.add_vrect(x0=target - pd.Timedelta(minutes=30), x1=target + pd.Timedelta(minutes=30), fillcolor=color, opacity=0.1, line_width=0)
     _layout(figure, "", "Flights / hour", 300)
     figure.update_layout(barmode="overlay", margin={"l": 48, "r": 12, "t": 34, "b": 30}, hovermode="x unified")

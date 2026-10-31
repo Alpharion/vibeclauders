@@ -11,7 +11,7 @@ from src.dashboard import components, map_view, outputs, plots, theme, views
 from src.dashboard.data import SCORED_HORIZONS, Bundle, is_schedule_only
 from src.dashboard.outputs import MovementForecasts
 from src.dashboard.theme import badge, card, card_title, chip, html, tile
-from src.dashboard.views import Snapshot, resolve_airport
+from src.dashboard.views import Snapshot
 from src.shared import AIRPORTS
 
 TABS = ("Overview", "Weather", "Traffic", "Compare", "Evaluation")
@@ -208,12 +208,18 @@ def movement_card(bundle: Bundle, snapshot: Snapshot, reveal: bool, forecasts: M
 
 def capacity_card(bundle: Bundle, snapshot: Snapshot) -> None:
     arrivals, _ = views.scheduled_at(bundle.table("traffic_hourly"), snapshot.airport, snapshot.target_hour_utc)
-    row, reason = views.aar_row(bundle, snapshot)
+    row, kind, reason = views.capacity_row(bundle, snapshot)
     with card("capacity"):
         card_title("Arrival demand / capacity", glyph="bars")
         if row is None:
             html(f'<div style="font-size:15px;font-weight:600">{number(arrivals)} scheduled / capacity unknown</div>')
             st.caption(f"AAR not available. {reason} Scheduled counts are reconstructed, not queue demand.")
+            return
+        if kind == "estimate":
+            html(f'<div style="font-size:15px;font-weight:600">{number(arrivals)} scheduled</div>')
+            html(badge("MODEL PROXY · NOT AAR", "amber"))
+            st.metric(views.ESTIMATE_TITLE + " (arrivals/hour)", f"{row['aar_pred']:.1f}")
+            st.caption(f"{views.estimate_note(row)}. Genuine AAR not available: {reason}")
             return
         html(f'<div style="font-size:15px;font-weight:600">{number(arrivals)} scheduled / {row["aar_pred"]:.0f} per hour</div>')
         st.metric("Predicted AAR (arrivals/hour)", f"{row['aar_pred']:.1f}")
@@ -333,7 +339,6 @@ def condition_grid(probabilities, histories: dict, snapshot: Snapshot) -> None:
 
 
 def taf_table(outlook: dict, snapshot: Snapshot) -> None:
-    html(f'<div class="head-row"><div style="flex:1">{""}</div></div>')
     with st.container(horizontal=True, vertical_alignment="center"):
         card_title("Published TAF outlook", glyph="file")
         st.space("stretch")
@@ -437,12 +442,14 @@ def traffic_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool, f
             f"Population: {', '.join(map(str, traffic['population'].unique()))}. Reconstructed "
             "retrospectively, not known at the cutoff, so these counts are not queue demand."
         )
-    capacity, reason = views.aar_row(bundle, snapshot)
-    theme.notice(
-        f"Arrival capacity context: {capacity['aar_pred']:.0f}/h · separate from scheduled demand"
-        if capacity is not None else f"Arrival capacity context: AAR unavailable. {escape(reason)} AAR is not a traffic-volume prediction.",
-        "quiet", "info",
-    )
+    capacity, kind, reason = views.capacity_row(bundle, snapshot)
+    if capacity is None:
+        context = f"Arrival capacity context: AAR unavailable. {escape(reason)} AAR is not a traffic-volume prediction."
+    elif kind == "estimate":
+        context = f"Arrival capacity context: {capacity['aar_pred']:.0f}/h model proxy, not AAR · separate from scheduled demand"
+    else:
+        context = f"Arrival capacity context: {capacity['aar_pred']:.0f}/h · separate from scheduled demand"
+    theme.notice(context, "quiet", "info")
     flights = bundle.table("flights")
     if flights is not None:
         movements = views.planning_movements(flights, snapshot.airport, snapshot.asof_utc, window)
@@ -835,7 +842,7 @@ def evaluation_tab(bundle: Bundle, snapshot: Snapshot | None, reveal: bool) -> N
     risk = bundle.docs.get("risk_evaluation")
     left, right = st.columns([56, 44], gap="small")
     with left, card("aar"):
-        aar_evaluation(bundle)
+        aar_evaluation(bundle, reveal)
     with right, card("delay"):
         delay_evaluation(bundle, risk, snapshot)
     left, right = st.columns([56, 44], gap="small")
@@ -864,12 +871,13 @@ def evaluation_tab(bundle: Bundle, snapshot: Snapshot | None, reveal: bool) -> N
     outcomes_bar(reveal, "evaluation", "Reveal held-out outcomes for retrospective inspection.")
 
 
-def aar_evaluation(bundle: Bundle) -> None:
+def aar_evaluation(bundle: Bundle, reveal: bool = False) -> None:
     card_title("Arrival capacity · AAR RMSE", "Lower is better · arrivals/hour", glyph="plane")
     document = bundle.docs.get("capacity_evaluation")
     metrics = (document or {}).get("metrics") or []
     if metrics:
         st.dataframe(pd.DataFrame(metrics), hide_index=True)
+        estimate_evaluation(bundle, reveal)
         return
     rows = [
         [escape(info["iata"]), f"+{lead}h", "—", "—", "Not available"]
@@ -883,6 +891,37 @@ def aar_evaluation(bundle: Bundle) -> None:
     if document and document.get("requested_extract"):
         with st.expander("Inspect capacity requirements"):
             st.json(document["requested_extract"], expanded=True)
+    estimate_evaluation(bundle, reveal)
+
+
+def estimate_evaluation(bundle: Bundle, reveal: bool) -> None:
+    """Capacity proxy, shown inside the existing capacity panel and never as AAR accuracy."""
+    document = bundle.docs.get("capacity_estimate_evaluation")
+    capability = bundle.capability("Capacity estimate (proxy)")
+    if document is None:
+        st.caption("Capacity estimate (proxy) not loaded: " + "; ".join(capability.reasons))
+        return
+    st.markdown(f"**{views.ESTIMATE_TITLE}** · model proxy")
+    st.caption(
+        f"Method {document.get('method')} · target {document.get('validation_target')} · run {capability.run_id}. "
+        "Metrics compare a frozen training-only frontier with observed high-demand throughput (held-out 2025); "
+        "they are not facility AAR accuracy. Uncertainty bounds are not estimated."
+    )
+    table = views.estimate_metrics(document)
+    if not table.empty:
+        st.dataframe(table, hide_index=True)
+    cohorts = pd.DataFrame(document.get("cohorts") or [])
+    if not cohorts.empty:
+        cohorts = cohorts[cohorts["split"] == "test"]
+        if reveal:
+            st.dataframe(cohorts, hide_index=True)
+        else:
+            st.dataframe(
+                cohorts[["airport", "weather_regime", "n_snapshots", "n_unique_hours", "mean_estimate"]], hide_index=True,
+            )
+            st.caption("Observed throughput by weather regime is hidden until **Reveal outcomes** is on.")
+    for limitation in document.get("limitations", [])[:3]:
+        st.caption(f"Limitation: {limitation}")
 
 
 def delay_evaluation(bundle: Bundle, document: dict | None, snapshot: Snapshot | None) -> None:

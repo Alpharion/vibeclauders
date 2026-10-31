@@ -1,0 +1,461 @@
+{
+  "schema_version": "2.0",
+  "run_id": "m1-capest-20261031T072310Z-a27968",
+  "generated_at_utc": "2026-10-31T07:23:11+00:00",
+  "producer": "member-1/data_capacity",
+  "status": "partial",
+  "limitations": [
+    "Model-estimated capacity PROXY, not facility AAR: no independent facility AAR label exists for validation.",
+    "Population is BTS reporting carriers only; no scaling to whole-airport rates (cargo, GA, military and most international flights are excluded).",
+    "Throughput in high-demand hours is assumed informative about attainable rates; low demand, flow programmes and coverage limits mean the frontier can understate physical capacity.",
+    "Uncertainty bounds are not estimated (uncertainty_kind='unavailable').",
+    "Validation compares the frozen frontier to observed high-demand throughput, a proxy target - not AAR accuracy."
+  ],
+  "missing_inputs": [],
+  "method": "high_demand_weather_frontier_v1",
+  "model_version": "capacity-proxy-frontier-v1",
+  "assumptions_id": "capacity-proxy-assumptions-v1",
+  "fitted_on": "training split only",
+  "demand_thresholds": {
+    "KATL": 57.0,
+    "KDFW": 60.0
+  },
+  "cells": [
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "regime": "convective",
+      "support_n": 3,
+      "estimate": 84.2
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "regime": "winter",
+      "support_n": 0,
+      "estimate": null
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "regime": "ifr",
+      "support_n": 169,
+      "estimate": 82.20000000000002
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "regime": "wind",
+      "support_n": 118,
+      "estimate": 72.3
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "regime": "mvfr",
+      "support_n": 186,
+      "estimate": 81.0
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "regime": "vfr",
+      "support_n": 1800,
+      "estimate": 81.0
+    },
+    {
+      "level": "group",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "regime": "degraded",
+      "support_n": 476,
+      "estimate": 80.0
+    },
+    {
+      "level": "group",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "regime": "vfr",
+      "support_n": 1800,
+      "estimate": 81.0
+    },
+    {
+      "level": "airport",
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "regime": "all",
+      "support_n": 2276,
+      "estimate": 81.0
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "regime": "convective",
+      "support_n": 4,
+      "estimate": 84.3
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "regime": "winter",
+      "support_n": 0,
+      "estimate": null
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "regime": "ifr",
+      "support_n": 174,
+      "estimate": 82.0
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "regime": "wind",
+      "support_n": 120,
+      "estimate": 72.0
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "regime": "mvfr",
+      "support_n": 190,
+      "estimate": 81.1
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "regime": "vfr",
+      "support_n": 1788,
+      "estimate": 81.0
+    },
+    {
+      "level": "group",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "regime": "degraded",
+      "support_n": 488,
+      "estimate": 81.0
+    },
+    {
+      "level": "group",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "regime": "vfr",
+      "support_n": 1788,
+      "estimate": 81.0
+    },
+    {
+      "level": "airport",
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "regime": "all",
+      "support_n": 2276,
+      "estimate": 81.0
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "regime": "convective",
+      "support_n": 1,
+      "estimate": 46.0
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "regime": "winter",
+      "support_n": 0,
+      "estimate": null
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "regime": "ifr",
+      "support_n": 180,
+      "estimate": 83.0
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "regime": "wind",
+      "support_n": 118,
+      "estimate": 70.0
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "regime": "mvfr",
+      "support_n": 208,
+      "estimate": 80.0
+    },
+    {
+      "level": "regime",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "regime": "vfr",
+      "support_n": 1769,
+      "estimate": 81.0
+    },
+    {
+      "level": "group",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "regime": "degraded",
+      "support_n": 507,
+      "estimate": 80.0
+    },
+    {
+      "level": "group",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "regime": "vfr",
+      "support_n": 1769,
+      "estimate": 81.0
+    },
+    {
+      "level": "airport",
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "regime": "all",
+      "support_n": 2276,
+      "estimate": 81.0
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "regime": "convective",
+      "support_n": 143,
+      "estimate": 68.0
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "regime": "winter",
+      "support_n": 3,
+      "estimate": 55.400000000000006
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "regime": "ifr",
+      "support_n": 61,
+      "estimate": 61.0
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "regime": "wind",
+      "support_n": 183,
+      "estimate": 72.80000000000001
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "regime": "mvfr",
+      "support_n": 147,
+      "estimate": 65.4
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "regime": "vfr",
+      "support_n": 1684,
+      "estimate": 74.0
+    },
+    {
+      "level": "group",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "regime": "degraded",
+      "support_n": 537,
+      "estimate": 69.0
+    },
+    {
+      "level": "group",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "regime": "vfr",
+      "support_n": 1684,
+      "estimate": 74.0
+    },
+    {
+      "level": "airport",
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "regime": "all",
+      "support_n": 2221,
+      "estimate": 73.0
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "regime": "convective",
+      "support_n": 134,
+      "estimate": 67.4
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "regime": "winter",
+      "support_n": 6,
+      "estimate": 59.0
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "regime": "ifr",
+      "support_n": 71,
+      "estimate": 61.0
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "regime": "wind",
+      "support_n": 193,
+      "estimate": 71.80000000000001
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "regime": "mvfr",
+      "support_n": 151,
+      "estimate": 64.0
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "regime": "vfr",
+      "support_n": 1666,
+      "estimate": 74.0
+    },
+    {
+      "level": "group",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "regime": "degraded",
+      "support_n": 555,
+      "estimate": 67.0
+    },
+    {
+      "level": "group",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "regime": "vfr",
+      "support_n": 1666,
+      "estimate": 74.0
+    },
+    {
+      "level": "airport",
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "regime": "all",
+      "support_n": 2221,
+      "estimate": 73.0
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "regime": "convective",
+      "support_n": 125,
+      "estimate": 65.0
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "regime": "winter",
+      "support_n": 7,
+      "estimate": 40.000000000000014
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "regime": "ifr",
+      "support_n": 84,
+      "estimate": 62.0
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "regime": "wind",
+      "support_n": 206,
+      "estimate": 71.0
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "regime": "mvfr",
+      "support_n": 164,
+      "estimate": 63.0
+    },
+    {
+      "level": "regime",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "regime": "vfr",
+      "support_n": 1635,
+      "estimate": 74.0
+    },
+    {
+      "level": "group",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "regime": "degraded",
+      "support_n": 586,
+      "estimate": 67.0
+    },
+    {
+      "level": "group",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "regime": "vfr",
+      "support_n": 1635,
+      "estimate": 74.0
+    },
+    {
+      "level": "airport",
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "regime": "all",
+      "support_n": 2221,
+      "estimate": 73.0
+    }
+  ],
+  "baseline_airport_frontier": {
+    "KATL": 81.0,
+    "KDFW": 73.0
+  }
+}

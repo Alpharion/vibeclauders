@@ -1,0 +1,71 @@
+{
+  "schema_version": "2.0",
+  "run_id": "m1-capest-20261031T072310Z-a27968",
+  "generated_at_utc": "2026-10-31T07:23:11+00:00",
+  "producer": "member-1/data_capacity",
+  "status": "partial",
+  "limitations": [
+    "Model-estimated capacity PROXY, not facility AAR: no independent facility AAR label exists for validation.",
+    "Population is BTS reporting carriers only; no scaling to whole-airport rates (cargo, GA, military and most international flights are excluded).",
+    "Throughput in high-demand hours is assumed informative about attainable rates; low demand, flow programmes and coverage limits mean the frontier can understate physical capacity.",
+    "Uncertainty bounds are not estimated (uncertainty_kind='unavailable').",
+    "Validation compares the frozen frontier to observed high-demand throughput, a proxy target - not AAR accuracy."
+  ],
+  "missing_inputs": [],
+  "label_kind": "model_estimated_capacity",
+  "estimation_method": "high_demand_weather_frontier_v1",
+  "scope": "KATL/KDFW, horizons 3/6/12, held-out replay 2025-01..07, reporting carriers; capacity proxy, not AAR",
+  "capabilities": {
+    "capacity_estimate": {
+      "status": "partial",
+      "reason": "Model-estimated capacity proxy for reporting carriers, not facility AAR; no uncertainty bounds."
+    }
+  },
+  "artifact_hashes": {
+    "forecast.parquet": "7cc2d8b9f277b634a77e8070d50fa13b9bb39cfdb298d585af2d49b310352219",
+    "evaluation.json": "915e455b5d533cb36ddc12a7d4b5691d56c9e671a7acf137a7415b0d3bb4c17e",
+    "assumptions.json": "7d93726a2252d2dd0ad21de2289baa872db19cdd4d58867523460ccfa6ce9244",
+    "model.json": "39147b3b508f3e1026e7d1efa32083626455cfd9c5c83f997148d84757d5002d"
+  },
+  "outputs": [
+    {
+      "path": "artifacts/capacity_estimate/forecast.parquet",
+      "sha256": "7cc2d8b9f277b634a77e8070d50fa13b9bb39cfdb298d585af2d49b310352219",
+      "rows": 30477
+    },
+    {
+      "path": "artifacts/capacity_estimate/evaluation.json",
+      "sha256": "915e455b5d533cb36ddc12a7d4b5691d56c9e671a7acf137a7415b0d3bb4c17e",
+      "rows": null
+    },
+    {
+      "path": "artifacts/capacity_estimate/assumptions.json",
+      "sha256": "7d93726a2252d2dd0ad21de2289baa872db19cdd4d58867523460ccfa6ce9244",
+      "rows": null
+    },
+    {
+      "path": "artifacts/capacity_estimate/model.json",
+      "sha256": "39147b3b508f3e1026e7d1efa32083626455cfd9c5c83f997148d84757d5002d",
+      "rows": null
+    }
+  ],
+  "sources": {
+    "capacity_manifest": "artifacts/capacity/manifest.json",
+    "capacity_manifest_sha256": "e41f85fb26d73d4cddef33c2f5ed146199ef5d0207a505cae4bb424b152b2656",
+    "upstream_run_id": "m1-20261031T065014Z-eacdd5",
+    "inputs": [
+      {
+        "name": "traffic_hourly",
+        "path": "artifacts/capacity/traffic_hourly.parquet",
+        "sha256": "bd14ee2bfc7aab93276306c248562e78b2723549ad9e2fe0911afb0c5cbedcde",
+        "upstream_run_id": "m1-20261031T065014Z-eacdd5"
+      },
+      {
+        "name": "weather_features",
+        "path": "artifacts/capacity/weather_features.parquet",
+        "sha256": "6c4374d1c4ed5816b7b6feba100852ddef250947c301e6a12fd9ffd7faf7fd81",
+        "upstream_run_id": "m1-20261031T065014Z-eacdd5"
+      }
+    ]
+  }
+}

@@ -11,7 +11,7 @@ import streamlit as st
 from src.dashboard import components, live_screen, replay, theme, views
 from src.dashboard.data import SCORED_HORIZONS, Bundle, fingerprint, load_bundle
 from src.dashboard.outputs import agreement_pending
-from src.dashboard.theme import chip, html
+from src.dashboard.theme import html
 from src.dashboard.views import Snapshot, resolve_airport
 from src.shared import AIRPORTS
 
