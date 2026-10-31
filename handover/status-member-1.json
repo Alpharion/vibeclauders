@@ -1,145 +1,53 @@
 {
   "member": "1",
-  "schema_version": "2.0",
+  "baseline_commit": "737b46852c2d4b98e7c01e68ed7e3888f6542c5c",
+  "result_commit": null,
   "state": "ready_for_review",
-  "started_at_utc": "2026-10-31T04:28:08Z",
-  "updated_at_utc": "2026-10-31T06:58:00Z",
-  "elapsed_minutes": 150,
-  "completed": [
-    "Plan 1.1: JSON written with LF on every OS; a test fails on any CR in published JSON",
-    "Plan 1.2: AAR attempt log (data/public/aspm/attempts.json) copied into data_access.json; 2 entries (ASPM login required; organisers provided no AAR data). Gate 2 decision recorded: AAR unmet",
-    "Plan 1.3: traffic_hourly.parquet from all 31 BTS months 2023-01..2025-07: 90,524 rows, KATL/KDFW, arrivals and departures, 0 failed months, coverage=reporting_carriers",
-    "Plan 1.4: 0 inverted weather validity rows (was 5,582); TAF period = 30 h from the 00/06/12/18Z cycle; TEMPO/PROB periods parsed from raw text; contract features unchanged, 35 rows gain month-end cond_* groups",
-    "Plan 1.5: clean automatic run in a fresh worktree with empty caches: 16m01s, exit 0, no manual step, 0 failed downloads",
-    "Reproducibility fix found by the clean run: weather decoding no longer depends on IEM row order; both download sets now give identical outputs (12 feature cells resolved deterministically)",
-    "Plan 1.6: airport-generic proof with a test-only registry (synthetic KORD, heading 270); missing heading or timezone refused with the field named; no third airport in artifacts",
-    "Plan 2.3 interface: forecast.parquet carries nullable aar_observed",
-    "Merged origin/main into zeph with no conflicts; whole-repo tests pass",
-    "Plan section 7 stretch (team agreement pending): observed reporting-carrier arrivals forecast, label observed_reporting_carrier_arrivals, never AAR. Test RMSE 9.26 vs 15.43 baseline; in weather-impacted hours weather beats schedule-only by 1.83 arrivals/hour (95% CI [-3.46, -0.46])",
-    "Additive frozen_precip_flag features (cond_/obs_ variants); contract features unchanged"
+  "started_at_utc": "2026-10-31T07:19:14Z",
+  "updated_at_utc": "2026-10-31T07:32:00Z",
+  "elapsed_minutes": 13,
+  "p0_completed": [
+    "Traffic-chart crash fixed: reporting_chart draws the cutoff as a shape plus a separate annotation; test_actual_traffic_counts_need_reveal passes with masking unchanged",
+    "Capacity proxy published by `python -m src.data_capacity estimate-capacity --from-published`: run m1-capest-20261031T072310Z-a27968, 30,477 held-out rows for KATL/KDFW x leads 3/6/12 (30,147 available, 330 partial, 0 unavailable)",
+    "Estimate bound into the existing Arrival capacity card (exact-key fallback after genuine AAR) and the Evaluation panel; optional hashed loader group; no new tabs or controls"
+  ],
+  "owned_files_changed": [
+    "src/dashboard/plots.py", "src/dashboard/data.py", "src/dashboard/views.py", "src/dashboard/app.py",
+    "src/data_capacity/__main__.py", "src/data_capacity/capacity_estimate.py",
+    "tests/dashboard/test_capacity_estimate.py", "tests/data_capacity/test_capacity_estimate.py",
+    "artifacts/capacity_estimate/forecast.parquet", "artifacts/capacity_estimate/evaluation.json",
+    "artifacts/capacity_estimate/assumptions.json", "artifacts/capacity_estimate/model.json",
+    "artifacts/capacity_estimate/manifest.json",
+    "handover/status-member-1.json", "handover/member-1-sprint-results.md"
   ],
   "artifacts": [
-    {
-      "path": "data/processed/flights.parquet",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "status": "available",
-      "coverage": "ATL/DFW sample flights, local dates 2023-01-01..2025-07-31"
-    },
-    {
-      "path": "artifacts/capacity/weather.parquet",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "status": "available",
-      "coverage": "KATL/KDFW METAR+TAF issued 2022-12-30..2025-08-01"
-    },
-    {
-      "path": "artifacts/capacity/weather_features.parquet",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "status": "available",
-      "coverage": "KATL/KDFW, local dates 2023-01-01..2025-07-31, horizons 3/6/12"
-    },
-    {
-      "path": "artifacts/capacity/traffic_hourly.parquet",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "status": "available",
-      "coverage": "KATL/KDFW hourly, BTS months 2023-01..2025-07, reporting carriers"
-    },
-    {
-      "path": "artifacts/capacity/forecast.parquet",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "status": "unavailable",
-      "coverage": null
-    },
-    {
-      "path": "artifacts/capacity/throughput_forecast.parquet",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "status": "available",
-      "coverage": "held-out 2025-01..07, KATL/KDFW, horizons 3/6/12; NOT AAR"
-    },
-    {
-      "path": "artifacts/capacity/throughput_evaluation.json",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "status": "available",
-      "coverage": null
-    },
-    {
-      "path": "artifacts/capacity/evaluation.json",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "status": "unavailable",
-      "coverage": null
-    },
-    {
-      "path": "artifacts/capacity/data_access.json",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "status": "partial",
-      "coverage": null
-    },
-    {
-      "path": "data/processed/provenance.json",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "status": "partial",
-      "coverage": null
-    },
-    {
-      "path": "data/processed/storm_events.parquet",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "status": "available",
-      "coverage": "2022-2025 vicinity counties; retrospective only"
-    },
-    {
-      "path": "artifacts/capacity/manifest.json",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "status": "partial",
-      "coverage": null
-    }
+    {"path": "artifacts/capacity_estimate/", "run_id": "m1-capest-20261031T072310Z-a27968", "status": "partial",
+     "coverage": "KATL/KDFW, leads 3/6/12, held-out replay 2025-01..07, reporting carriers; model proxy, not AAR",
+     "upstream_run_id": "m1-20261031T065014Z-eacdd5"}
   ],
-  "commands_tested": [
-    "python -m src.data_capacity bts --workers 4 --months 2023-01 ... 2025-07",
-    "python -m src.data_capacity run",
-    "python -m src.data_capacity run --cache-only",
-    "python -m pytest tests/data_capacity -q",
-    "python -m pytest tests -q"
+  "checks": [
+    {"command": "python -m pytest tests/dashboard/test_additions.py::test_actual_traffic_counts_need_reveal -q", "exit": 0, "result": "1 passed"},
+    {"command": "python -m pytest tests/data_capacity tests/dashboard -q", "exit": 0, "result": "252 passed"},
+    {"command": "python -m pytest tests/flight_risk -q", "exit": 0, "result": "96 passed"},
+    {"command": "python -m pytest tests -q", "exit": 0, "result": "348 passed"},
+    {"command": "python -m src.flight_risk verify", "exit": 0, "result": "risk run 0949771a54bb4e49b4e215528eb5d46b verified"},
+    {"command": "python -m src.data_capacity estimate-capacity --from-published", "exit": 0, "result": "run m1-capest-20261031T072310Z-a27968"},
+    {"command": "AppTest app.py on real repository artifacts (KATL/KDFW x 3/6/12 x reveal off/on)", "exit": 0, "result": "no exceptions; estimate card and proxy evaluation shown"}
   ],
-  "test_results": [
-    {
-      "command": "python -m src.data_capacity bts --workers 4 --months 2023-01 ... 2025-07",
-      "result": "passed",
-      "evidence": "31/31 months downloaded and filtered in 10m16s; 0 failed"
-    },
-    {
-      "command": "python -m src.data_capacity run",
-      "result": "passed",
-      "evidence": "fresh worktree, empty caches: 16m01s, exit 0, 0 failed downloads, run m1-20261031T060631Z-ca753e"
-    },
-    {
-      "command": "python -m src.data_capacity run --cache-only",
-      "result": "passed",
-      "evidence": "run m1-20261031T065014Z-eacdd5 (published); manifest status partial: AAR unavailable only"
-    },
-    {
-      "command": "python -m pytest tests/data_capacity -q",
-      "result": "passed",
-      "evidence": "80 passed in the clean worktree"
-    },
-    {
-      "command": "python -m pytest tests -q",
-      "result": "passed",
-      "evidence": "299 passed on zeph (Windows)"
-    }
-  ],
-  "blockers": [
-    {
-      "requirement": "Challenge 5 core: hourly AAR prediction evaluated by RMSE",
-      "reason": "No genuine facility AAR labels: FAA ASPM requires credentials the team lacks, and the organisers provided no AAR data",
-      "evidence": "artifacts/capacity/data_access.json aar.attempts (2 entries) and aar.gate_2_decision = AAR unmet",
-      "owner": "Supervisor/team (decision recorded); Member 3 presents it as an unmet requirement",
-      "next_action": "Present as unmet with access evidence and the one-command path. The throughput stretch in plan section 7 needs agreement from all three members and must never be labelled AAR."
-    }
+  "frozen_input_hashes_unchanged": true,
+  "used_other_member_new_outputs": false,
+  "known_inherited_failures": [],
+  "new_failures": [],
+  "limitations": [
+    "Capacity proxy for BTS reporting carriers, not facility AAR; no whole-airport scaling",
+    "Assumes high-demand throughput reflects attainable rates; flow programmes and demand below capacity can understate capacity",
+    "No uncertainty bounds (uncertainty_kind='unavailable')",
+    "Rare regimes (ATL convective/winter) back off to group cells; winter cohort shows large over-estimates (failure case)",
+    "Windows only; Linux not run from this machine"
   ],
   "next_steps": [
-    "Support Member 3 integration of traffic_hourly and the unavailable AAR state",
-    "Defects only after Gate 3; the suite has not been run on Linux from this machine"
+    "Optional after P0 (not done): all-missing traffic-total display, small layout adjustments",
+    "Supervisor merge and combined release checks"
   ],
-  "contract_changes_requested": [
-    "Additive only: artifacts/capacity/throughput_forecast.parquet and throughput_evaluation.json (plan section 7 stretch, needs agreement from all three members before Member 3 presents it); additive frozen_precip_flag columns in weather_features"
-  ]
+  "supervisor_acceptance": null
 }

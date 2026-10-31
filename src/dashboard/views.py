@@ -371,6 +371,62 @@ def aar_row(bundle: Bundle, snapshot: Snapshot) -> tuple[pd.Series | None, str |
     return row, None
 
 
+ESTIMATE_TITLE = "Estimated arrival capacity - reporting carriers"
+
+
+def estimate_row(bundle: Bundle, snapshot: Snapshot) -> tuple[pd.Series | None, str | None]:
+    """Model-estimated capacity proxy at the exact key, only if cutoff-safe and usable."""
+    table = bundle.table("capacity_estimate")
+    if table is None:
+        return None, bundle.problem("capacity_estimate")
+    rows = snapshot.rows(table)
+    if rows.empty:
+        return None, "No capacity estimate at this exact cutoff, target hour and lead."
+    row = rows.iloc[0]
+    if row["label_kind"] != "model_estimated_capacity":
+        return None, f"label_kind {row['label_kind']!r} is not a model capacity estimate."
+    if row["status"] not in ("available", "partial"):
+        return None, "The capacity estimate is unavailable at this key (insufficient training support)."
+    for column in ("features_available_at_utc", "model_train_end_utc", "model_selection_end_utc"):
+        if pd.isna(row[column]) or row[column] > snapshot.asof_utc:
+            return None, f"{column} is later than the cutoff, so this estimate is not cutoff-safe."
+    if pd.isna(row["aar_pred"]):
+        return None, "Estimate is null at this key."
+    return row, None
+
+
+def capacity_row(bundle: Bundle, snapshot: Snapshot) -> tuple[pd.Series | None, str, str | None]:
+    """Genuine facility AAR first; otherwise the proxy at the same exact key.
+    Returns (row, kind, reason) with kind 'facility_aar', 'estimate' or 'none'."""
+    row, aar_reason = aar_row(bundle, snapshot)
+    if row is not None:
+        return row, "facility_aar", None
+    row, estimate_reason = estimate_row(bundle, snapshot)
+    if row is not None:
+        return row, "estimate", aar_reason
+    return None, "none", f"{aar_reason} Capacity estimate: {estimate_reason}"
+
+
+def estimate_note(row: pd.Series) -> str:
+    support = "unknown" if pd.isna(row.get("support_n")) else f"{int(row['support_n'])} training hours"
+    cell = row.get("frontier_cell") or "?"
+    backoff = row.get("backoff_level") or "?"
+    return (f"Model proxy, not facility AAR · {row['estimation_method']} · cell {cell} "
+            f"(backoff: {backoff}, support {support}) · uncertainty {row['uncertainty_kind']}")
+
+
+def estimate_metrics(document: dict | None, split: str = "test") -> pd.DataFrame:
+    """Proxy-target metrics, one row per airport/lead, without any row-level outcomes."""
+    metrics = pd.DataFrame((document or {}).get("metrics") or [])
+    if metrics.empty:
+        return metrics
+    metrics = metrics[metrics["split"] == split]
+    wide = metrics.pivot_table(index=["airport", "horizon_hours", "n"], columns="metric",
+                               values=["value", "baseline_value"], aggfunc="first")
+    wide.columns = [f"{m} ({'frontier' if v == 'value' else 'baseline'})" for v, m in wide.columns]
+    return wide.reset_index().round(3)
+
+
 def uncertainty(row: pd.Series) -> tuple[float, float] | None:
     """Bounds only when both exist. Missing means unknown, not a zero-width interval."""
     if pd.isna(row["aar_lower"]) or pd.isna(row["aar_upper"]):
