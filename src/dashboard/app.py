@@ -18,7 +18,7 @@ from src.shared import AIRPORTS
 REPO_ROOT = Path(__file__).resolve().parents[2]
 STATUS_LABEL = {"available": "Available", "partial": "Partial", "unavailable": "Unavailable"}
 HISTORICAL, LIVE = "Historical replay", "Live weather"
-FOOTER = "Decision support · Human review required · No operational commands transmitted · UTC throughout"
+FOOTER = "Demo data: forecast values are placeholders · Decision support · Human review required · No operational commands transmitted · UTC throughout"
 
 
 @st.cache_data(show_spinner="Validating published artifacts…", max_entries=2)
