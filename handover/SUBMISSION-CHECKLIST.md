@@ -1,6 +1,6 @@
 # Combined release and submission checklist
 
-Current state: **not accepted for submission**. Member 1's estimator/frontend work is independently supervised; this checklist does not certify it. The baseline chart failure is still a release blocker.
+Current state: **not accepted for submission**. Member 1's estimator/frontend work is independently supervised; this checklist does not certify it. Member 1 published the chart fix and capacity proxy at `5805f89b8ae908b330e1e981536f52ae1725c2ee`, run `m1-capest-20261031T072310Z-a27968`; this is a ready-for-review publication, not acceptance. The baseline chart failure must pass the combined gate.
 
 ## Automated gate
 
@@ -25,7 +25,7 @@ Confirm `execution_evidence_matches` is true and verification status is `verifie
 
 ## Human checks
 
-- [ ] Review/merge the Member 1 and Member 2 commits; record the final combined commit.
+- [ ] Review the Member 1 and Member 2 commits, integrate them on the readiness branch and record the combined commit. Main merge remains a separate supervisor action.
 - [ ] Confirm no unexpected changes to frozen risk/model/input bytes.
 - [ ] Check ATL/DFW x 3/6/12h x reveal on/off in the actual browser.
 - [ ] Verify estimated capacity label, population, assumptions, support and uncertainty statement; no manufactured observed-AAR curve.
@@ -42,7 +42,7 @@ Confirm `execution_evidence_matches` is true and verification status is `verifie
 | Field | Value |
 |---|---|
 | Combined commit | Pending |
-| Member 1 publication run | Pending |
+| Member 1 publication run | `m1-capest-20261031T072310Z-a27968` (published; verify inclusion) |
 | Automated gate result/report | Pending combined run |
 | Final ZIP SHA256 | Pending combined release |
 | Browser review and reviewer | Pending |

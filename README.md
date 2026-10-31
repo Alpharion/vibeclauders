@@ -4,9 +4,9 @@ A local Streamlit decision-support prototype for an airport flow planner (Airbus
 
 ## Current delivery baseline
 
-Implementation baseline: `737b468` (31 October 2026); original delivery contribution: `24d834b`. The readiness follow-up adds automated release verification, a separate controller review briefing and judging instructions. It does not consume Member 1's new work or modify the frontend, producers or published models.
+Implementation baseline: `737b468` (31 October 2026); original delivery contribution: `24d834b`. The readiness follow-up adds automated release verification, a separate controller review briefing and judging instructions. Member 2 does not modify the frontend, producers or published models. Member 1 separately published commit `5805f89b8ae908b330e1e981536f52ae1725c2ee`; the readiness integration may combine that exact commit for verification. Publication is not supervisor acceptance.
 
-**Known frontend regression:** the new reporting-carrier chart uses an annotated Plotly line with a pandas Timestamp and can raise a TypeError. Member 1 owns the fix. A verified package of this baseline is **not a fully working demo release**. See `output/delivery/VERIFICATION.md` and `verification.json` for measured results and verification scope.
+**Baseline frontend regression:** `737b468` has a Plotly Timestamp annotation failure. Member 1's published commit includes a fix; only the current combined verification report establishes whether it passes in the release snapshot. See `output/delivery/VERIFICATION.md` and `verification.json` for measured results and verification scope.
 
 The interface on main includes Overview, Weather, Traffic, Compare and Evaluation tabs, historical/live modes, radar/connections/flagged-flow map layers, condition-frequency heatmaps and reporting-carrier traffic charts. Those source files are preserved by Member 2.
 
@@ -33,7 +33,7 @@ python -m streamlit run app.py
 | Normalised history | `artifacts/risk/normalized_metrics.parquet`, 1,891 rows | Sample cohorts; observed outcomes require reveal |
 | Reporting-carrier traffic | `artifacts/capacity/traffic_hourly.parquet`, 90,524 rows / 31 BTS months | Reconstructed schedules; not complete cutoff demand |
 | Observed-arrivals forecast | 30,465 rows in `throughput_forecast.parquet` | Forecast of reporting-carrier arrivals, not measured facility AAR; baseline UI does not load this forecast |
-| Capacity/AAR estimation | Separate optional `artifacts/capacity_estimate/` publication planned by Member 1 | Absent on this branch; user expects model estimation, not waiting for organiser labels |
+| Capacity/AAR estimation | Member 1 published optional `artifacts/capacity_estimate/` in `5805f89` | Reporting-carrier high-demand weather frontier; available only when that publication is included and validated, not facility AAR |
 | Recorded facility AAR | Existing `forecast.parquet` is empty | No independent AAR observations/RMSE; do not relabel throughput as observed AAR |
 | Queue, metering and flight rescheduling | Explicit unavailable decision; typed empty queue | Missing complete demand and cutoff backlog; no operational savings claimed |
 
@@ -62,11 +62,11 @@ python -m pytest tests/flight_risk tests/delivery -q --basetemp=tmp/release-test
 python -m tools.delivery.smoke_app
 ```
 
-Choose a fresh writable `--basetemp` per test invocation on restricted Windows environments. The full suite is `python -m pytest tests -q`; retain and report every failure, including the inherited chart defect. AppTest does not verify remote radar/basemap tiles.
+Choose a fresh writable `--basetemp` per test invocation on restricted Windows environments. The full suite is `python -m pytest tests -q`; retain and report every failure, without suppressing inherited or newly discovered failures. AppTest does not verify remote radar/basemap tiles.
 
 ## Work ownership and release
 
-Use `handover/sprint-30min/README.md`, the two member prompts, `INTERFACE.md` and `ACCEPTANCE.md`. Older plans and handoffs are historical checkpoints where they conflict with that clarified sprint. Member 1 owns model estimation plus its existing-panel integration; Member 2 owns packaging/evidence. Supervisors merge in either order, rerun combined checks and rebuild the final package. No estimate or frontend fix is claimed complete by this branch.
+Use `handover/sprint-30min/README.md`, the two member prompts, `INTERFACE.md` and `ACCEPTANCE.md`. Older plans and handoffs are historical checkpoints where they conflict with that clarified sprint. Member 1 owns model estimation plus its existing-panel integration; Member 2 owns packaging/evidence. Supervisors merge in either order, rerun combined checks and rebuild the final package. Member 1 reports the estimate and chart fix ready for review; combined automation, browser review and supervisor acceptance remain distinct gates.
 
 ## Controller review and judging
 
