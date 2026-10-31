@@ -1,0 +1,85 @@
+{
+  "member": 2,
+  "schema_version": "2.0",
+  "updated_at_utc": "2026-10-31T04:19:09.836008+00:00",
+  "state": "ready_for_review",
+  "completed": [
+    "Revised comprehensive plan and v2 shared contract",
+    "Prepared externally supervised Member 1 and Member 3 handoffs",
+    "Implemented and trained local schedule-risk model",
+    "Implemented optional verified-weather consumer and matched evaluation",
+    "Published normalized history and held-out failure evidence",
+    "Implemented gated arrival queue and review advisory",
+    "Verified CLI and 85 passing tests"
+  ],
+  "artifacts": [
+    {
+      "path": "artifacts/risk/manifest.json",
+      "run_id": "c5a9e8584a3843b29612df39d8de5f96",
+      "status": "partial"
+    },
+    {
+      "path": "artifacts/risk/decision_manifest.json",
+      "run_id": "29aa2c83afca4a70829e72696b07fc0e",
+      "status": "unavailable"
+    },
+    {
+      "path": "handover/member-2-results.md",
+      "status": "available"
+    }
+  ],
+  "commands_tested": [
+    "python -m src.flight_risk train",
+    "python -m src.flight_risk decide --airport KATL --asof 2025-07-15T12:00:00Z --window-hours 6",
+    "python -m src.flight_risk verify",
+    "python -m pytest tests/flight_risk -q --basetemp=tmp/pytest-member2-final-01"
+  ],
+  "test_results": [
+    {
+      "command": "python -m pytest tests/flight_risk -q --basetemp=tmp/pytest-member2-final-01",
+      "result": "passed",
+      "evidence": "85 passed, 1 non-fatal joblib Windows core-discovery warning; exit 0"
+    },
+    {
+      "command": "python -m src.flight_risk verify",
+      "result": "passed",
+      "evidence": "10,604 predictions / 3,537 flights / both airports / leads3,6,12; model partial, decisions unavailable; exit 0"
+    }
+  ],
+  "blockers": [
+    {
+      "requirement": "Weather-enhanced held-out evaluation",
+      "reason": "Verified external weather features absent",
+      "evidence": {
+        "status": "unavailable",
+        "reason": "No cutoff-safe engineered weather features supplied"
+      },
+      "next_action": "Publish accepted canonical/weather inputs and rerun train",
+      "owner": "Member 1, followed by Member 3 integration"
+    },
+    {
+      "requirement": "Supported arrival queues and AAR forecasting",
+      "reason": "Genuine capacity, complete arrival demand and cutoff backlog absent",
+      "evidence": [
+        "demand: verified input table unavailable",
+        "capacity: verified input table unavailable",
+        "initial_backlog: verified input table unavailable"
+      ],
+      "next_action": "Acquire real matched inputs or retain explicit unmet capability",
+      "owner": "Member 1"
+    },
+    {
+      "requirement": "End-to-end dashboard and reproducible dependency install",
+      "reason": "Existing UI uses v1 windows/readers; old requirements differ from verified runtime",
+      "evidence": "handover/agent-3-dashboard-integration.md",
+      "next_action": "Migrate UI, reconcile dependencies, verify and demonstrate",
+      "owner": "Member 3"
+    }
+  ],
+  "next_steps": [
+    "External supervisors launch/review Members 1 and 3 using prepared handoffs",
+    "Member 3 reruns Member 2 pipeline with accepted Member 1 outputs",
+    "Refresh results and perform final whole-project acceptance"
+  ],
+  "contract_changes_requested": []
+}

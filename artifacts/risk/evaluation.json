@@ -1,0 +1,917 @@
+{
+  "schema_version": "2.0",
+  "run_id": "c5a9e8584a3843b29612df39d8de5f96",
+  "generated_at_utc": "2026-10-31T04:17:39.539119+00:00",
+  "producer": "member-2",
+  "runtime": {
+    "python": "3.14.6",
+    "python_executable": "C:\\Users\\simho\\anaconda3\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "libraries": {
+      "numpy": "2.4.6",
+      "pandas": "3.0.3",
+      "scipy": "1.18.0",
+      "scikit-learn": "1.9.0",
+      "pyarrow": "23.0.1",
+      "joblib": "1.5.3"
+    }
+  },
+  "status": "partial",
+  "model": "hist_gradient_boosting",
+  "model_version": "member2-risk-v2",
+  "split": {
+    "train": [
+      "2023-01-01",
+      "2023-12-31"
+    ],
+    "validation": [
+      "2024-01-01",
+      "2024-12-31"
+    ],
+    "test": [
+      "2025-01-01",
+      "2025-07-31"
+    ],
+    "basis": "original airport-local flight date (FL_DATE/flight_date_local); whole dates stay together; any derived original dates disclosed"
+  },
+  "selection_end_utc": "2025-01-01T06:00:00+00:00",
+  "selection_rule": "Model: maximum validation average precision, then minimum Brier; threshold: maximum validation F1, ties use higher threshold",
+  "pr_auc_definition": "Average precision (non-interpolated PR summary)",
+  "calibration_method": "No post-hoc calibrator; held-out Brier and ten fixed reliability bins reported",
+  "threshold": 0.15743372204945102,
+  "candidate_validation": {
+    "logistic_regression": {
+      "n": 6346,
+      "severe_n": 688,
+      "precision": 0.1941683233929755,
+      "recall": 0.4258720930232558,
+      "f1": 0.26672735548475196,
+      "pr_auc": 0.18241575626301837,
+      "brier": 0.0944889096589072,
+      "confusion": {
+        "tn": 4442,
+        "fp": 1216,
+        "fn": 395,
+        "tp": 293
+      },
+      "threshold": 0.12858550995635384
+    },
+    "hist_gradient_boosting": {
+      "n": 6346,
+      "severe_n": 688,
+      "precision": 0.25816326530612244,
+      "recall": 0.36773255813953487,
+      "f1": 0.30335731414868106,
+      "pr_auc": 0.2112129165129189,
+      "brier": 0.0926186647545052,
+      "confusion": {
+        "tn": 4931,
+        "fp": 727,
+        "fn": 435,
+        "tp": 253
+      },
+      "threshold": 0.15743372204945102
+    }
+  },
+  "baseline": {
+    "name": "training-only airport/local-hour smoothed severe-delay rate",
+    "threshold": 0.09489696598904308,
+    "smoothing_prior_count": 20
+  },
+  "weather_model": {
+    "status": "unavailable",
+    "reason": "No cutoff-safe engineered weather features supplied"
+  },
+  "weather_matched_test": [],
+  "metrics": [
+    {
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "precision",
+      "value": 0.31862745098039214,
+      "baseline_value": 0.21510673234811165,
+      "n": 1763,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "recall",
+      "value": 0.2850877192982456,
+      "baseline_value": 0.5745614035087719,
+      "n": 1763,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "f1",
+      "value": 0.30092592592592593,
+      "baseline_value": 0.3130227001194743,
+      "n": 1763,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "pr_auc",
+      "value": 0.24956272099639965,
+      "baseline_value": 0.20811350054460193,
+      "n": 1763,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metric": "brier",
+      "value": 0.10818276612186437,
+      "baseline_value": 0.11182465446285499,
+      "n": 1763,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "precision",
+      "value": 0.31862745098039214,
+      "baseline_value": 0.21510673234811165,
+      "n": 1763,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "recall",
+      "value": 0.2850877192982456,
+      "baseline_value": 0.5745614035087719,
+      "n": 1763,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "f1",
+      "value": 0.30092592592592593,
+      "baseline_value": 0.3130227001194743,
+      "n": 1763,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "pr_auc",
+      "value": 0.24956272099639965,
+      "baseline_value": 0.20811350054460193,
+      "n": 1763,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metric": "brier",
+      "value": 0.10818276612186437,
+      "baseline_value": 0.11182465446285499,
+      "n": 1763,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "precision",
+      "value": 0.31862745098039214,
+      "baseline_value": 0.21510673234811165,
+      "n": 1759,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "recall",
+      "value": 0.2850877192982456,
+      "baseline_value": 0.5745614035087719,
+      "n": 1759,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "f1",
+      "value": 0.30092592592592593,
+      "baseline_value": 0.3130227001194743,
+      "n": 1759,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "pr_auc",
+      "value": 0.24959493931239513,
+      "baseline_value": 0.20815875193243022,
+      "n": 1759,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metric": "brier",
+      "value": 0.10842271676844424,
+      "baseline_value": 0.11207309660743128,
+      "n": 1759,
+      "severe_n": 228,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "precision",
+      "value": 0.2490118577075099,
+      "baseline_value": 0.19794871794871796,
+      "n": 1774,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "recall",
+      "value": 0.4772727272727273,
+      "baseline_value": 0.7310606060606061,
+      "n": 1774,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "f1",
+      "value": 0.32727272727272727,
+      "baseline_value": 0.3115415657788539,
+      "n": 1774,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "pr_auc",
+      "value": 0.22762587202434117,
+      "baseline_value": 0.19598833448292508,
+      "n": 1774,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metric": "brier",
+      "value": 0.12388078325754041,
+      "baseline_value": 0.12537718023628502,
+      "n": 1774,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "precision",
+      "value": 0.2490118577075099,
+      "baseline_value": 0.19794871794871796,
+      "n": 1774,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "recall",
+      "value": 0.4772727272727273,
+      "baseline_value": 0.7310606060606061,
+      "n": 1774,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "f1",
+      "value": 0.32727272727272727,
+      "baseline_value": 0.3115415657788539,
+      "n": 1774,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "pr_auc",
+      "value": 0.22762587202434117,
+      "baseline_value": 0.19598833448292508,
+      "n": 1774,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metric": "brier",
+      "value": 0.12388078325754041,
+      "baseline_value": 0.12537718023628502,
+      "n": 1774,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "precision",
+      "value": 0.2490118577075099,
+      "baseline_value": 0.19815195071868583,
+      "n": 1771,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "recall",
+      "value": 0.4772727272727273,
+      "baseline_value": 0.7310606060606061,
+      "n": 1771,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "f1",
+      "value": 0.32727272727272727,
+      "baseline_value": 0.31179321486268174,
+      "n": 1771,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "pr_auc",
+      "value": 0.227723783356992,
+      "baseline_value": 0.19605414263502302,
+      "n": 1771,
+      "severe_n": 264,
+      "split": "test"
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metric": "brier",
+      "value": 0.12408047570942195,
+      "baseline_value": 0.1255779904001638,
+      "n": 1771,
+      "severe_n": 264,
+      "split": "test"
+    }
+  ],
+  "detail": [
+    {
+      "airport": "KATL",
+      "horizon_hours": 3,
+      "metrics": {
+        "n": 1763,
+        "severe_n": 228,
+        "precision": 0.31862745098039214,
+        "recall": 0.2850877192982456,
+        "f1": 0.30092592592592593,
+        "pr_auc": 0.24956272099639965,
+        "brier": 0.10818276612186437,
+        "confusion": {
+          "tn": 1396,
+          "fp": 139,
+          "fn": 163,
+          "tp": 65
+        }
+      },
+      "baseline": {
+        "n": 1763,
+        "severe_n": 228,
+        "precision": 0.21510673234811165,
+        "recall": 0.5745614035087719,
+        "f1": 0.3130227001194743,
+        "pr_auc": 0.20811350054460193,
+        "brier": 0.11182465446285499,
+        "confusion": {
+          "tn": 1057,
+          "fp": 478,
+          "fn": 97,
+          "tp": 131
+        }
+      },
+      "reliability": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "n": 989,
+          "mean_probability": 0.061547006727225136,
+          "observed_severe_rate": 0.07583417593528817
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "n": 686,
+          "mean_probability": 0.13604350083054234,
+          "observed_severe_rate": 0.1836734693877551
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "n": 50,
+          "mean_probability": 0.22438035516526558,
+          "observed_severe_rate": 0.28
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "n": 11,
+          "mean_probability": 0.35531340646693077,
+          "observed_severe_rate": 0.2727272727272727
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "n": 21,
+          "mean_probability": 0.43673123817172665,
+          "observed_severe_rate": 0.3333333333333333
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "n": 6,
+          "mean_probability": 0.5306916308685052,
+          "observed_severe_rate": 0.5
+        }
+      ]
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 6,
+      "metrics": {
+        "n": 1763,
+        "severe_n": 228,
+        "precision": 0.31862745098039214,
+        "recall": 0.2850877192982456,
+        "f1": 0.30092592592592593,
+        "pr_auc": 0.24956272099639965,
+        "brier": 0.10818276612186437,
+        "confusion": {
+          "tn": 1396,
+          "fp": 139,
+          "fn": 163,
+          "tp": 65
+        }
+      },
+      "baseline": {
+        "n": 1763,
+        "severe_n": 228,
+        "precision": 0.21510673234811165,
+        "recall": 0.5745614035087719,
+        "f1": 0.3130227001194743,
+        "pr_auc": 0.20811350054460193,
+        "brier": 0.11182465446285499,
+        "confusion": {
+          "tn": 1057,
+          "fp": 478,
+          "fn": 97,
+          "tp": 131
+        }
+      },
+      "reliability": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "n": 989,
+          "mean_probability": 0.061547006727225136,
+          "observed_severe_rate": 0.07583417593528817
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "n": 686,
+          "mean_probability": 0.13604350083054234,
+          "observed_severe_rate": 0.1836734693877551
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "n": 50,
+          "mean_probability": 0.22438035516526558,
+          "observed_severe_rate": 0.28
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "n": 11,
+          "mean_probability": 0.35531340646693077,
+          "observed_severe_rate": 0.2727272727272727
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "n": 21,
+          "mean_probability": 0.43673123817172665,
+          "observed_severe_rate": 0.3333333333333333
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "n": 6,
+          "mean_probability": 0.5306916308685052,
+          "observed_severe_rate": 0.5
+        }
+      ]
+    },
+    {
+      "airport": "KATL",
+      "horizon_hours": 12,
+      "metrics": {
+        "n": 1759,
+        "severe_n": 228,
+        "precision": 0.31862745098039214,
+        "recall": 0.2850877192982456,
+        "f1": 0.30092592592592593,
+        "pr_auc": 0.24959493931239513,
+        "brier": 0.10842271676844424,
+        "confusion": {
+          "tn": 1392,
+          "fp": 139,
+          "fn": 163,
+          "tp": 65
+        }
+      },
+      "baseline": {
+        "n": 1759,
+        "severe_n": 228,
+        "precision": 0.21510673234811165,
+        "recall": 0.5745614035087719,
+        "f1": 0.3130227001194743,
+        "pr_auc": 0.20815875193243022,
+        "brier": 0.11207309660743128,
+        "confusion": {
+          "tn": 1053,
+          "fp": 478,
+          "fn": 97,
+          "tp": 131
+        }
+      },
+      "reliability": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "n": 985,
+          "mean_probability": 0.061588636889564,
+          "observed_severe_rate": 0.07614213197969544
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "n": 686,
+          "mean_probability": 0.13604350083054234,
+          "observed_severe_rate": 0.1836734693877551
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "n": 50,
+          "mean_probability": 0.22438035516526558,
+          "observed_severe_rate": 0.28
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "n": 11,
+          "mean_probability": 0.35531340646693077,
+          "observed_severe_rate": 0.2727272727272727
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "n": 21,
+          "mean_probability": 0.43673123817172665,
+          "observed_severe_rate": 0.3333333333333333
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "n": 6,
+          "mean_probability": 0.5306916308685052,
+          "observed_severe_rate": 0.5
+        }
+      ]
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 3,
+      "metrics": {
+        "n": 1774,
+        "severe_n": 264,
+        "precision": 0.2490118577075099,
+        "recall": 0.4772727272727273,
+        "f1": 0.32727272727272727,
+        "pr_auc": 0.22762587202434117,
+        "brier": 0.12388078325754041,
+        "confusion": {
+          "tn": 1130,
+          "fp": 380,
+          "fn": 138,
+          "tp": 126
+        }
+      },
+      "baseline": {
+        "n": 1774,
+        "severe_n": 264,
+        "precision": 0.19794871794871796,
+        "recall": 0.7310606060606061,
+        "f1": 0.3115415657788539,
+        "pr_auc": 0.19598833448292508,
+        "brier": 0.12537718023628502,
+        "confusion": {
+          "tn": 728,
+          "fp": 782,
+          "fn": 71,
+          "tp": 193
+        }
+      },
+      "reliability": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "n": 960,
+          "mean_probability": 0.056206720956967854,
+          "observed_severe_rate": 0.1
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "n": 461,
+          "mean_probability": 0.14318700420495553,
+          "observed_severe_rate": 0.1648590021691974
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "n": 296,
+          "mean_probability": 0.2407250748771177,
+          "observed_severe_rate": 0.2702702702702703
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "n": 56,
+          "mean_probability": 0.333843921928354,
+          "observed_severe_rate": 0.21428571428571427
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "n": 1,
+          "mean_probability": 0.45241915454668913,
+          "observed_severe_rate": 0.0
+        }
+      ]
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 6,
+      "metrics": {
+        "n": 1774,
+        "severe_n": 264,
+        "precision": 0.2490118577075099,
+        "recall": 0.4772727272727273,
+        "f1": 0.32727272727272727,
+        "pr_auc": 0.22762587202434117,
+        "brier": 0.12388078325754041,
+        "confusion": {
+          "tn": 1130,
+          "fp": 380,
+          "fn": 138,
+          "tp": 126
+        }
+      },
+      "baseline": {
+        "n": 1774,
+        "severe_n": 264,
+        "precision": 0.19794871794871796,
+        "recall": 0.7310606060606061,
+        "f1": 0.3115415657788539,
+        "pr_auc": 0.19598833448292508,
+        "brier": 0.12537718023628502,
+        "confusion": {
+          "tn": 728,
+          "fp": 782,
+          "fn": 71,
+          "tp": 193
+        }
+      },
+      "reliability": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "n": 960,
+          "mean_probability": 0.056206720956967854,
+          "observed_severe_rate": 0.1
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "n": 461,
+          "mean_probability": 0.14318700420495553,
+          "observed_severe_rate": 0.1648590021691974
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "n": 296,
+          "mean_probability": 0.2407250748771177,
+          "observed_severe_rate": 0.2702702702702703
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "n": 56,
+          "mean_probability": 0.333843921928354,
+          "observed_severe_rate": 0.21428571428571427
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "n": 1,
+          "mean_probability": 0.45241915454668913,
+          "observed_severe_rate": 0.0
+        }
+      ]
+    },
+    {
+      "airport": "KDFW",
+      "horizon_hours": 12,
+      "metrics": {
+        "n": 1771,
+        "severe_n": 264,
+        "precision": 0.2490118577075099,
+        "recall": 0.4772727272727273,
+        "f1": 0.32727272727272727,
+        "pr_auc": 0.227723783356992,
+        "brier": 0.12408047570942195,
+        "confusion": {
+          "tn": 1127,
+          "fp": 380,
+          "fn": 138,
+          "tp": 126
+        }
+      },
+      "baseline": {
+        "n": 1771,
+        "severe_n": 264,
+        "precision": 0.19815195071868583,
+        "recall": 0.7310606060606061,
+        "f1": 0.31179321486268174,
+        "pr_auc": 0.19605414263502302,
+        "brier": 0.1255779904001638,
+        "confusion": {
+          "tn": 726,
+          "fp": 781,
+          "fn": 71,
+          "tp": 193
+        }
+      },
+      "reliability": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "n": 958,
+          "mean_probability": 0.05621963962177766,
+          "observed_severe_rate": 0.10020876826722339
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "n": 460,
+          "mean_probability": 0.14326503420355827,
+          "observed_severe_rate": 0.16521739130434782
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "n": 296,
+          "mean_probability": 0.2407250748771177,
+          "observed_severe_rate": 0.2702702702702703
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "n": 56,
+          "mean_probability": 0.333843921928354,
+          "observed_severe_rate": 0.21428571428571427
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "n": 1,
+          "mean_probability": 0.45241915454668913,
+          "observed_severe_rate": 0.0
+        }
+      ]
+    }
+  ],
+  "data_audit": {
+    "source_id": "challenge-flight-sample",
+    "input_rows": 148273,
+    "target_departures": 16151,
+    "invalid_schedule_or_key_rows": 0,
+    "duplicate_key_rows": 0,
+    "invalid_or_naive_utc_rows": 0,
+    "original_flight_date_derived_rows": 0,
+    "unique_valid_schedule_rows": 16151,
+    "cancelled_rows": 204,
+    "unknown_cancellation_rows": 0,
+    "noncancelled_missing_label_rows": 0,
+    "cancelled_with_delay_label_rows": 7,
+    "eligible_labelled_rows": 15947,
+    "split_rows": {
+      "test": 3537,
+      "train": 6064,
+      "validation": 6346
+    },
+    "label_rule": "cancelled == 0 and DEP_DELAY is known; severe iff DEP_DELAY > 45",
+    "schedule_assumption": "Reconstructed historical schedule, not an archived schedule snapshot; publication/revision timing is unverified."
+  },
+  "prediction_rows": 10604,
+  "unique_test_flights": 3537,
+  "excluded_test_horizon_rows_before_selection_end": 7,
+  "limitations": [
+    "Flight source coverage is retained; sample predictions are not complete airport demand.",
+    "Historical schedules are reconstructed; archived schedule publication/revision timing is not verified.",
+    "Training/validation labels are retrospective; historical BTS publication latency is not established.",
+    "Uncalibrated model probabilities: no post-hoc calibrator fitted; Brier score and held-out reliability bins quantify calibration.",
+    "No delay minutes, fuel savings, capacity or causal intervention benefits are inferred from delay probabilities.",
+    "Schedule-only probabilities do not model approaching weather and repeat across horizons; horizon labels identify prediction cutoffs, not measured lead-time sensitivity."
+  ],
+  "sources": [
+    {
+      "path": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\data\\weather\\Flight_Data_With_Weather_Final.csv",
+      "sha256": "9a9d80659da6e9833c8360583476d71e42937ccf5e42870902b90b57c2c99ba7",
+      "size_bytes": 63972945
+    }
+  ],
+  "missing_inputs": [
+    "sufficient_cutoff_safe_weather_features_for_train_validation_test"
+  ],
+  "capabilities": {
+    "schedule_risk": {
+      "status": "available",
+      "test_rows": 10604
+    },
+    "weather_risk": {
+      "status": "unavailable",
+      "weather_enhanced_prediction_rows": 0,
+      "reason": "No cutoff-safe engineered weather features supplied"
+    },
+    "weather_model_evaluation": {
+      "status": "unavailable",
+      "matched_test_cohorts": 0
+    },
+    "normalized_observed_delays": {
+      "status": "available",
+      "requires_outcome_reveal": true
+    }
+  },
+  "failure_case": {
+    "flight_id": "bfd0e37ba4944076cf85",
+    "airport": "KDFW",
+    "horizon_hours": 3,
+    "asof_utc": "2025-01-13T23:00:00+00:00",
+    "probability": 0.17016626034950968,
+    "threshold": 0.15743372204945102,
+    "observed_severe_delay": 0,
+    "observed_dep_delay_min": 41.0,
+    "requires_outcome_reveal": true,
+    "explanation": "Held-out misclassification; model uses limited schedule patterns and any verified weather available. No causal diagnosis is inferred."
+  },
+  "artifact_row_counts": {
+    "predictions.parquet": 10604,
+    "normalized_metrics.parquet": 1891,
+    "evaluation.json": null,
+    "model.joblib": null
+  }
+}

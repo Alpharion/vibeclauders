@@ -1,0 +1,32 @@
+{
+  "schema_version": "2.0",
+  "status": "unavailable",
+  "asof_utc": "2025-07-15T12:00:00+00:00",
+  "airport": "KATL",
+  "horizon_hours": 6,
+  "recommendations": [],
+  "missing_inputs": [
+    "demand: verified input table unavailable",
+    "capacity: verified input table unavailable",
+    "initial_backlog: verified input table unavailable"
+  ],
+  "limitations": [
+    "Discrete one-hour arrival queue: Q_next = max(0, Q_start + demand - floor(AAR)).",
+    "AAR serves arrivals only; departure capacity and joint-runway constraints are not modelled.",
+    "Demand is newly due arrivals in each interval; initial backlog is separate and must not be counted again.",
+    "Queue order, within-hour timing, aircraft eligibility and individual delay are not modelled.",
+    "Backlog area sums end-of-hour backlog; it is not measured delay or an intervention benefit.",
+    "Advisories require a qualified controller's review; no operational instructions are executed.",
+    "Flight rescheduling is withheld: no verified flight-state, eligibility and allocation comparison is supplied.",
+    "No total-delay, fuel, diversion or causal benefit improvement is claimed."
+  ],
+  "rescheduling": {
+    "status": "unavailable",
+    "missing_inputs": [
+      "verified flight states and eligibility at cutoff",
+      "complete constrained flight allocation comparison"
+    ]
+  },
+  "run_id": "29aa2c83afca4a70829e72696b07fc0e",
+  "generated_at_utc": "2026-10-31T04:17:48.907627+00:00"
+}

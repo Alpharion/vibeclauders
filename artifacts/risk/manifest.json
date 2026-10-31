@@ -1,0 +1,120 @@
+{
+  "schema_version": "2.0",
+  "run_id": "c5a9e8584a3843b29612df39d8de5f96",
+  "generated_at_utc": "2026-10-31T04:17:39.539119+00:00",
+  "status": "partial",
+  "producer": "member-2",
+  "runtime": {
+    "python": "3.14.6",
+    "python_executable": "C:\\Users\\simho\\anaconda3\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "libraries": {
+      "numpy": "2.4.6",
+      "pandas": "3.0.3",
+      "scipy": "1.18.0",
+      "scikit-learn": "1.9.0",
+      "pyarrow": "23.0.1",
+      "joblib": "1.5.3"
+    }
+  },
+  "artifact_row_counts": {
+    "predictions.parquet": 10604,
+    "normalized_metrics.parquet": 1891,
+    "evaluation.json": null,
+    "model.joblib": null
+  },
+  "model_version": "member2-risk-v2",
+  "sources": [
+    {
+      "path": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\data\\weather\\Flight_Data_With_Weather_Final.csv",
+      "sha256": "9a9d80659da6e9833c8360583476d71e42937ccf5e42870902b90b57c2c99ba7",
+      "size_bytes": 63972945
+    }
+  ],
+  "selection_end_utc": "2025-01-01T06:00:00+00:00",
+  "airports": [
+    "KATL",
+    "KDFW"
+  ],
+  "horizons": [
+    3,
+    6,
+    12
+  ],
+  "prediction_rows": 10604,
+  "feature_allowlist": [
+    "month",
+    "day_of_week",
+    "local_hour",
+    "scheduled_duration_min",
+    "distance_miles",
+    "airport",
+    "carrier",
+    "dest"
+  ],
+  "weather_feature_allowlist": [],
+  "artifacts": [
+    "model.joblib",
+    "predictions.parquet",
+    "normalized_metrics.parquet",
+    "evaluation.json"
+  ],
+  "limitations": [
+    "Flight source coverage is retained; sample predictions are not complete airport demand.",
+    "Historical schedules are reconstructed; archived schedule publication/revision timing is not verified.",
+    "Training/validation labels are retrospective; historical BTS publication latency is not established.",
+    "Uncalibrated model probabilities: no post-hoc calibrator fitted; Brier score and held-out reliability bins quantify calibration.",
+    "No delay minutes, fuel savings, capacity or causal intervention benefits are inferred from delay probabilities.",
+    "Schedule-only probabilities do not model approaching weather and repeat across horizons; horizon labels identify prediction cutoffs, not measured lead-time sensitivity."
+  ],
+  "missing_inputs": [
+    "sufficient_cutoff_safe_weather_features_for_train_validation_test"
+  ],
+  "capabilities": {
+    "schedule_risk": {
+      "status": "available",
+      "test_rows": 10604
+    },
+    "weather_risk": {
+      "status": "unavailable",
+      "weather_enhanced_prediction_rows": 0,
+      "reason": "No cutoff-safe engineered weather features supplied"
+    },
+    "weather_model_evaluation": {
+      "status": "unavailable",
+      "matched_test_cohorts": 0
+    },
+    "normalized_observed_delays": {
+      "status": "available",
+      "requires_outcome_reveal": true
+    }
+  },
+  "artifact_hashes": {
+    "model.joblib": "08f39f90ca5638b8755707163bb744157965661565e502e0af11c58415335022",
+    "predictions.parquet": "3dddf574411eca51e2be298b0f34168bcf4bf49dd2b9c1ddb2ad438f29002556",
+    "normalized_metrics.parquet": "44a595975f5033e17f8b6aa3fbd9239e68b546eea65022dd8968310547191a77",
+    "evaluation.json": "243c106517eb4cc58c71f64e47773a1103fb79d39fbfbfc58efc3619b4cd3008"
+  },
+  "artifact_records": [
+    {
+      "path": "model.joblib",
+      "sha256": "08f39f90ca5638b8755707163bb744157965661565e502e0af11c58415335022",
+      "row_count": null
+    },
+    {
+      "path": "predictions.parquet",
+      "sha256": "3dddf574411eca51e2be298b0f34168bcf4bf49dd2b9c1ddb2ad438f29002556",
+      "row_count": 10604
+    },
+    {
+      "path": "normalized_metrics.parquet",
+      "sha256": "44a595975f5033e17f8b6aa3fbd9239e68b546eea65022dd8968310547191a77",
+      "row_count": 1891
+    },
+    {
+      "path": "evaluation.json",
+      "sha256": "243c106517eb4cc58c71f64e47773a1103fb79d39fbfbfc58efc3619b4cd3008",
+      "row_count": null
+    }
+  ]
+}
