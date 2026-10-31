@@ -47,3 +47,22 @@ def test_other_key_is_not_substituted(bundle):
 def test_missing_publication_gives_reason(tmp_path):
     brief, text, reason = outputs.review_brief(load_bundle(tmp_path), snap())
     assert brief is None and text is None and reason
+
+
+def test_compare_shows_incoming_figures_when_no_departure_forecast(monkeypatch):
+    """Regression: totals needed both directions, so 'Actual minus forecast' was always blank."""
+    import re
+
+    from streamlit.testing.v1 import AppTest
+    from src.dashboard.app import cached_bundle
+
+    monkeypatch.setenv("DASHBOARD_DATA_ROOT", str(ROOT))
+    cached_bundle.clear()
+    app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=180).run()
+    app.session_state["tab"] = "Compare"
+    app.session_state["reveal"] = True
+    app.session_state["preview-held"] = True
+    app.run()
+    assert not app.exception
+    text = re.sub(r"<[^>]+>", " ", "\n".join(str(e.value) for e in app.markdown))
+    assert re.search(r"Incoming forecast\s*\d", text) and re.search(r"Actual minus forecast\s*[−+]?\d", text)
