@@ -115,3 +115,5 @@ def render_readiness(bundle, snapshot=None):
 
     from src.dashboard.processing_evidence import render_processing_evidence
     render_processing_evidence(bundle)
+    from src.dashboard.sprint_evidence import render_sprint_evidence
+    render_sprint_evidence(bundle)

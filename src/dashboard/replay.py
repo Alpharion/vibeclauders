@@ -279,6 +279,8 @@ def weather_tab(bundle: Bundle, snapshot: Snapshot) -> None:
     if snapshot.airport.heading is None:
         row, feature_reason = None, f"{snapshot.airport.icao} has no configured runway heading, so runway-relative wind is refused."
     probability_tiles(row, probabilities, snapshot, feature_reason, reason)
+    from src.dashboard.weather_actions import render_weather_actions
+    render_weather_actions(row, snapshot)
     weather = bundle.table("weather")
     histories = {}
     if weather is not None:

@@ -116,7 +116,8 @@ def runtime_fingerprint(files: dict[str, bytes]) -> str:
     """Bind execution evidence to code, tests, dependencies and runtime inputs, excluding prose."""
     selected = {k: digest(v) for k, v in sorted(files.items()) if
                 k.startswith(("src/", "tests/", "tools/delivery/", "artifacts/", "data/", ".streamlit/"))
-                or k in {"app.py", "requirements.txt", "requirements-observed.txt", "output/delivery/build-package.py"}}
+                or k in {"app.py", "requirements.txt", "requirements-observed.txt", "output/delivery/build-package.py",
+                         "handover/full-bts-model-evidence.json"}}
     return digest(json_bytes(selected))
 
 
