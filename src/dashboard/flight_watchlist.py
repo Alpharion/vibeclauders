@@ -11,7 +11,7 @@ def flight_cards(rows):
         probability = row.get("probability_severe_delay")
         threshold = row.get("threshold")
         known = pd.notna(probability)
-        tone = "unscored" if not known else "red" if probability >= .5 else "amber" if probability >= .25 else "cyan"
+        tone = "unscored" if not known else "red" if probability >= .5 else "amber" if probability > .20 else "cyan"
         value = f"{probability:.1%}" if known else "Not scored"
         status = "REVIEW" if known and pd.notna(threshold) and probability >= threshold else "Below threshold" if known and pd.notna(threshold) else "Threshold unavailable"
         name = row.get("Flight", row.get("flight_id", "Unknown flight"))
@@ -45,7 +45,7 @@ def render(bundle, snapshot):
         if "carrier" in rows and "flight_number" in rows:
             rows["Flight"] = rows["carrier"].astype("string").fillna("") + " " + rows["flight_number"].astype("string").fillna("")
         theme.html(flight_cards(rows))
-        st.caption("Display colours: cyan <25%, amber 25–<50%, red ≥50%, grey unscored. These visual bands are not calibrated risk categories; REVIEW uses each model's published threshold, even on a cyan card.")
+        st.caption("Display colours: cyan ≤20%, amber >20% and <50%, red ≥50%, grey unscored. These visual bands are not calibrated risk categories; REVIEW uses each model's published threshold, even on a cyan card.")
         names = {"dest":"Destination", "scheduled_dep_utc":"Departure UTC", "probability_severe_delay":"Delay >45 min probability", "threshold":"Review threshold", "flight_id":"Flight ID"}
         columns = [c for c in ["Flight", "dest", "scheduled_dep_utc", "Review status", "probability_severe_delay", "threshold", "flight_id"] if c in rows]
         with st.expander("Flight watchlist details"):
