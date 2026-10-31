@@ -1,11 +1,11 @@
 {
   "schema_version": "2.0",
-  "run_id": "m1-20261031T054026Z-670c8c",
-  "generated_at_utc": "2026-10-31T05:42:01+00:00",
+  "run_id": "m1-20261031T060631Z-6c6e38",
+  "generated_at_utc": "2026-10-31T06:10:40+00:00",
   "producer": "member-1/data_capacity",
   "status": "partial",
-  "started_at_utc": "2026-10-31T05:40:26+00:00",
-  "command": "python -m src.data_capacity run --cache-only --bts-months 2023-01",
+  "started_at_utc": "2026-10-31T06:06:31+00:00",
+  "command": "python -m src.data_capacity run --cache-only",
   "parameters": {
     "airports": [
       "KATL",
@@ -38,17 +38,24 @@
       "schema_version": "2.0"
     },
     {
+      "name": "traffic_hourly",
+      "path": "artifacts/capacity/traffic_hourly.parquet",
+      "rows": 90524,
+      "sha256": "ed903c1acb568a3a398f49e4fb4d1cc0a52253e5a359df7102b100b3ee404b2f",
+      "schema_version": "2.0"
+    },
+    {
       "name": "weather",
       "path": "artifacts/capacity/weather.parquet",
       "rows": 147002,
-      "sha256": "88204511f0dcb8f73b0a7911b5419c9237ec04582e92bfb1f0c66ec6f663193d",
+      "sha256": "ffd60bf4b6c9d8e62ee2c5912a7f987b42a88fbbe809a5d0c5a78d238ac2e11c",
       "schema_version": "2.0"
     },
     {
       "name": "weather_features",
       "path": "artifacts/capacity/weather_features.parquet",
       "rows": 135786,
-      "sha256": "414cda4fe9ec9766d6cf2ec417c6400e3e517fd372181f382dd884d0e6146169",
+      "sha256": "b768b5a3beb4915374fd4442431f7c354715c1cdf2223849e23c6b34c3b8ba91",
       "schema_version": "2.0"
     },
     {
@@ -62,40 +69,41 @@
       "name": "forecast",
       "path": "artifacts/capacity/forecast.parquet",
       "rows": 0,
-      "sha256": "95d1492700f05d681f72dc91f319958cec577f53b81f59e83edbcdecf67fc7c0",
+      "sha256": "676f034938806a57788c1d1e4849eea772c83dea63d9d39c30f878ec86287e14",
       "schema_version": "2.0"
     },
     {
       "name": "evaluation",
       "path": "artifacts/capacity/evaluation.json",
       "rows": null,
-      "sha256": "aa5a866617aaa0aca5df7eb4ce1d6d445a79836596453ebeea1941d421f229c9",
+      "sha256": "88fe2f648897ddbe2415c48721ce424c59b87828824a62fa34c9fe03a3afcca3",
       "schema_version": "2.0"
     },
     {
       "name": "data_access",
       "path": "artifacts/capacity/data_access.json",
       "rows": null,
-      "sha256": "c1649de8dabf00118a7971d39f56234cc2d514e3163f75c6748a9fa2de9a6a20",
+      "sha256": "703493e3f2b5f30497193df98510f2bd8cda424e5ef9bed9d165dd8ccc7ef61a",
       "schema_version": "2.0"
     },
     {
       "name": "provenance",
       "path": "data/processed/provenance.json",
       "rows": null,
-      "sha256": "af5c1a95004516e467687eaf461be3f261f71baf907ca2813577ac475b941562",
+      "sha256": "43b11415ced59785f5871eadaeb5d434aac0f29e37d8404db35a590eb5c680bc",
       "schema_version": "2.0"
     }
   ],
   "artifact_hashes": {
     "../../data/processed/flights.parquet": "6e446d7c1948333d122bb1fb64b6dd5546537c343e3defbfcf4b07c83ee9b4de",
-    "weather.parquet": "88204511f0dcb8f73b0a7911b5419c9237ec04582e92bfb1f0c66ec6f663193d",
-    "weather_features.parquet": "414cda4fe9ec9766d6cf2ec417c6400e3e517fd372181f382dd884d0e6146169",
+    "traffic_hourly.parquet": "ed903c1acb568a3a398f49e4fb4d1cc0a52253e5a359df7102b100b3ee404b2f",
+    "weather.parquet": "ffd60bf4b6c9d8e62ee2c5912a7f987b42a88fbbe809a5d0c5a78d238ac2e11c",
+    "weather_features.parquet": "b768b5a3beb4915374fd4442431f7c354715c1cdf2223849e23c6b34c3b8ba91",
     "../../data/processed/storm_events.parquet": "526cae770223b82dd52fd38aa421afac00938b39f2931d538127d71d73718d04",
-    "forecast.parquet": "95d1492700f05d681f72dc91f319958cec577f53b81f59e83edbcdecf67fc7c0",
-    "evaluation.json": "aa5a866617aaa0aca5df7eb4ce1d6d445a79836596453ebeea1941d421f229c9",
-    "data_access.json": "c1649de8dabf00118a7971d39f56234cc2d514e3163f75c6748a9fa2de9a6a20",
-    "../../data/processed/provenance.json": "af5c1a95004516e467687eaf461be3f261f71baf907ca2813577ac475b941562"
+    "forecast.parquet": "676f034938806a57788c1d1e4849eea772c83dea63d9d39c30f878ec86287e14",
+    "evaluation.json": "88fe2f648897ddbe2415c48721ce424c59b87828824a62fa34c9fe03a3afcca3",
+    "data_access.json": "703493e3f2b5f30497193df98510f2bd8cda424e5ef9bed9d165dd8ccc7ef61a",
+    "../../data/processed/provenance.json": "43b11415ced59785f5871eadaeb5d434aac0f29e37d8404db35a590eb5c680bc"
   },
   "split": {
     "basis": "airport-local date",
@@ -296,6 +304,129 @@
     "eligible_flights": {
       "status": "unavailable",
       "reason": "No as-of flight state (airborne/ground) data."
+    },
+    "traffic_hourly": {
+      "status": "available",
+      "months": [
+        "2023-01",
+        "2023-02",
+        "2023-03",
+        "2023-04",
+        "2023-05",
+        "2023-06",
+        "2023-07",
+        "2023-08",
+        "2023-09",
+        "2023-10",
+        "2023-11",
+        "2023-12",
+        "2024-01",
+        "2024-02",
+        "2024-03",
+        "2024-04",
+        "2024-05",
+        "2024-06",
+        "2024-07",
+        "2024-08",
+        "2024-09",
+        "2024-10",
+        "2024-11",
+        "2024-12",
+        "2025-01",
+        "2025-02",
+        "2025-03",
+        "2025-04",
+        "2025-05",
+        "2025-06",
+        "2025-07"
+      ],
+      "flight_audit": {
+        "input_rows": 3255141,
+        "flight_key_impl": "src.shared.flight_key",
+        "excluded_out_of_date_range": 0,
+        "excluded_no_selected_airport": 0,
+        "rows_touching_selected_airports": 3255141,
+        "excluded_invalid_schedule_fields": 2,
+        "excluded_nonexistent_local_time": 0,
+        "excluded_unresolved_arrival_date": 41,
+        "flagged_dst_ambiguous": 5,
+        "flagged_crs_2400": 0,
+        "collapsed_exact_duplicates": 0,
+        "excluded_conflicting_duplicate_keys": 0,
+        "published_rows": 3255098,
+        "unknown_cancellation_status": 0,
+        "missing_dep_delay_noncancelled": 0,
+        "coverage_by_airport": {
+          "ATL": {
+            "departures": 860406,
+            "arrivals": 860267,
+            "departures_by_year": {
+              "2023": 336463,
+              "2024": 341910,
+              "2025": 182033
+            },
+            "arrivals_by_year": {
+              "2023": 336450,
+              "2024": 341801,
+              "2025": 182016
+            }
+          },
+          "DFW": {
+            "departures": 783963,
+            "arrivals": 783907,
+            "departures_by_year": {
+              "2023": 285243,
+              "2024": 313582,
+              "2025": 185138
+            },
+            "arrivals_by_year": {
+              "2023": 285217,
+              "2024": 313567,
+              "2025": 185123
+            }
+          }
+        },
+        "coverage_note": "Sampled flights; not complete airport demand. Movements: a flight between two selected airports counts once per airport."
+      },
+      "by_airport": {
+        "KATL": {
+          "arrival": {
+            "hours": 22631,
+            "scheduled_total": 860227,
+            "actual_total": 848808,
+            "median_scheduled_per_hour": 45.0,
+            "max_scheduled_per_hour": 112
+          },
+          "departure": {
+            "hours": 22631,
+            "scheduled_total": 860406,
+            "actual_total": 851074,
+            "median_scheduled_per_hour": 45.0,
+            "max_scheduled_per_hour": 96
+          }
+        },
+        "KDFW": {
+          "arrival": {
+            "hours": 22631,
+            "scheduled_total": 783882,
+            "actual_total": 763764,
+            "median_scheduled_per_hour": 31.0,
+            "max_scheduled_per_hour": 98
+          },
+          "departure": {
+            "hours": 22631,
+            "scheduled_total": 783963,
+            "actual_total": 767406,
+            "median_scheduled_per_hour": 38.0,
+            "max_scheduled_per_hour": 100
+          }
+        }
+      },
+      "early_spill_masked_hours": 2,
+      "failed_months": [],
+      "coverage": "reporting_carriers",
+      "population": "BTS On-Time Reporting Carrier On-Time Performance: domestic scheduled flights of reporting carriers; excludes non-reporting airlines, cargo, general aviation, military and most international flights",
+      "use": "retrospective traffic context; never queue demand, never AAR"
     },
     "storm_annotation": {
       "status": "available",
