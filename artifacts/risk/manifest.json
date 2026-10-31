@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
-  "run_id": "b307f1c50ba24af3b2b01b4b060c93de",
-  "generated_at_utc": "2026-10-31T06:15:45.380065+00:00",
+  "run_id": "9dbee2fd44d94d96b70e275c6d9d9f11",
+  "generated_at_utc": "2026-10-31T06:33:11.422400+00:00",
   "status": "partial",
   "producer": "member-2",
   "runtime": {
@@ -26,17 +26,17 @@
   "model_version": "member2-risk-v2",
   "sources": [
     {
-      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\b11f5103991946449c7c0c7d20aa8cbb\\2-flights.parquet",
+      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\d388c78a3eb6443a8b17d00ec7a3b2be\\1-flights.parquet",
       "sha256": "6e446d7c1948333d122bb1fb64b6dd5546537c343e3defbfcf4b07c83ee9b4de",
       "size_bytes": 2472318
     },
     {
-      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\b11f5103991946449c7c0c7d20aa8cbb\\1-weather_features.parquet",
-      "sha256": "414cda4fe9ec9766d6cf2ec417c6400e3e517fd372181f382dd884d0e6146169",
+      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\d388c78a3eb6443a8b17d00ec7a3b2be\\2-weather_features.parquet",
+      "sha256": "b768b5a3beb4915374fd4442431f7c354715c1cdf2223849e23c6b34c3b8ba91",
       "size_bytes": 5374413
     },
     {
-      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\b11f5103991946449c7c0c7d20aa8cbb\\0-storm_events.parquet",
+      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\d388c78a3eb6443a8b17d00ec7a3b2be\\0-storm_events.parquet",
       "sha256": "526cae770223b82dd52fd38aa421afac00938b39f2931d538127d71d73718d04",
       "size_bytes": 46529
     }
@@ -123,20 +123,20 @@
     }
   },
   "artifact_hashes": {
-    "model.joblib": "ef48eb2504f1baabaa0c3a3b5a473a0b8426aed265de93e4eea0bc8413112ebd",
-    "predictions.parquet": "e631247f6d9e814c1c9b32e1a54176fe1657ce94112091c37d47e6f558fbcb7a",
+    "model.joblib": "6b8a0e6114da6b68768c7d0542f1485e152a2ac69f95e9a604059e700ae0f0f5",
+    "predictions.parquet": "abcd9da2ac915b0e895b608048a91828c021436bdbf65a633301c299c627d865",
     "normalized_metrics.parquet": "7432b6e328c9f2a7070d755e7ef15c2a1fa33640c04b8718da855f8f6c5dec39",
-    "evaluation.json": "46c7cd4d3d1384f1f18da0351241fc9580d0694759dedc66572c00943c07a91e"
+    "evaluation.json": "40c535c3b21b3ddabda8598b679a3e2abc1a527040c1b3d7b2b65421151a55f9"
   },
   "artifact_records": [
     {
       "path": "model.joblib",
-      "sha256": "ef48eb2504f1baabaa0c3a3b5a473a0b8426aed265de93e4eea0bc8413112ebd",
+      "sha256": "6b8a0e6114da6b68768c7d0542f1485e152a2ac69f95e9a604059e700ae0f0f5",
       "row_count": null
     },
     {
       "path": "predictions.parquet",
-      "sha256": "e631247f6d9e814c1c9b32e1a54176fe1657ce94112091c37d47e6f558fbcb7a",
+      "sha256": "abcd9da2ac915b0e895b608048a91828c021436bdbf65a633301c299c627d865",
       "row_count": 10604
     },
     {
@@ -146,7 +146,7 @@
     },
     {
       "path": "evaluation.json",
-      "sha256": "46c7cd4d3d1384f1f18da0351241fc9580d0694759dedc66572c00943c07a91e",
+      "sha256": "40c535c3b21b3ddabda8598b679a3e2abc1a527040c1b3d7b2b65421151a55f9",
       "row_count": null
     }
   ]

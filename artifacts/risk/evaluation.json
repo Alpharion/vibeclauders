@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
-  "run_id": "b307f1c50ba24af3b2b01b4b060c93de",
-  "generated_at_utc": "2026-10-31T06:15:45.380065+00:00",
+  "run_id": "9dbee2fd44d94d96b70e275c6d9d9f11",
+  "generated_at_utc": "2026-10-31T06:33:11.422400+00:00",
   "producer": "member-2",
   "runtime": {
     "python": "3.14.6",
@@ -1165,17 +1165,17 @@
   ],
   "sources": [
     {
-      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\b11f5103991946449c7c0c7d20aa8cbb\\2-flights.parquet",
+      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\d388c78a3eb6443a8b17d00ec7a3b2be\\1-flights.parquet",
       "sha256": "6e446d7c1948333d122bb1fb64b6dd5546537c343e3defbfcf4b07c83ee9b4de",
       "size_bytes": 2472318
     },
     {
-      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\b11f5103991946449c7c0c7d20aa8cbb\\1-weather_features.parquet",
-      "sha256": "414cda4fe9ec9766d6cf2ec417c6400e3e517fd372181f382dd884d0e6146169",
+      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\d388c78a3eb6443a8b17d00ec7a3b2be\\2-weather_features.parquet",
+      "sha256": "b768b5a3beb4915374fd4442431f7c354715c1cdf2223849e23c6b34c3b8ba91",
       "size_bytes": 5374413
     },
     {
-      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\b11f5103991946449c7c0c7d20aa8cbb\\0-storm_events.parquet",
+      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\d388c78a3eb6443a8b17d00ec7a3b2be\\0-storm_events.parquet",
       "sha256": "526cae770223b82dd52fd38aa421afac00938b39f2931d538127d71d73718d04",
       "size_bytes": 46529
     }

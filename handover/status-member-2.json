@@ -1,7 +1,7 @@
 {
   "member": 2,
   "schema_version": "2.0",
-  "updated_at_utc": "2026-10-31T06:19:56.520124+00:00",
+  "updated_at_utc": "2026-10-31T06:34:33.288144+00:00",
   "state": "ready_for_review",
   "completed": [
     "Revised comprehensive plan and v2 shared contract",
@@ -18,18 +18,19 @@
     "Plan 2.2-2.5: storm_cohorts, impact (equal alert share vs historical rate), alert_rates and three explained failure_cases published",
     "Plan 2.6: third-airport registry tests (KORD fixture) pass without modelling changes",
     "Plan 2.7: validation-only Platt calibration experiment; not adopted (0.07% gain < 1% rule)",
-    "Merged Member 1 zeph (capacity run m1-20261031T054026Z-670c8c) and retrained; model inputs unchanged, so metrics are identical"
+    "Merged Member 1 zeph (capacity run m1-20261031T054026Z-670c8c) and retrained; model inputs unchanged, so metrics are identical",
+    "Merged Member 1 republish m1-20261031T060631Z-6c6e38 and retrained (run 9dbee2fd); outputs unchanged"
   ],
   "artifacts": [
     {
       "path": "artifacts/risk/manifest.json",
-      "run_id": "b307f1c50ba24af3b2b01b4b060c93de",
+      "run_id": "9dbee2fd44d94d96b70e275c6d9d9f11",
       "status": "partial",
       "coverage": "KATL/KDFW, leads 3/6/12, test 2025-01-01..2025-07-31; 10,599/10,604 rows weather-enhanced"
     },
     {
       "path": "artifacts/risk/decision_manifest.json",
-      "run_id": "752753983daf48dfa9dbdf70a71ebb54",
+      "run_id": "70afa0e88de3428581af497d64d0a859",
       "status": "unavailable",
       "coverage": null
     },
@@ -44,13 +45,13 @@
     "python -m src.flight_risk train",
     "python -m src.flight_risk decide --airport KATL --asof 2025-07-15T12:00:00Z --window-hours 6",
     "python -m src.flight_risk verify",
-    "python -m pytest tests -q --basetemp=tmp/pt-all-2"
+    "python -m pytest tests -q --basetemp=tmp/pt-all-5"
   ],
   "test_results": [
     {
-      "command": "python -m pytest tests -q --basetemp=tmp/pt-all-2",
+      "command": "python -m pytest tests -q --basetemp=tmp/pt-all-5",
       "result": "passed",
-      "evidence": "248 passed, 2 skipped, 1 failed; all 96 Member 2 tests pass; the failure is Member 1's forecast schema test (aar_observed missing from published forecast.parquet)"
+      "evidence": "290 passed; exit 0"
     },
     {
       "command": "python -m src.flight_risk verify",
@@ -80,8 +81,7 @@
   ],
   "next_steps": [
     "Plan 2.9 at Gate 3: rerun decide only if AAR forecasts and complete demand are on main",
-    "Member 1: republish forecast.parquet with aar_observed and publish traffic_hourly.parquet",
-    "Member 3 renders storm_cohorts, impact, alert_rates and failure_cases from run b307f1c50ba24af3b2b01b4b060c93de and reads producer capability statuses"
+    "Member 3 renders Member 2 outputs from run 9dbee2fd44d94d96b70e275c6d9d9f11"
   ],
   "contract_changes_requested": []
 }
