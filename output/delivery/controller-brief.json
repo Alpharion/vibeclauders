@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "status": "available",
+  "airport": "KATL",
+  "asof_utc": "2025-07-12T20:00:00+00:00",
+  "horizon_hours": 3,
+  "target_hour_utc": "2025-07-12T23:00:00+00:00",
+  "risk_run_id": "0949771a54bb4e49b4e215528eb5d46b",
+  "sampled_flights_scored": 2,
+  "flagged_flights": 2,
+  "review_priorities": [
+    {
+      "flight_id": "460f3042c18b22443112",
+      "probability": 0.6120271448182713,
+      "threshold": 0.14602464873871673,
+      "model_kind": "weather_enhanced",
+      "reason": "Published probability meets or exceeds its validation-selected alert threshold",
+      "recommended_review": "Review current weather and airline/inbound-aircraft status before deciding whether intervention is warranted"
+    },
+    {
+      "flight_id": "a6e1ef65ebf371bd00f0",
+      "probability": 0.36971235534052926,
+      "threshold": 0.14602464873871673,
+      "model_kind": "weather_enhanced",
+      "reason": "Published probability meets or exceeds its validation-selected alert threshold",
+      "recommended_review": "Review current weather and airline/inbound-aircraft status before deciding whether intervention is warranted"
+    }
+  ],
+  "summary": "Review the flagged departures in descending risk order",
+  "limitations": [
+    "Historical replay; these are not current operational alerts.",
+    "This is a separate review briefing, not an action published to the dashboard or queue.",
+    "Coverage is sampled departures, not complete airport traffic; probabilities are not calibrated guarantees.",
+    "No capacity reduction, metering rate, flight time, routing or rescheduling is recommended.",
+    "Qualified human review is required; no delay-minute or fuel benefit is established."
+  ],
+  "evidence": {
+    "predictions": "artifacts/risk/predictions.parquet",
+    "predictions_sha256": "084efcd74bc6a35c6bf072541c9aa595952d02dab5d5086044416fb994a5a159",
+    "manifest_sha256": "94e967c743226fe221b5a8976ece96b6851d7ed59833eed68d821a32543e3263"
+  }
+}
