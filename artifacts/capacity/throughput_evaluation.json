@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
-  "run_id": "m1-20261031T084129Z-f83c9b",
-  "generated_at_utc": "2026-10-31T08:42:40+00:00",
+  "run_id": "m1-20261031T091043Z-1e4024",
+  "generated_at_utc": "2026-10-31T09:11:53+00:00",
   "producer": "member-1/data_capacity",
   "limitations": [
     "Forecast of observed reporting-carrier arrivals per hour (throughput). NOT the facility Airport Arrival Rate (AAR): counts are limited by demand, by BTS coverage and by upstream flow programmes, so they do not measure runway capacity. Never report this as AAR or AAR RMSE."
@@ -12,9 +12,9 @@
   "not_aar": "Forecast of observed reporting-carrier arrivals per hour (throughput). NOT the facility Airport Arrival Rate (AAR): counts are limited by demand, by BTS coverage and by upstream flow programmes, so they do not measure runway capacity. Never report this as AAR or AAR RMSE.",
   "team_agreement": {
     "status": "agreed",
-    "recorded_date": "2026-10-31",
-    "authority": "User confirmed: the team agrees, implement the plan",
-    "scope": "Present the currently published reporting-carrier arrivals forecast and evaluation; not facility AAR or a departure-volume forecast."
+    "required_by": "parallel-plan section 7 (all three members)",
+    "recorded_at_utc": "2026-10-31T09:10:42Z",
+    "note": "All three members agreed to present it, as reported by Member 1's supervisor. Still labelled throughput, never AAR."
   },
   "assumptions": [
     "Airline schedules are published well before the cutoff, so the target hour's scheduled count is treated as known at cutoff. BTS CRS times reconstruct that schedule (not an as-of snapshot) and include flights later cancelled.",

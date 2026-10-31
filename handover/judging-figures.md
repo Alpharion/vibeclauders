@@ -17,9 +17,9 @@ Integration-branch release gate: `verified`, scope `combined_runtime`, 501 tests
 
 | Publication | Run ID | Status |
 |---|---|---|
-| Data and capacity | `m1-20261031T084129Z-f83c9b` | partial (genuine AAR unavailable) |
+| Data and capacity | `m1-20261031T091043Z-1e4024` | partial (genuine AAR unavailable) |
 | Delay-risk model | `0949771a54bb4e49b4e215528eb5d46b` | partial |
-| Capacity estimate (proxy) | `m1-capest-20261031T084305Z-940bb8` | partial (model proxy, not AAR) |
+| Capacity estimate (proxy) | `m1-capest-20261031T091219Z-3d8ab4` | partial (model proxy, not AAR) |
 
 ## 3. Data coverage (multi-source integration, automatic processing)
 
@@ -144,7 +144,7 @@ Held-out rows: 30,465; mean observed 35.0 arrivals/hour.
 | benign (n=24,667) | 8.75 | 8.56 | 13.79 |
 | noaa_storm_event_hour_retrospective (n=558) | 21.25 | 25.40 | 31.86 |
 
-Weather minus schedule-only RMSE: weather-impacted hours (n=2,932) **-1.83**, 95% CI [-3.46, -0.46]; all hours -0.13 [-0.40, +0.14] (not significant). Team agreement to present this: **pending**.
+Weather minus schedule-only RMSE: weather-impacted hours (n=2,932) **-1.83**, 95% CI [-3.46, -0.46]; all hours -0.13 [-0.40, +0.14] (not significant). Team agreement to present this: **agreed**.
 
 ## 6. Decision support (latest integration branch only)
 

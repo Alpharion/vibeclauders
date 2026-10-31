@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
-  "run_id": "m1-20261031T084129Z-f83c9b",
-  "generated_at_utc": "2026-10-31T08:43:04+00:00",
+  "run_id": "m1-20261031T091043Z-1e4024",
+  "generated_at_utc": "2026-10-31T09:12:17+00:00",
   "producer": "member-1/data_capacity",
   "status": "partial",
   "decision": "AAR UNAVAILABLE: FAA ASPM hourly/quarter-hour AAR requires an authenticated ASPM account (Direct Login / MyAccess). No credentialed export is present. Weather (IEM METAR/TAF), BTS and NOAA sources are automatically accessible.",

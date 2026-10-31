@@ -77,7 +77,7 @@ Splits are by airport-local date: train 2023, select on 2024, test January–Jul
 **Arrival capacity.**
 - **Genuine facility AAR: unmet.** The organisers supplied none, and FAA ASPM requires credentials; the attempts are logged in `artifacts/capacity/data_access.json`.
 - **Capacity estimate (proxy):** a high-demand, weather-regime frontier for reporting carriers (`artifacts/capacity_estimate/`). Its q0.90 pinball loss beats a no-weather baseline by approximately 0.88–1.87% across airport/lead cells. It isn't AAR: there are no uncertainty bounds and no whole-airport scaling. Two further accuracy experiments were rejected under rules fixed in advance.
-- **Arrivals forecast:** forecast of reporting-carrier arrivals per hour, RMSE 9.26 vs 15.43 baseline. In weather-impacted hours, weather improves RMSE by 1.83 (95% CI −3.46 to −0.46). This is throughput, not AAR, and team agreement to present it is pending.
+- **Arrivals forecast:** forecast of reporting-carrier arrivals per hour, RMSE 9.26 vs 15.43 baseline. In weather-impacted hours, weather improves RMSE by 1.83 (95% CI −3.46 to −0.46). This is throughput, not AAR, and the team agreed to present it.
 
 **Safeguards (challenge "want to avoid").**
 - **No leakage:** only inputs available at the cutoff are used, with tests.
@@ -100,7 +100,7 @@ Splits are by airport-local date: train 2023, select on 2024, test January–Jul
 | Hourly reporting-carrier traffic | 90,524 rows, 31 months, 0 failed |
 | NOAA storm events (retrospective) | 1,839 |
 
-Published runs: data/capacity `m1-20261031T084129Z-f83c9b`, risk `0949771a54bb4e49b4e215528eb5d46b`, capacity estimate `m1-capest-20261031T084305Z-940bb8`.
+Published runs: data/capacity `m1-20261031T091043Z-1e4024`, risk `0949771a54bb4e49b4e215528eb5d46b`, capacity estimate `m1-capest-20261031T091219Z-3d8ab4`.
 
 ## Verify and package
 
