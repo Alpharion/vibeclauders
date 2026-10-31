@@ -11,7 +11,7 @@ import subprocess
 from zipfile import ZipFile, ZIP_DEFLATED
 
 PREFIX = "challenge-5-implementation"
-ROOT_FILES = ("app.py", "requirements.txt", "requirements-observed.txt", "README.md",
+ROOT_FILES = ("artifacts/live_weather/model.json", "app.py", "requirements.txt", "requirements-observed.txt", "README.md",
               ".gitattributes", ".gitignore", "implementation-plan.md", "parallel-plan.md",
               ".streamlit/config.toml", "src/dashboard/static/leaflet.js", "src/dashboard/static/leaflet.css")
 TREES = ("src", "tests", "tools/delivery", ".streamlit", "handover", "data/processed",

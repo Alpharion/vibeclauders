@@ -73,6 +73,8 @@ def panel(replay_mode: str, footer: str, interval: int | None) -> None:
                     st.info("Nothing is fetched until you ask, so replay and offline demos need no network.")
                 else:
                     current_conditions(feed, icao, now)
+                    from src.dashboard.live_prediction import render as render_prediction
+                    render_prediction(feed, icao, now)
                     left, right = st.columns([68, 32], gap="small")
                     with left, card("live-map"):
                         map_section(feed, icao, now)
