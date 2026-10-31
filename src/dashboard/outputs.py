@@ -52,6 +52,7 @@ PLACEHOLDER_SHARES = {
     6: {"Thunderstorm": .45, "IFR / LIFR": .30, "Visibility < 3 SM": .20, "Gusts ≥ 25 kt": .35, "VFR": .35, "MVFR": .35, "IFR": .25, "LIFR": .05},
     12: {"Thunderstorm": .20, "IFR / LIFR": .10, "Visibility < 3 SM": .10, "Gusts ≥ 25 kt": .15, "VFR": .70, "MVFR": .20, "IFR": .08, "LIFR": .02},
 }
+PLACEHOLDER_SCHEDULE_FACTOR = 0.9  # Mock traffic forecast: this share of scheduled movements.
 PLACEHOLDER_CEILING = {3: (900, 500, 1800), 6: (2500, 1200, 3800), 12: (4000, 2500, 6500)}
 
 
@@ -193,6 +194,16 @@ def _add_throughput(bundle: Bundle, airport: Airport, asof_utc: pd.Timestamp, pr
         )
 
 
+def placeholder_movement(hour: pd.Timestamp, direction: str, scheduled: float) -> MovementForecast | None:
+    """Mock forecast for Compare only; other views keep showing the direction as unavailable."""
+    if pd.isna(scheduled):
+        return None
+    return MovementForecast(
+        hour, direction, float(round(scheduled * PLACEHOLDER_SCHEDULE_FACTOR)), None, None, None,
+        PLACEHOLDER_VERSION, "Illustrative share of scheduled movements",
+    )
+
+
 def last_completed_hour(traffic: pd.DataFrame | None, airport: Airport, asof_utc: pd.Timestamp) -> dict | None:
     """Observed counts for the hour ending at the cutoff, which was complete when the forecast froze."""
     if traffic is None:
@@ -301,7 +312,8 @@ def _actual_text(rows: pd.DataFrame, condition: str, happened: pd.Series) -> tup
 
 def verify_events(bundle: Bundle, snapshot: Snapshot) -> tuple[list[EventVerification], str | None]:
     """Score each saved forecast against METARs. A window without reports is never a non-event."""
-    probabilities, _ = weather_probabilities(bundle, snapshot.airport, snapshot.asof_utc)
+    probabilities, _ = display_probabilities(bundle, snapshot.airport, snapshot.asof_utc)
+    placeholder = is_placeholder(probabilities)
     feature, reason = weather_feature_row(bundle, snapshot)
     if feature is None and probabilities is None:
         return [], reason
@@ -311,7 +323,8 @@ def verify_events(bundle: Bundle, snapshot: Snapshot) -> tuple[list[EventVerific
     for condition in PROBABILITY_CONDITIONS:
         share = probability(probabilities, condition, snapshot.horizon_hours)
         if share is not None:
-            basis, label, alert = "Model probability", f"{share:.0%}", share >= ALERT_THRESHOLD
+            basis = "Illustrative placeholder" if placeholder else "Model probability"
+            label, alert = f"{share:.0%}", share >= ALERT_THRESHOLD
         else:
             state = taf_state(feature, condition) if feature is not None else "Unknown"
             basis, label = "Published TAF", state

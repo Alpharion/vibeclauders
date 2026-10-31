@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
-  "run_id": "m1-capest-20261031T084305Z-940bb8",
-  "generated_at_utc": "2026-10-31T08:43:07+00:00",
+  "run_id": "m1-capest-20261031T091219Z-3d8ab4",
+  "generated_at_utc": "2026-10-31T09:12:20+00:00",
   "producer": "member-1/data_capacity",
   "status": "partial",
   "limitations": [
@@ -22,49 +22,49 @@
     }
   },
   "artifact_hashes": {
-    "forecast.parquet": "e1a325b65f38efb00e3bcf818b7a6f3bb210d04fdd76f57d3bb67bfa52b4e536",
-    "evaluation.json": "4f2bc4356322882bd3f810aa30de0837875423c193e21485649bcf7cad8a2227",
-    "assumptions.json": "00e75368ff94bb91d38183a2ecf40f3fe54e43d1bf99b603412183aa0558c6ad",
-    "model.json": "f02e4cb23ee00354b1373a09c82749328c692fafedd21cbdd923582501bd4332"
+    "forecast.parquet": "e79203a7f59df293d52064839cb55093679cdab883d353977d3555f6734a46f8",
+    "evaluation.json": "9369b3e6c067e3b603e6deef48dab4e80c57517be418944beaa9f4aab98ed009",
+    "assumptions.json": "69f9db5ae0267ca82cb651e0045577e37679a84d28b23cb6ef3e1c05e52ee412",
+    "model.json": "cf97764c4a27e53591b078605c6ff542d092f698ca8c2bc7a00ccb9a696d818f"
   },
   "outputs": [
     {
       "path": "artifacts/capacity_estimate/forecast.parquet",
-      "sha256": "e1a325b65f38efb00e3bcf818b7a6f3bb210d04fdd76f57d3bb67bfa52b4e536",
+      "sha256": "e79203a7f59df293d52064839cb55093679cdab883d353977d3555f6734a46f8",
       "rows": 30477
     },
     {
       "path": "artifacts/capacity_estimate/evaluation.json",
-      "sha256": "4f2bc4356322882bd3f810aa30de0837875423c193e21485649bcf7cad8a2227",
+      "sha256": "9369b3e6c067e3b603e6deef48dab4e80c57517be418944beaa9f4aab98ed009",
       "rows": null
     },
     {
       "path": "artifacts/capacity_estimate/assumptions.json",
-      "sha256": "00e75368ff94bb91d38183a2ecf40f3fe54e43d1bf99b603412183aa0558c6ad",
+      "sha256": "69f9db5ae0267ca82cb651e0045577e37679a84d28b23cb6ef3e1c05e52ee412",
       "rows": null
     },
     {
       "path": "artifacts/capacity_estimate/model.json",
-      "sha256": "f02e4cb23ee00354b1373a09c82749328c692fafedd21cbdd923582501bd4332",
+      "sha256": "cf97764c4a27e53591b078605c6ff542d092f698ca8c2bc7a00ccb9a696d818f",
       "rows": null
     }
   ],
   "sources": {
     "capacity_manifest": "artifacts/capacity/manifest.json",
-    "capacity_manifest_sha256": "9e15d370f639dc7f208c947a5e3f2864a983e980518c06a84969cc8f364e150d",
-    "upstream_run_id": "m1-20261031T084129Z-f83c9b",
+    "capacity_manifest_sha256": "3d469148e604cadb44354a860b992aac75183584de3cf95364bab47b3efff27b",
+    "upstream_run_id": "m1-20261031T091043Z-1e4024",
     "inputs": [
       {
         "name": "traffic_hourly",
         "path": "artifacts/capacity/traffic_hourly.parquet",
-        "sha256": "a68b1d1827ddb64ed39607dd5477858bad45219c9827f08bb561d3324cbaeea1",
-        "upstream_run_id": "m1-20261031T084129Z-f83c9b"
+        "sha256": "0937f5736b93eec6db94aba08106707c5185d00e035bb2a158b2dcd42ec5d085",
+        "upstream_run_id": "m1-20261031T091043Z-1e4024"
       },
       {
         "name": "weather_features",
         "path": "artifacts/capacity/weather_features.parquet",
-        "sha256": "ba8aa8cf6a2377e2b7c2690a58796d6d1d61de213862a7050b7fa8a6fb8bbba7",
-        "upstream_run_id": "m1-20261031T084129Z-f83c9b"
+        "sha256": "798512b2aa52e09b32dca6d6c7c61ac86662d3e1500cd35e2d3c5247ce93b2aa",
+        "upstream_run_id": "m1-20261031T091043Z-1e4024"
       }
     ]
   }

@@ -49,7 +49,7 @@ def test_label_is_never_aar(result):
     assert set(fc.label_kind) == {"observed_reporting_carrier_arrivals"}
     assert not any(c.startswith("aar") for c in fc.columns)
     assert "NOT the facility Airport Arrival Rate" in rep["not_aar"]
-    assert rep["team_agreement"]["status"] == "pending"
+    assert rep["team_agreement"]["status"] == "agreed"
 
 
 def test_contract_split_and_cutoff_rules(result):

@@ -238,8 +238,10 @@ def fit_evaluate(features: pd.DataFrame, traffic: pd.DataFrame, airports: list[A
     overall_scores = score(te)
     report = {
         "status": "available", "label_kind": LABEL_KIND, "not_aar": NOT_AAR,
-        "team_agreement": {"status": "pending", "required_by": "parallel-plan section 7 (all three members at Gate 2)",
-                           "note": "Built at Member 1's request; Member 3 should not present it until agreement is recorded."},
+        "team_agreement": {"status": "agreed", "required_by": "parallel-plan section 7 (all three members)",
+                           "recorded_at_utc": "2026-10-31T09:10:42Z",
+                           "note": "All three members agreed to present it, as reported by Member 1's supervisor. "
+                                   "Still labelled throughput, never AAR."},
         "assumptions": ASSUMPTIONS,
         "split": {"basis": "airport-local date of target hour", "train": "2023", "validate": "2024",
                   "test": "2025-01-01..2025-07-31", "rows": counts, "excluded_test_cutoffs_before_selection_end": True},

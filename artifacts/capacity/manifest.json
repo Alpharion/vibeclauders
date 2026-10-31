@@ -1,10 +1,10 @@
 {
   "schema_version": "2.0",
-  "run_id": "m1-20261031T084129Z-f83c9b",
-  "generated_at_utc": "2026-10-31T08:43:04+00:00",
+  "run_id": "m1-20261031T091043Z-1e4024",
+  "generated_at_utc": "2026-10-31T09:12:17+00:00",
   "producer": "member-1/data_capacity",
   "status": "partial",
-  "started_at_utc": "2026-10-31T08:41:29+00:00",
+  "started_at_utc": "2026-10-31T09:10:43+00:00",
   "command": "python -m src.data_capacity run --cache-only",
   "parameters": {
     "airports": [
@@ -41,21 +41,21 @@
       "name": "traffic_hourly",
       "path": "artifacts/capacity/traffic_hourly.parquet",
       "rows": 90524,
-      "sha256": "a68b1d1827ddb64ed39607dd5477858bad45219c9827f08bb561d3324cbaeea1",
+      "sha256": "0937f5736b93eec6db94aba08106707c5185d00e035bb2a158b2dcd42ec5d085",
       "schema_version": "2.0"
     },
     {
       "name": "weather",
       "path": "artifacts/capacity/weather.parquet",
       "rows": 147002,
-      "sha256": "efc8bfab02a4bdba245b9052e2a6e94b5a9e39bc7fbf414649529739df34935d",
+      "sha256": "87097003725bfa55b0eec1cbd1943292dda9b3d98a6f35df8b6a81ce0a21b4bf",
       "schema_version": "2.0"
     },
     {
       "name": "weather_features",
       "path": "artifacts/capacity/weather_features.parquet",
       "rows": 135786,
-      "sha256": "ba8aa8cf6a2377e2b7c2690a58796d6d1d61de213862a7050b7fa8a6fb8bbba7",
+      "sha256": "798512b2aa52e09b32dca6d6c7c61ac86662d3e1500cd35e2d3c5247ce93b2aa",
       "schema_version": "2.0"
     },
     {
@@ -76,50 +76,50 @@
       "name": "evaluation",
       "path": "artifacts/capacity/evaluation.json",
       "rows": null,
-      "sha256": "bc2a5a51fdbb6f595cf8e0e902a18b37d744319b7c5f76990937ab8c425575ff",
+      "sha256": "4cadd487cf256ffc3ad885b50a3c59cbffa064ba81f7094a9bffc15427e406cb",
       "schema_version": "2.0"
     },
     {
       "name": "throughput_forecast",
       "path": "artifacts/capacity/throughput_forecast.parquet",
       "rows": 30465,
-      "sha256": "5b515b3a63bdd5dda48ee7f214e38f571d4e5c004e073fb5949ff28b51911a8d",
+      "sha256": "4de9421d534f5563d05b0a6fc194593dd99e9941cc0fc26691086a6f3e44ceb7",
       "schema_version": "2.0"
     },
     {
       "name": "throughput_evaluation",
       "path": "artifacts/capacity/throughput_evaluation.json",
       "rows": null,
-      "sha256": "55d66e759a246eff36448a145f29ec5097931aa85c27caf16fd3835b1f605b93",
+      "sha256": "739c123be333b487d3b3cb31152583134192e355226b07c4bbb3315f13edcfd9",
       "schema_version": "2.0"
     },
     {
       "name": "data_access",
       "path": "artifacts/capacity/data_access.json",
       "rows": null,
-      "sha256": "803d9d9cf861a6b7d4b234e624d2dac09ecc1fdea21002bc283134461900ab90",
+      "sha256": "ef49964ebd1f1d5dd93a1c2d514045519a78034e1fef0e649b7d9a74ec1551f5",
       "schema_version": "2.0"
     },
     {
       "name": "provenance",
       "path": "data/processed/provenance.json",
       "rows": null,
-      "sha256": "106d5e98e81d5469dda1940d18198491844788eef8e84206192cc2cc2cb1bd50",
+      "sha256": "e0623c113687de002eccceec2a1a8e4431597623470f2f8937c23afb0d4a2783",
       "schema_version": "2.0"
     }
   ],
   "artifact_hashes": {
     "../../data/processed/flights.parquet": "5534d21ce766845dbab4e51372618a433cb895ad3fdcf1478e5a74515af46176",
-    "traffic_hourly.parquet": "a68b1d1827ddb64ed39607dd5477858bad45219c9827f08bb561d3324cbaeea1",
-    "weather.parquet": "efc8bfab02a4bdba245b9052e2a6e94b5a9e39bc7fbf414649529739df34935d",
-    "weather_features.parquet": "ba8aa8cf6a2377e2b7c2690a58796d6d1d61de213862a7050b7fa8a6fb8bbba7",
+    "traffic_hourly.parquet": "0937f5736b93eec6db94aba08106707c5185d00e035bb2a158b2dcd42ec5d085",
+    "weather.parquet": "87097003725bfa55b0eec1cbd1943292dda9b3d98a6f35df8b6a81ce0a21b4bf",
+    "weather_features.parquet": "798512b2aa52e09b32dca6d6c7c61ac86662d3e1500cd35e2d3c5247ce93b2aa",
     "../../data/processed/storm_events.parquet": "526cae770223b82dd52fd38aa421afac00938b39f2931d538127d71d73718d04",
     "forecast.parquet": "676f034938806a57788c1d1e4849eea772c83dea63d9d39c30f878ec86287e14",
-    "evaluation.json": "bc2a5a51fdbb6f595cf8e0e902a18b37d744319b7c5f76990937ab8c425575ff",
-    "throughput_forecast.parquet": "5b515b3a63bdd5dda48ee7f214e38f571d4e5c004e073fb5949ff28b51911a8d",
-    "throughput_evaluation.json": "55d66e759a246eff36448a145f29ec5097931aa85c27caf16fd3835b1f605b93",
-    "data_access.json": "803d9d9cf861a6b7d4b234e624d2dac09ecc1fdea21002bc283134461900ab90",
-    "../../data/processed/provenance.json": "106d5e98e81d5469dda1940d18198491844788eef8e84206192cc2cc2cb1bd50"
+    "evaluation.json": "4cadd487cf256ffc3ad885b50a3c59cbffa064ba81f7094a9bffc15427e406cb",
+    "throughput_forecast.parquet": "4de9421d534f5563d05b0a6fc194593dd99e9941cc0fc26691086a6f3e44ceb7",
+    "throughput_evaluation.json": "739c123be333b487d3b3cb31152583134192e355226b07c4bbb3315f13edcfd9",
+    "data_access.json": "ef49964ebd1f1d5dd93a1c2d514045519a78034e1fef0e649b7d9a74ec1551f5",
+    "../../data/processed/provenance.json": "e0623c113687de002eccceec2a1a8e4431597623470f2f8937c23afb0d4a2783"
   },
   "split": {
     "basis": "airport-local date",
@@ -329,9 +329,9 @@
       "not_aar": "Forecast of observed reporting-carrier arrivals per hour (throughput). NOT the facility Airport Arrival Rate (AAR): counts are limited by demand, by BTS coverage and by upstream flow programmes, so they do not measure runway capacity. Never report this as AAR or AAR RMSE.",
       "team_agreement": {
         "status": "agreed",
-        "recorded_date": "2026-10-31",
-        "authority": "User confirmed: the team agrees, implement the plan",
-        "scope": "Present the currently published reporting-carrier arrivals forecast and evaluation; not facility AAR or a departure-volume forecast."
+        "required_by": "parallel-plan section 7 (all three members)",
+        "recorded_at_utc": "2026-10-31T09:10:42Z",
+        "note": "All three members agreed to present it, as reported by Member 1's supervisor. Still labelled throughput, never AAR."
       },
       "reason": null
     },
