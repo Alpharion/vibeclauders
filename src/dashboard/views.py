@@ -392,6 +392,29 @@ def reporting_traffic(
     return rows.sort_values(["hour_utc", "direction"])[columns]
 
 
+def storm_table(cohorts: list[dict]) -> pd.DataFrame:
+    """One row per cohort, airport and lead, with model and baseline side by side."""
+    rows = pd.DataFrame(cohorts)
+    key = ["cohort", "airport", "horizon_hours"]
+    wide = rows.pivot(index=key, columns="metric", values=["value", "baseline_value"])
+    wide.columns = [metric if kind == "value" else f"{metric} (baseline)" for kind, metric in wide.columns]
+    wide = wide[sorted(wide.columns)].astype(float)
+    context = [c for c in ("n", "severe_n", "reason") if c in rows]
+    return rows.groupby(key)[context].first().join(wide).reset_index()
+
+
+def calibration_note(document: dict | None) -> str | None:
+    experiment = (document or {}).get("calibration_experiment") or {}
+    if experiment.get("status") != "available":
+        return None
+    gain = experiment.get("validation_relative_gain")
+    outcome = "Adopted" if experiment.get("adopted") else "Not adopted, so probabilities are uncalibrated"
+    return (
+        f"Calibration tested on validation data only: {experiment.get('method')}. {outcome} "
+        f"({gain:.2%} validation Brier gain). Rule: {experiment.get('decision_rule')}."
+    )
+
+
 def failure_cards(*documents: dict | None) -> list:
     """Distinct failure cases; a case can appear in both the old and new fields."""
     cards, seen = [], set()

@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from src.dashboard.data import fingerprint, is_schedule_only, load_bundle
+from src.dashboard.data import Group, _capabilities, fingerprint, is_schedule_only, load_bundle
 from tests.dashboard import conftest as c
 
 
@@ -132,3 +132,52 @@ def test_utc_day_spanning_two_splits_is_valid(tmp_path):
         "artifacts/risk/manifest.json", c.RUN,
     )
     assert len(load_bundle(tmp_path).table("normalized_metrics")) == len(frame)
+
+
+def set_capabilities(root, capabilities):
+    path = root / "artifacts/risk/manifest.json"
+    manifest = json.loads(path.read_text())
+    manifest["capabilities"] = capabilities
+    path.write_text(json.dumps(manifest))
+
+
+def test_schedule_risk_stays_available_when_every_row_has_weather(tmp_path):
+    table = c.predictions().assign(model_kind="weather_enhanced")
+    c.publish_risk(tmp_path, table=table)
+    set_capabilities(tmp_path, {"schedule_risk": {"status": "available"}, "weather_risk": {"status": "partial", "reason": "coverage gap"}})
+    bundle = load_bundle(tmp_path)
+    assert status(bundle, "Schedule risk") == "available"  # All rows carry weather.
+
+
+def test_partial_weather_risk_keeps_its_reason(root):
+    c.publish_risk(root, table=c.predictions().assign(model_kind="weather_enhanced"))
+    set_capabilities(root, {"weather_risk": {"status": "partial", "reason": "coverage gap"}})
+    tables = {"weather_features": c.pd.DataFrame(), "predictions": c.predictions().assign(model_kind="weather_enhanced")}
+    group = Group(manifest=json.loads((root / "artifacts/risk/manifest.json").read_text()))
+    groups = {"risk": group, "decision": Group(), "capacity": Group()}
+    capability = next(x for x in _capabilities(tables, {}, groups) if x.name == "Weather risk")
+    assert (capability.status, capability.reasons) == ("partial", ["coverage gap"])
+
+
+def test_producer_status_cannot_raise_missing_evidence(tmp_path):
+    set_capabilities_on_empty = c.envelope(capabilities={"weather_risk": {"status": "available"}})
+    c.write_json(tmp_path / "artifacts/risk/manifest.json", set_capabilities_on_empty)
+    assert status(load_bundle(tmp_path), "Weather risk") == "unavailable"
+
+
+def test_empty_forecast_is_not_available_aar(tmp_path):
+    c.publish_capacity(tmp_path, forecast_table=c.forecast().iloc[0:0])
+    bundle = load_bundle(tmp_path)
+    assert bundle.table("forecast") is not None
+    assert status(bundle, "AAR forecast") == "unavailable"
+
+
+def test_unavailable_capacity_evaluation_is_not_available_aar(tmp_path):
+    document = c.envelope("synthetic-capacity", metrics=[], missing_inputs=["no AAR labels"])
+    document["status"] = "unavailable"
+    c.publish(
+        tmp_path, {"artifacts/capacity/forecast.parquet": c.forecast()},
+        {"artifacts/capacity/evaluation.json": document}, "artifacts/capacity/manifest.json", "synthetic-capacity",
+    )
+    capability = load_bundle(tmp_path).capability("AAR forecast")
+    assert capability.status == "unavailable" and capability.reasons == ["no AAR labels"]

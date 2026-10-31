@@ -352,11 +352,19 @@ def is_schedule_only(model_kind: str) -> bool:
     return "schedule" in kind and "weather" not in kind
 
 
-def _capability(name, loaded, reasons, group) -> Capability:
+def _capability(name, loaded, reasons, group, published=None) -> Capability:
+    """Loaded evidence is required; the producer's own status can only lower it."""
     run_id = group.manifest["run_id"] if group.manifest else None
-    if loaded:
-        return Capability(name, "available", [], run_id)
-    return Capability(name, "unavailable", list(reasons), run_id)
+    if not loaded:
+        return Capability(name, "unavailable", list(reasons), run_id)
+    entry = ((group.manifest or {}).get("capabilities") or {}).get(published) or {}
+    status = entry.get("status") if entry.get("status") in STATUSES else "available"
+    return Capability(name, status, [str(entry["reason"])] if entry.get("reason") else [], run_id)
+
+
+def _published(group: Group, name: str) -> bool:
+    entry = ((group.manifest or {}).get("capabilities") or {}).get(name) or {}
+    return "predictions" not in group.problems and entry.get("status") in ("available", "partial")
 
 
 def _capabilities(tables, docs, groups) -> list[Capability]:
@@ -365,28 +373,38 @@ def _capabilities(tables, docs, groups) -> list[Capability]:
     kinds = set(predictions["model_kind"]) if predictions is not None else set()
     schedule_kinds = {k for k in kinds if is_schedule_only(k)}
     weather_loaded = "weather_features" in tables
+    forecast = tables.get("forecast")
+    aar_ready = (
+        forecast is not None
+        and not forecast.empty
+        and (docs.get("capacity_evaluation") or {}).get("status") in ("available", "partial")
+    )
 
     capabilities = [
         _capability(
-            "Schedule risk", bool(schedule_kinds),
+            "Schedule risk", bool(schedule_kinds) or _published(risk, "schedule_risk"),
             risk.problems.get("predictions", ["no schedule-only predictions published"]), risk,
+            "schedule_risk",
         ),
         _capability(
             "Weather risk", bool(kinds - schedule_kinds) and weather_loaded,
             ["no weather-enhanced predictions with verified weather features published"], risk,
+            "weather_risk",
         ),
         _capability(
             "Normalised history", "normalized_metrics" in tables,
-            risk.problems.get("normalized_metrics", []), risk,
+            risk.problems.get("normalized_metrics", []), risk, "normalized_observed_delays",
         ),
         _capability(
             "Weather features", weather_loaded,
             capacity.problems.get("weather_features", []), capacity,
         ),
         _capability(
-            "AAR forecast", "forecast" in tables and "capacity_evaluation" in docs,
+            "AAR forecast", aar_ready,
             capacity.problems.get("forecast", [])
-            + capacity.problems.get("capacity_evaluation", []),
+            + capacity.problems.get("capacity_evaluation", [])
+            + (docs.get("capacity_evaluation") or {}).get("missing_inputs", [])
+            or ["no AAR forecast rows are published"],
             capacity,
         ),
         _capability(

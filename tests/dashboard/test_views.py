@@ -242,3 +242,21 @@ def test_busiest_cutoffs_rank_scored_keys_only(root):
     busiest = views.busiest_cutoffs(index, "KATL", 6)
     assert busiest["asof_utc"].tolist() == [c.ASOF]
     assert views.busiest_cutoffs(index, "KATL", 12).empty
+
+
+def test_storm_table_has_one_row_per_cohort_and_keeps_nulls():
+    base = {"cohort": "storm", "airport": "KATL", "horizon_hours": 6, "n": 4, "severe_n": 0, "reason": "too few"}
+    rows = [
+        {**base, "metric": "recall", "value": None, "baseline_value": None},
+        {**base, "metric": "brier", "value": 0.1, "baseline_value": 0.2},
+    ]
+    table = views.storm_table(rows)
+    assert len(table) == 1
+    assert pd.isna(table["recall"].item()) and table["brier (baseline)"].item() == 0.2
+    assert table["reason"].item() == "too few"
+
+
+def test_calibration_note_says_when_not_adopted():
+    document = {"calibration_experiment": {"status": "available", "adopted": False, "method": "Platt", "validation_relative_gain": 0.0007, "decision_rule": "1% gain"}}
+    assert "Not adopted, so probabilities are uncalibrated (0.07%" in views.calibration_note(document)
+    assert views.calibration_note({}) is None

@@ -382,6 +382,12 @@ def impact_section(document: dict | None) -> None:
     st.dataframe(pd.DataFrame(impact.get("comparisons", [])), hide_index=True)
     if impact.get("limitations"):
         st.write("Limitations:", impact["limitations"])
+    if document.get("alert_rates"):
+        st.markdown("**Alert rates**")
+        st.dataframe(pd.DataFrame(document["alert_rates"]), hide_index=True)
+    note = views.calibration_note(document)
+    if note:
+        st.caption(note)
 
 
 def storm_section(document: dict | None) -> None:
@@ -391,7 +397,7 @@ def storm_section(document: dict | None) -> None:
         unavailable("Storm-event cohorts", "No storm cohort evaluation is published.")
         return
     st.caption("Retrospective NOAA annotation of held-out rows. Storm logs are never model inputs.")
-    st.dataframe(pd.DataFrame(cohorts), hide_index=True)
+    st.dataframe(views.storm_table(cohorts), hide_index=True)
 
 
 def failure_section(cases: list) -> None:
@@ -400,7 +406,7 @@ def failure_section(cases: list) -> None:
             st.json(case, expanded=False)
             continue
         with st.container(border=True):
-            kind = str(case.get("kind", "Failure case")).replace("_", " ").capitalize()
+            kind = str(case.get("kind", "Earlier example")).replace("_", " ").capitalize()
             st.markdown(f"**{kind}** · {case.get('airport', 'unknown airport')} · flight {case.get('flight_id')}")
             if case.get("explanation"):
                 st.write("Likely reason:", case["explanation"])
