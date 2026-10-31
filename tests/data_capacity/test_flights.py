@@ -86,3 +86,14 @@ def test_published_flights_keys_unique_and_utc():
     for c in ["flight_id", "origin", "dest", "carrier", "flight_number", "scheduled_dep_utc", "scheduled_arr_utc",
               "dep_delay_min", "arr_delay_min", "cancelled", "diverted", "coverage", "source_id"]:
         assert c in f.columns
+
+
+def test_icao_columns_from_registry_and_unknown_stay_null():
+    out, _ = build([row(), row(ORIGIN="LAX", DEST="ATL", CRS_DEP_TIME=700, CRS_ARR_TIME=1430, CRS_ELAPSED_TIME=270.0,
+                            OP_CARRIER_FL_NUM=5.0)])
+    atl_dfw = out[out.origin == "ATL"].iloc[0]
+    assert (atl_dfw.origin_icao, atl_dfw.dest_icao) == ("KATL", "KDFW")
+    lax = out[out.origin == "LAX"].iloc[0]
+    assert pd.isna(lax.origin_icao) and lax.dest_icao == "KATL"
+    # identity is unchanged: still the IATA-based shared flight_key
+    assert out.flight_id.str.len().eq(20).all()

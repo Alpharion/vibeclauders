@@ -100,7 +100,7 @@ Splits are by airport-local date: train 2023, select on 2024, test January–Jul
 | Hourly reporting-carrier traffic | 90,524 rows, 31 months, 0 failed |
 | NOAA storm events (retrospective) | 1,839 |
 
-Published runs: data/capacity `m1-20261031T065014Z-eacdd5`, risk `0949771a54bb4e49b4e215528eb5d46b`, capacity estimate `m1-capest-20261031T072310Z-a27968`.
+Published runs: data/capacity `m1-20261031T084129Z-f83c9b`, risk `0949771a54bb4e49b4e215528eb5d46b`, capacity estimate `m1-capest-20261031T084305Z-940bb8`.
 
 ## Verify and package
 
