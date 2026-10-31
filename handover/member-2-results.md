@@ -1,5 +1,23 @@
 # Member 2 verified results and handback
 
+## Current handback: independent 30-minute delivery sprint
+
+31 October 2026. **Delivery work ready for review; baseline application has a known frontend failure.** Implementation base `737b46852c2d4b98e7c01e68ed7e3888f6542c5c`, handoff base `c01500a3bb247e7ab7882ae3d45e4b266d1b028e`, branch `codex/member-2-delivery-30min`.
+
+- Replaced the stale partial archive builder with portable, manifest-backed packaging. It includes both producers, processed inputs, frozen risk snapshots, current frontend/config/static files, tests and handoffs. It preserves committed model requirements and excludes raw caches, worktrees, environments and prior archives.
+- Added 10 delivery tests and a real-artifact AppTest command. Optional `artifacts/capacity_estimate` discovery is verified with a synthetic fixture; no Member 1 sprint output was required or used.
+- Fresh extracted runtime: risk verifier **exit 0**; risk plus delivery tests **106 passed, exit 0**; full suite **330 passed / one inherited failure, exit 1**; app smoke **exit 1**, reproducing that same initial chart exception. The airport/lead/reveal matrix is blocked by the initial render.
+- Source preservation: **97/97 frozen files unchanged**. Extraction preservation: **96/96 included frozen files unchanged**; raw-cache `data/public/.gitignore` intentionally omitted. No dashboard, model, data, existing test or dependency edits; no retraining.
+- Known failure remains `tests/dashboard/test_additions.py::test_actual_traffic_counts_need_reveal`, caused by the Timestamp annotation at `src/dashboard/plots.py:168`. Member 1 owns the fix. It prevents final demo acceptance but does not block independent delivery-tool acceptance.
+
+Detailed commands, environment, intermediate archive hash and limitations are in `output/delivery/VERIFICATION.md` and `verification.json`. The final baseline ZIP is `output/delivery/challenge-5-implementation.zip`; its **final** hash and source commit are in the adjacent `.sha256` and `.receipt.json`, reported in the handback message. Code-identical runtime tests preceded the final documentation rebuild; final payload/hash checks are separate.
+
+Rebuild with `python output/delivery/build-package.py`. Verify with `python output/delivery/build-package.py --verify output/delivery/challenge-5-implementation.zip`. Generated archives and verbose local logs are ignored by Git; the builder, tests and evidence are committed. Supervisors merge both independent member contributions, repair/verify the combined app, refresh execution evidence, and rebuild. Changed runtime bytes invalidate this branch's execution status automatically.
+
+Capacity direction: organisers do not provide genuine AAR labels. Member 1 is implementing a separately labelled model estimate from published inputs; it is planned/absent in this branch. Observed throughput, estimated capacity and recorded facility AAR remain distinct. Queue/advice remain unavailable without complete demand and cutoff backlog. The historical sections below preserve earlier modelling evidence and are not a current release checklist.
+
+## Historical model handback (before this sprint)
+
 ## Completion boundary
 
 The local risk-model, normalized-metric, queue-validation and advisory implementation is complete and tested. It has now been refreshed with Member 1's verified canonical flights and cutoff-safe weather features (now capacity run `m1-20261031T062924Z-d9dfcd`, merged from branch `zeph`), and extended with the parallel-plan evaluation additions (storm cohorts, status-quo impact, alert rates, explained failure cases, calibration experiment). Current project capability is still **partial**: no genuine AAR, complete demand or cutoff backlog is published, so queue/advice remain unavailable. Member 3's v2 dashboard is on `main`; its rendering of these outputs was reviewed in `handover/message-to-member-3.md`. This is not a claim that Challenge 5 is fully satisfied.

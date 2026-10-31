@@ -1,50 +1,69 @@
 # ATL/DFW flow-planning replay
 
-A local Streamlit dashboard for an **ATC / airport flow planner** (Airbus Track, Challenge 5).
+A local Streamlit decision-support prototype for an airport flow planner (Airbus Challenge 5). At a historical cutoff it displays available weather, severe departure-delay probabilities, traffic context and retrospective evaluation. Advisories require human review; the application sends no operational instructions.
 
-- **Today's workflow:** reactive. Planners respond once weather has already cut arrival capacity and delays are building.
-- **Decision aided:** at a historical cutoff, should arrival metering be reviewed, and which departures carry the highest severe-delay risk 3, 6 or 12 hours ahead?
-- **Boundary:** read-only. Every advisory needs human review, and the app transmits nothing.
+## Current delivery baseline
 
-Measured prediction quality (Evaluation tab) is separate from simulated operational value (Decision support tab). Neither is a claim about whole-airport impact while traffic is a sample.
+Implementation baseline: `737b468` (31 October 2026); handoff documents: `c01500a`. This Member 2 branch changes delivery tooling and evidence only. It does not consume Member 1's new work.
+
+**Known frontend regression:** the new reporting-carrier chart uses an annotated Plotly line with a pandas Timestamp and can raise a TypeError. Member 1 owns the fix. A verified package of this baseline is **not a fully working demo release**. See `output/delivery/VERIFICATION.md` and `verification.json` for measured results and verification scope.
+
+The interface on main includes Overview, Weather, Traffic, Compare and Evaluation tabs, historical/live modes, radar/connections/flagged-flow map layers, condition-frequency heatmaps and reporting-carrier traffic charts. Those source files are preserved by Member 2.
 
 ## Run
 
-```bash
-pip install -r requirements.txt
+Use a compatible Python environment; the model was published with Python 3.14.6 and the exact versions in `requirements-observed.txt`. That file is preserved, not regenerated from the packaging machine. A clean install was not performed during the delivery verification.
+
+```text
+python -m pip install -r requirements-observed.txt
+python -m src.flight_risk verify
 python -m streamlit run app.py
-python -m pytest tests/dashboard -q
 ```
 
-The app reads producer output from the repository root. Set `DASHBOARD_DATA_ROOT` to read another folder. With nothing published it still starts, and shows why each capability is unavailable.
+`DASHBOARD_DATA_ROOT` can select another artifact root. Replay predictions are historical backtests, not evidence that a forecast was issued in 2025. Live weather is separate. Browser map tiles require network access even when the local code and artifacts are packaged.
 
-## Layout
+## Current capabilities and evidence
 
-| Path | Purpose |
-|---|---|
-| `src/shared.py` | Scored airport registry (`AIRPORTS`) and `flight_key` |
-| `data/reference/airports.json` | Airport reference data |
-| `src/dashboard/data.py` | Manifest, hash, schema and key validation; capability states |
-| `src/dashboard/views.py` | Exact-snapshot selection and evidence gates |
-| `src/dashboard/plots.py`, `app.py` | Charts and UI |
+| Capability | Published evidence | Boundary |
+|---|---|---|
+| Canonical flights | `data/processed/flights.parquet`, 25,299 rows | Challenge sample, not complete airport demand |
+| Weather and runway-relative wind | 147,002 decoded weather rows; 135,786 feature snapshots | Explicit availability assumptions; ATL heading 080, DFW 180 |
+| Departure delay >45 min | 10,604 held-out predictions / 3,537 flights; 10,599 weather-enhanced and 5 schedule-only | Both airports, 3/6/12-hour leads; probabilities uncalibrated |
+| Risk evaluation | `artifacts/risk/evaluation.json` | Chronological splits; matched weather comparison, alert workload, storm cohorts, failure cases |
+| Normalised history | `artifacts/risk/normalized_metrics.parquet`, 1,891 rows | Sample cohorts; observed outcomes require reveal |
+| Reporting-carrier traffic | `artifacts/capacity/traffic_hourly.parquet`, 90,524 rows / 31 BTS months | Reconstructed schedules; not complete cutoff demand |
+| Observed-arrivals forecast | 30,465 rows in `throughput_forecast.parquet` | Forecast of reporting-carrier arrivals, not measured facility AAR; baseline UI does not load this forecast |
+| Capacity/AAR estimation | Separate optional `artifacts/capacity_estimate/` publication planned by Member 1 | Absent on this branch; user expects model estimation, not waiting for organiser labels |
+| Recorded facility AAR | Existing `forecast.parquet` is empty | No independent AAR observations/RMSE; do not relabel throughput as observed AAR |
+| Queue, metering and flight rescheduling | Explicit unavailable decision; typed empty queue | Missing complete demand and cutoff backlog; no operational savings claimed |
 
-## Requirements and evidence
+At +3h, published risk precision/recall are 26.1%/52.2% for ATL and 23.5%/48.9% for DFW. Weather versus schedule-only average precision is 0.2620 versus 0.2496 (ATL), 0.2485 versus 0.2276 (DFW), on matched cohorts. Alert quality improvement does not establish reduced delays or fuel savings.
 
-Status reflects this repository today. No producer artifacts are present, so every row marked "UI ready" has been exercised on synthetic test fixtures only.
+Capacity/data run: `m1-20261031T065014Z-eacdd5`. Risk run: `0949771a54bb4e49b4e215528eb5d46b`. Its frozen inputs refer to the earlier compatible upstream run; the current weather additions do not change the nine risk features. No retraining was performed for packaging.
 
-| Challenge requirement | Artifact | Check | Status and limitation |
-|---|---|---|---|
-| Hourly AAR prediction at 3/6/12 h | `artifacts/capacity/forecast.parquet`, `evaluation.json` | `test_unsafe_aar_row_is_refused` | **Unmet until Member 1 publishes genuine AAR.** No proxy is shown |
-| AAR RMSE against baseline | `artifacts/capacity/evaluation.json` | `test_valid_artifacts_and_selection_updates_panels` | UI ready; no measured result yet |
-| Cutoff-safe weather and runway-relative wind | `artifacts/capacity/weather_features.parquet`, `weather.parquet` | `test_future_amendment_is_excluded` | UI ready; awaiting Member 1 |
-| Severe departure-delay probability (over 45 min) | `artifacts/risk/predictions.parquet` | `test_risk_join_keeps_scored_cohort` | UI ready; real run not loaded here. Member 2 reports a schedule-only model, so weather skill is unmeasured |
-| Precision, recall, PR-AUC, Brier, reliability | `artifacts/risk/evaluation.json` | `test_launch_with_partial_artifacts` | UI ready; real run not loaded here |
-| Normalised historical trends | `artifacts/risk/normalized_metrics.parquet` | `test_history_recomputes_from_denominators`, `test_outcomes_locked_until_reveal` | UI ready; sample cohorts behind Reveal outcomes |
-| AAR observed versus predicted trend | None contracted | Requested in `handover/status-member-3.json` | **Unmet.** The contract has no observed-AAR column |
-| Arrivals, departures and movements | `data/processed/flights.parquet` | `test_movements_reconcile_and_are_labelled_sampled` | UI ready; awaiting Member 1 |
-| Backlog and recovery queue | `artifacts/risk/queue.parquet` | `test_valid_queue_passes`, `test_queue_violation_is_detected` | **Unmet.** Needs genuine capacity, complete demand and cutoff backlog |
-| Early flow-management advice | `artifacts/risk/recommendations.json` | `test_recommendation_refused_for_other_snapshot` | Withheld with reasons until the queue exists |
-| Flight rescheduling | `data/processed/eligible_flights.parquet` | `test_revised_times_need_eligibility` | **Unmet.** Revised times need verified eligibility |
-| Honest failure and refusal | All manifests | `tests/dashboard/test_data.py` | Evidence tab lists each rejection and reason |
+## Build and verify a portable package
 
-Deferred under the handoff's scope cuts: routing/diversion, ATIS, live weather and the geographic map. None of these is implemented.
+```text
+python output/delivery/build-package.py
+python output/delivery/build-package.py --verify output/delivery/challenge-5-implementation.zip
+```
+
+The builder includes runtime source/tests, Leaflet assets, configuration, both producer publications, processed inputs, frozen snapshots and current handoffs. It discovers optional new producer manifests automatically. Raw download caches, environments, Git metadata and previous release archives are excluded. Source provenance paths are retained as metadata; they are never followed outside the repository.
+
+Outputs are ZIP, SHA256, payload manifest and receipt under `output/delivery/`. `--output PATH` changes the destination. `--reference-pdf PATH` optionally includes an additional reference PDF; no personal Downloads path is required. The repository reference directory is included when present.
+
+Each archive contains a newly generated `BUNDLE_MANIFEST.json` and `BUNDLE_README.md`. Payload hashes identify content even for a dirty source tree. The builder validates bytes, not model accuracy or application acceptance. Execution evidence is tied to a runtime fingerprint and becomes stale when code/tests/dependencies/data change.
+
+After extraction, from its `challenge-5-implementation` directory:
+
+```text
+python -m src.flight_risk verify
+python -m pytest tests/flight_risk tests/delivery -q --basetemp=tmp/release-tests-01
+python -m tools.delivery.smoke_app
+```
+
+Choose a fresh writable `--basetemp` per test invocation on restricted Windows environments. The full suite is `python -m pytest tests -q`; retain and report every failure, including the inherited chart defect. AppTest does not verify remote radar/basemap tiles.
+
+## Work ownership and release
+
+Use `handover/sprint-30min/README.md`, the two member prompts, `INTERFACE.md` and `ACCEPTANCE.md`. Older plans and handoffs are historical checkpoints where they conflict with that clarified sprint. Member 1 owns model estimation plus its existing-panel integration; Member 2 owns packaging/evidence. Supervisors merge in either order, rerun combined checks and rebuild the final package. No estimate or frontend fix is claimed complete by this branch.

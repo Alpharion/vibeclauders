@@ -1,0 +1,7 @@
+# Rebuildable release products and verbose local check logs.
+*.zip
+*.zip.tmp
+*.sha256
+*.manifest.json
+*.receipt.json
+logs/

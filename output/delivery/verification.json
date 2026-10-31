@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "status": "baseline_verified_with_known_frontend_failure",
+  "generated_at_utc": "2026-10-31T07:25:02.480791+00:00",
+  "baseline_implementation_commit": "737b46852c2d4b98e7c01e68ed7e3888f6542c5c",
+  "handoff_commit": "c01500a3bb247e7ab7882ae3d45e4b266d1b028e",
+  "runtime_fingerprint": "11cd243b0efb97228cdc58733266123f26acfbd86454ee0013b85e3702796bb6",
+  "tested_archive": {
+    "archive": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-tested.zip",
+    "sha256": "4960726d4423c995a3e640d8f7604f9fbe1875ebfbed4d82c2cf4abb61989e9f",
+    "payload_files": 128,
+    "archive_bytes": 32050583,
+    "source": {
+      "commit": "c01500a3bb247e7ab7882ae3d45e4b266d1b028e",
+      "dirty": true,
+      "status": "M output/delivery/build-package.py\n?? output/delivery/frozen-baseline.json\n?? tests/delivery/test_package.py\n?? tools/delivery/__init__.py\n?? tools/delivery/package.py\n?? tools/delivery/smoke_app.py",
+      "branch": "codex/member-2-delivery-30min"
+    },
+    "runtime_fingerprint": "11cd243b0efb97228cdc58733266123f26acfbd86454ee0013b85e3702796bb6",
+    "verification_status": "unverified_or_stale_execution_evidence",
+    "producer_runs": [
+      "m1-20261031T065014Z-eacdd5",
+      "a7b89e44c69449d1a7ecfbf0cb8ff3b5",
+      "0949771a54bb4e49b4e215528eb5d46b"
+    ]
+  },
+  "execution_directory": "Fresh member2-extracted-tested/challenge-5-implementation extraction, outside the source checkout",
+  "environment": {
+    "python": "3.14.6",
+    "packages": {
+      "streamlit": "1.58.0",
+      "pandas": "3.0.3",
+      "numpy": "2.4.6",
+      "plotly": "6.7.0",
+      "scikit-learn": "1.9.0",
+      "scipy": "1.18.0",
+      "pyarrow": "23.0.1",
+      "requests": "2.34.2",
+      "pytest": "9.0.3",
+      "joblib": "1.5.3"
+    }
+  },
+  "checks": [
+    {
+      "name": "risk_verify",
+      "command": "python -m src.flight_risk verify",
+      "exit_code": 0,
+      "result": "10,604 predictions; 3,537 flights; KATL/KDFW; leads 3/6/12; model partial; decisions unavailable",
+      "local_log": "output/delivery/logs/risk_verify.log",
+      "log_sha256": "9de83d24e4d4b385b14018ebc56f605deb56ee465060b822e7c38b418c54a6c5"
+    },
+    {
+      "name": "risk_and_delivery_tests",
+      "command": "python -m pytest tests/flight_risk tests/delivery -q --basetemp=<fresh writable directory>",
+      "exit_code": 0,
+      "passed": 106,
+      "failed": 0,
+      "warning_count": 1,
+      "elapsed_seconds": 11.15,
+      "local_log": "output/delivery/logs/risk_and_delivery_tests.log",
+      "log_sha256": "0760c8b7983a4c03f4d7d334d1a45d9cbce5b574a643f7c3a633d284872da3fd"
+    },
+    {
+      "name": "full_suite",
+      "command": "python -m pytest tests -q --tb=short --basetemp=<fresh writable directory>",
+      "exit_code": 1,
+      "passed": 330,
+      "failed": 1,
+      "warning_count": 1,
+      "elapsed_seconds": 51.63,
+      "local_log": "output/delivery/logs/full_suite.log",
+      "log_sha256": "07d8077f7d2e26825a9291ee1d0373676b474401e76e7f3b85b5ffa15bfee67e"
+    },
+    {
+      "name": "real_artifact_app_smoke",
+      "command": "python -m tools.delivery.smoke_app",
+      "exit_code": 1,
+      "result": "Initial real-artifact app run reproduced inherited Plotly Timestamp exception; control matrix not reached",
+      "local_log": "output/delivery/logs/real_artifact_app_smoke.log",
+      "log_sha256": "5023eeb7fac082eceb3e4f5398a13d2752eb9724c04d970a4eb1353b26202d7c"
+    }
+  ],
+  "source_frozen_files_checked": 97,
+  "extracted_frozen_files_checked": 96,
+  "changed_source_frozen_files": [],
+  "changed_extracted_frozen_files": [],
+  "deliberately_excluded_frozen_files": [
+    "data/public/.gitignore"
+  ],
+  "known_inherited_failures": [
+    {
+      "test": "tests/dashboard/test_additions.py::test_actual_traffic_counts_need_reveal",
+      "file": "src/dashboard/plots.py:168",
+      "cause": "Plotly annotated add_vline performs unsupported pandas Timestamp addition",
+      "owner": "Member 1"
+    }
+  ],
+  "new_failures": [],
+  "other_member_new_outputs_used": false,
+  "limitations": [
+    "This is delivery acceptance against the pinned baseline, not final demo acceptance.",
+    "App smoke stops on initial inherited chart exception; airport/lead/reveal matrix and browser tiles not verified.",
+    "Existing compatible environment used; no clean dependency installation or fresh public data acquisition.",
+    "Windows physical-core warning and sandbox temporary cleanup errors were separate from the reproducible chart failure.",
+    "Final documentation-complete package is rebuilt after this runtime test. Match runtime_fingerprint and check its own SHA256/manifest.",
+    "Verbose logs are local and excluded from package; summaries and their content hashes are recorded here."
+  ]
+}

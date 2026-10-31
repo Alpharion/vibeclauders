@@ -1,88 +1,134 @@
 {
+  "schema_version": "1.0",
   "member": 2,
-  "schema_version": "2.0",
-  "updated_at_utc": "2026-10-31T06:40:28.777406+00:00",
+  "role": "Independent delivery tooling and evidence",
+  "baseline_commit": "737b46852c2d4b98e7c01e68ed7e3888f6542c5c",
+  "handoff_commit": "c01500a3bb247e7ab7882ae3d45e4b266d1b028e",
+  "result_commit": null,
+  "result_commit_source": "The generated final archive receipt source.commit identifies the committed result; it is reported in the final handback.",
+  "branch": "codex/member-2-delivery-30min",
   "state": "ready_for_review",
-  "completed": [
-    "Revised comprehensive plan and v2 shared contract",
-    "Prepared externally supervised Member 1 and Member 3 handoffs",
-    "Implemented and trained local schedule-risk model",
-    "Implemented optional verified-weather consumer and matched evaluation",
-    "Published normalized history and held-out failure evidence",
-    "Implemented gated arrival queue and review advisory",
-    "Verified CLI and 85 passing tests",
-    "Merged Member 1 run and added contract artifact_hashes to its manifest writer (user-authorized)",
-    "Refreshed with verified canonical flights and weather features; weather-enhanced model selected",
-    "Plan 2.1: JSON published with LF bytes so hashes verify on any checkout",
-    "Plan 2.8: frozen parallel-plan additions recorded in handover/shared-contract.md",
-    "Plan 2.2-2.5: storm_cohorts, impact (equal alert share vs historical rate), alert_rates and three explained failure_cases published",
-    "Plan 2.6: third-airport registry tests (KORD fixture) pass without modelling changes",
-    "Plan 2.7: validation-only Platt calibration experiment; not adopted (0.07% gain < 1% rule)",
-    "Merged Member 1 zeph (capacity run m1-20261031T054026Z-670c8c) and retrained; model inputs unchanged, so metrics are identical",
-    "Merged Member 1 republish m1-20261031T060631Z-6c6e38 and retrained (run 9dbee2fd); outputs unchanged",
-    "Merged Member 1 run m1-20261031T062924Z-d9dfcd (deterministic weather decoding) and retrained (run 0949771a); 3 probabilities changed, no alerts changed"
+  "delivery_status": "baseline_verified_with_known_frontend_failure",
+  "started_at_utc": "2026-10-31T07:18:25+00:00",
+  "updated_at_utc": "2026-10-31T07:25:40.350605+00:00",
+  "elapsed_minutes": 7.26,
+  "p0_completed": [
+    "Complete byte-preserving manifest-backed package builder",
+    "Optional publication discovery tested independently",
+    "Fresh extraction risk and delivery verification",
+    "Full-suite/app baseline failure recorded",
+    "Current documentation and evidence; no producer/frontend changes"
+  ],
+  "owned_files_changed": [
+    "output/delivery/build-package.py",
+    "output/delivery/.gitignore",
+    "output/delivery/VERIFICATION.md",
+    "output/delivery/verification.json",
+    "output/delivery/frozen-baseline.json",
+    "tools/delivery/__init__.py",
+    "tools/delivery/package.py",
+    "tools/delivery/smoke_app.py",
+    "tests/delivery/test_package.py",
+    "README.md",
+    "BUNDLE_README.md",
+    "BUNDLE_MANIFEST.json",
+    "handover/member-2-results.md",
+    "handover/status-member-2.json"
   ],
   "artifacts": [
     {
+      "path": "output/delivery/challenge-5-implementation.zip",
+      "kind": "generated final baseline package",
+      "sha256_source": "output/delivery/challenge-5-implementation.sha256",
+      "source_commit": "output/delivery/challenge-5-implementation.receipt.json"
+    },
+    {
+      "path": "artifacts/capacity/manifest.json",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "state": "unchanged"
+    },
+    {
       "path": "artifacts/risk/manifest.json",
       "run_id": "0949771a54bb4e49b4e215528eb5d46b",
-      "status": "partial",
-      "coverage": "KATL/KDFW, leads 3/6/12, test 2025-01-01..2025-07-31; 10,599/10,604 rows weather-enhanced"
+      "state": "unchanged"
     },
     {
       "path": "artifacts/risk/decision_manifest.json",
       "run_id": "a7b89e44c69449d1a7ecfbf0cb8ff3b5",
-      "status": "unavailable",
-      "coverage": null
-    },
-    {
-      "path": "handover/member-2-results.md",
-      "run_id": null,
-      "status": "available",
-      "coverage": null
+      "state": "unchanged; unavailable"
     }
   ],
-  "commands_tested": [
-    "python -m src.flight_risk train",
-    "python -m src.flight_risk decide --airport KATL --asof 2025-07-15T12:00:00Z --window-hours 6",
-    "python -m src.flight_risk verify",
-    "python -m pytest tests -q --basetemp=tmp/pt-all-6"
-  ],
-  "test_results": [
+  "checks": [
     {
-      "command": "python -m pytest tests -q --basetemp=tmp/pt-all-6",
-      "result": "passed",
-      "evidence": "291 passed; exit 0"
-    },
-    {
+      "name": "risk_verify",
       "command": "python -m src.flight_risk verify",
-      "result": "passed",
-      "evidence": "10,604 predictions / 3,537 flights / KATL,KDFW / leads 3,6,12; model partial, decisions unavailable; exit 0"
-    }
-  ],
-  "blockers": [
-    {
-      "requirement": "Supported arrival queues and AAR forecasting",
-      "reason": "Genuine capacity, complete arrival demand and cutoff backlog absent",
-      "evidence": [
-        "demand: verified input table unavailable",
-        "capacity: verified input table unavailable",
-        "initial_backlog: verified input table unavailable"
-      ],
-      "next_action": "Acquire real matched inputs or retain explicit unmet capability",
-      "owner": "Member 1"
+      "exit_code": 0,
+      "result": "10,604 predictions; 3,537 flights; KATL/KDFW; leads 3/6/12; model partial; decisions unavailable",
+      "local_log": "output/delivery/logs/risk_verify.log",
+      "log_sha256": "9de83d24e4d4b385b14018ebc56f605deb56ee465060b822e7c38b418c54a6c5"
     },
     {
-      "requirement": "End-to-end dashboard and reproducible dependency install",
-      "reason": "Existing UI uses v1 windows/readers; old requirements differ from verified runtime",
-      "evidence": "handover/agent-3-dashboard-integration.md",
-      "next_action": "Migrate UI, reconcile dependencies, verify and demonstrate",
-      "owner": "Member 3"
+      "name": "risk_and_delivery_tests",
+      "command": "python -m pytest tests/flight_risk tests/delivery -q --basetemp=<fresh writable directory>",
+      "exit_code": 0,
+      "passed": 106,
+      "failed": 0,
+      "warning_count": 1,
+      "elapsed_seconds": 11.15,
+      "local_log": "output/delivery/logs/risk_and_delivery_tests.log",
+      "log_sha256": "0760c8b7983a4c03f4d7d334d1a45d9cbce5b574a643f7c3a633d284872da3fd"
+    },
+    {
+      "name": "full_suite",
+      "command": "python -m pytest tests -q --tb=short --basetemp=<fresh writable directory>",
+      "exit_code": 1,
+      "passed": 330,
+      "failed": 1,
+      "warning_count": 1,
+      "elapsed_seconds": 51.63,
+      "local_log": "output/delivery/logs/full_suite.log",
+      "log_sha256": "07d8077f7d2e26825a9291ee1d0373676b474401e76e7f3b85b5ffa15bfee67e"
+    },
+    {
+      "name": "real_artifact_app_smoke",
+      "command": "python -m tools.delivery.smoke_app",
+      "exit_code": 1,
+      "result": "Initial real-artifact app run reproduced inherited Plotly Timestamp exception; control matrix not reached",
+      "local_log": "output/delivery/logs/real_artifact_app_smoke.log",
+      "log_sha256": "5023eeb7fac082eceb3e4f5398a13d2752eb9724c04d970a4eb1353b26202d7c"
     }
+  ],
+  "runtime_fingerprint": "11cd243b0efb97228cdc58733266123f26acfbd86454ee0013b85e3702796bb6",
+  "frozen_input_hashes_unchanged": true,
+  "source_frozen_files_checked": 97,
+  "extracted_frozen_files_checked": 96,
+  "used_other_member_new_outputs": false,
+  "known_inherited_failures": [
+    {
+      "test": "tests/dashboard/test_additions.py::test_actual_traffic_counts_need_reveal",
+      "file": "src/dashboard/plots.py:168",
+      "cause": "Plotly annotated add_vline performs unsupported pandas Timestamp addition",
+      "owner": "Member 1"
+    }
+  ],
+  "new_failures": [],
+  "limitations": [
+    "This is delivery acceptance against the pinned baseline, not final demo acceptance.",
+    "App smoke stops on initial inherited chart exception; airport/lead/reveal matrix and browser tiles not verified.",
+    "Existing compatible environment used; no clean dependency installation or fresh public data acquisition.",
+    "Windows physical-core warning and sandbox temporary cleanup errors were separate from the reproducible chart failure.",
+    "Final documentation-complete package is rebuilt after this runtime test. Match runtime_fingerprint and check its own SHA256/manifest.",
+    "Verbose logs are local and excluded from package; summaries and their content hashes are recorded here."
   ],
   "next_steps": [
-    "Plan 2.9 at Gate 3: rerun decide only if AAR forecasts and complete demand are on main (Member 1 recorded AAR as unmet at Gate 2)",
-    "Member 3 renders Member 2 outputs from run 0949771a54bb4e49b4e215528eb5d46b"
+    "Supervisor reviews ownership and combines member commits in either order",
+    "Member 1 repairs inherited frontend failure and publishes labelled capacity estimate",
+    "Supervisor reruns combined suite and real-artifact app matrix, updates execution evidence and rebuilds/extracts final demo package"
   ],
-  "contract_changes_requested": []
+  "supervisor_acceptance": null,
+  "historical_model_work": {
+    "risk_run_id": "0949771a54bb4e49b4e215528eb5d46b",
+    "result_details": "handover/member-2-results.md historical sections",
+    "note": "Earlier modelling/retraining/test results are historical; no model work was performed in this sprint."
+  }
 }
