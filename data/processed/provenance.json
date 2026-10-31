@@ -1,0 +1,351 @@
+{
+  "schema_version": "2.0",
+  "run_id": "m1-20261031T045159Z-3df67d",
+  "generated_at_utc": "2026-10-31T04:52:30+00:00",
+  "producer": "member-1/data_capacity",
+  "status": "partial",
+  "sources": [
+    {
+      "source_id": "challenge_csv_bts_sample",
+      "name": "Challenge-supplied BTS-derived flight sample",
+      "url": "claude-upload/Flight_Data_With_Weather_Final.csv",
+      "retrieved_at_utc": null,
+      "requested_coverage": "2023-01-01..2025-07-31",
+      "coverage": "sample",
+      "status": "available",
+      "hash": "9a9d80659da6e9833c8360583476d71e42937ccf5e42870902b90b57c2c99ba7",
+      "notes": "Supplied file; its embedded daily weather columns are undated w.r.t. availability and are NOT used."
+    },
+    {
+      "source_id": "bts_ontime_prezip",
+      "name": "BTS On-Time Reporting (PREZIP)",
+      "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_1.zip",
+      "retrieved_at_utc": "2026-10-31T04:45:42+00:00",
+      "requested_coverage": "2023-01",
+      "coverage": "reporting_carriers",
+      "status": "cached",
+      "hash": "327924faa362d360747e9e4cf37f461c877441916321754f1789fadd61fd403a",
+      "notes": "filtered rows 93215 -> data/public/bts/filtered/ontime_ATL_DFW_2023_01.parquet"
+    },
+    {
+      "source_id": "iem_metar",
+      "name": "IEM METAR KATL",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=ATL&data=tmpf&data=drct&data=sknt&data=gust&data=vsby&data=skyc1&data=skyl1&data=skyc2&data=skyl2&data=skyc3&data=skyl3&data=skyc4&data=skyl4&data=wxcodes&data=metar&year1=2022&month1=12&day1=30&year2=2023&month2=1&day2=1&tz=Etc/UTC&format=onlycomma&latlon=no&missing=empty&trace=T&direct=no&report_type=3&report_type=4",
+      "retrieved_at_utc": "2026-10-31T04:37:15+00:00",
+      "requested_coverage": "2022-12-30..2023-01-01 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "f2ffbd8f04ebf804e6e1f965bab7e71e2ab49996200389759c36461738987bc1",
+      "notes": null
+    },
+    {
+      "source_id": "iem_taf",
+      "name": "IEM TAF KATL",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/taf.py?station=KATL&sts=2022-12-30T00:00Z&ets=2023-01-01T00:00Z&fmt=csv",
+      "retrieved_at_utc": "2026-10-31T04:35:11+00:00",
+      "requested_coverage": "2022-12-30..2023-01-01 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "9e8649e0d8ed6f41c0e70cdc907b3b309cba7a13185a1ee2f136193f20bb03fd",
+      "notes": null
+    },
+    {
+      "source_id": "iem_metar",
+      "name": "IEM METAR KATL",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=ATL&data=tmpf&data=drct&data=sknt&data=gust&data=vsby&data=skyc1&data=skyl1&data=skyc2&data=skyl2&data=skyc3&data=skyl3&data=skyc4&data=skyl4&data=wxcodes&data=metar&year1=2023&month1=1&day1=1&year2=2024&month2=1&day2=1&tz=Etc/UTC&format=onlycomma&latlon=no&missing=empty&trace=T&direct=no&report_type=3&report_type=4",
+      "retrieved_at_utc": "2026-10-31T04:35:17+00:00",
+      "requested_coverage": "2023-01-01..2024-01-01 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "f18648ce32da50cd498e6d9c3519d7a71d5b6a9fb0becc1780f69a5d27ffbd72",
+      "notes": null
+    },
+    {
+      "source_id": "iem_taf",
+      "name": "IEM TAF KATL",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/taf.py?station=KATL&sts=2023-01-01T00:00Z&ets=2024-01-01T00:00Z&fmt=csv",
+      "retrieved_at_utc": "2026-10-31T04:35:27+00:00",
+      "requested_coverage": "2023-01-01..2024-01-01 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "434b9c1c92843f7ad3e5e50c35ac063ef54d231c3ef91b5890c46d46595e0423",
+      "notes": null
+    },
+    {
+      "source_id": "iem_metar",
+      "name": "IEM METAR KATL",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=ATL&data=tmpf&data=drct&data=sknt&data=gust&data=vsby&data=skyc1&data=skyl1&data=skyc2&data=skyl2&data=skyc3&data=skyl3&data=skyc4&data=skyl4&data=wxcodes&data=metar&year1=2024&month1=1&day1=1&year2=2025&month2=1&day2=1&tz=Etc/UTC&format=onlycomma&latlon=no&missing=empty&trace=T&direct=no&report_type=3&report_type=4",
+      "retrieved_at_utc": "2026-10-31T04:35:33+00:00",
+      "requested_coverage": "2024-01-01..2025-01-01 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "7970f04ef94cdd285f2687f584eafcda7d917e3fd20e021c8b3ffa4a3b2e3c99",
+      "notes": null
+    },
+    {
+      "source_id": "iem_taf",
+      "name": "IEM TAF KATL",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/taf.py?station=KATL&sts=2024-01-01T00:00Z&ets=2025-01-01T00:00Z&fmt=csv",
+      "retrieved_at_utc": "2026-10-31T04:35:44+00:00",
+      "requested_coverage": "2024-01-01..2025-01-01 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "adff1b179c4c05b5f44a985825e5671969f758ebf7e990d176b7e72023d9c9af",
+      "notes": null
+    },
+    {
+      "source_id": "iem_metar",
+      "name": "IEM METAR KATL",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=ATL&data=tmpf&data=drct&data=sknt&data=gust&data=vsby&data=skyc1&data=skyl1&data=skyc2&data=skyl2&data=skyc3&data=skyl3&data=skyc4&data=skyl4&data=wxcodes&data=metar&year1=2025&month1=1&day1=1&year2=2025&month2=8&day2=2&tz=Etc/UTC&format=onlycomma&latlon=no&missing=empty&trace=T&direct=no&report_type=3&report_type=4",
+      "retrieved_at_utc": "2026-10-31T04:35:49+00:00",
+      "requested_coverage": "2025-01-01..2025-08-02 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "8d771af523a85cdf0888e0b222ed728f7497f773fcfb7676691e343009a1a626",
+      "notes": null
+    },
+    {
+      "source_id": "iem_taf",
+      "name": "IEM TAF KATL",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/taf.py?station=KATL&sts=2025-01-01T00:00Z&ets=2025-08-02T00:00Z&fmt=csv",
+      "retrieved_at_utc": "2026-10-31T04:35:57+00:00",
+      "requested_coverage": "2025-01-01..2025-08-02 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "235e0f44672193f2e779a09072b8ead9f2e4c8f1bc7d8a563f69d385b32c7cd0",
+      "notes": null
+    },
+    {
+      "source_id": "iem_metar",
+      "name": "IEM METAR KDFW",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DFW&data=tmpf&data=drct&data=sknt&data=gust&data=vsby&data=skyc1&data=skyl1&data=skyc2&data=skyl2&data=skyc3&data=skyl3&data=skyc4&data=skyl4&data=wxcodes&data=metar&year1=2022&month1=12&day1=30&year2=2023&month2=1&day2=1&tz=Etc/UTC&format=onlycomma&latlon=no&missing=empty&trace=T&direct=no&report_type=3&report_type=4",
+      "retrieved_at_utc": "2026-10-31T04:37:16+00:00",
+      "requested_coverage": "2022-12-30..2023-01-01 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "30f1b978dd5768d7479bb28845ea23208d63fd18e4e58bad9fc52a0361065e56",
+      "notes": null
+    },
+    {
+      "source_id": "iem_taf",
+      "name": "IEM TAF KDFW",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/taf.py?station=KDFW&sts=2022-12-30T00:00Z&ets=2023-01-01T00:00Z&fmt=csv",
+      "retrieved_at_utc": "2026-10-31T04:37:17+00:00",
+      "requested_coverage": "2022-12-30..2023-01-01 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "b1cbf3fbd625a872fe79c6217e7de47987088f8e77e7e136954de449f79bb278",
+      "notes": null
+    },
+    {
+      "source_id": "iem_metar",
+      "name": "IEM METAR KDFW",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DFW&data=tmpf&data=drct&data=sknt&data=gust&data=vsby&data=skyc1&data=skyl1&data=skyc2&data=skyl2&data=skyc3&data=skyl3&data=skyc4&data=skyl4&data=wxcodes&data=metar&year1=2023&month1=1&day1=1&year2=2024&month2=1&day2=1&tz=Etc/UTC&format=onlycomma&latlon=no&missing=empty&trace=T&direct=no&report_type=3&report_type=4",
+      "retrieved_at_utc": "2026-10-31T04:36:26+00:00",
+      "requested_coverage": "2023-01-01..2024-01-01 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "a79fbb3b0bfbaac8cab0dadd7b17a563c0f558ff543b267bcea5f21a5af32a91",
+      "notes": null
+    },
+    {
+      "source_id": "iem_taf",
+      "name": "IEM TAF KDFW",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/taf.py?station=KDFW&sts=2023-01-01T00:00Z&ets=2024-01-01T00:00Z&fmt=csv",
+      "retrieved_at_utc": "2026-10-31T04:36:33+00:00",
+      "requested_coverage": "2023-01-01..2024-01-01 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "c38ec11927bd77502e2dc2dd68ebb71d3910e2477dfe53d2585511184936eab2",
+      "notes": null
+    },
+    {
+      "source_id": "iem_metar",
+      "name": "IEM METAR KDFW",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DFW&data=tmpf&data=drct&data=sknt&data=gust&data=vsby&data=skyc1&data=skyl1&data=skyc2&data=skyl2&data=skyc3&data=skyl3&data=skyc4&data=skyl4&data=wxcodes&data=metar&year1=2024&month1=1&day1=1&year2=2025&month2=1&day2=1&tz=Etc/UTC&format=onlycomma&latlon=no&missing=empty&trace=T&direct=no&report_type=3&report_type=4",
+      "retrieved_at_utc": "2026-10-31T04:36:39+00:00",
+      "requested_coverage": "2024-01-01..2025-01-01 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "cc975e696225a620787c9b7e9785638842241da26180ec081868ccf7a3e75faf",
+      "notes": null
+    },
+    {
+      "source_id": "iem_taf",
+      "name": "IEM TAF KDFW",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/taf.py?station=KDFW&sts=2024-01-01T00:00Z&ets=2025-01-01T00:00Z&fmt=csv",
+      "retrieved_at_utc": "2026-10-31T04:36:46+00:00",
+      "requested_coverage": "2024-01-01..2025-01-01 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "2ecd94ab76b5071e0879e30e632fc66f2dce8f6b7d84658eea465ef09e25353e",
+      "notes": null
+    },
+    {
+      "source_id": "iem_metar",
+      "name": "IEM METAR KDFW",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DFW&data=tmpf&data=drct&data=sknt&data=gust&data=vsby&data=skyc1&data=skyl1&data=skyc2&data=skyl2&data=skyc3&data=skyl3&data=skyc4&data=skyl4&data=wxcodes&data=metar&year1=2025&month1=1&day1=1&year2=2025&month2=8&day2=2&tz=Etc/UTC&format=onlycomma&latlon=no&missing=empty&trace=T&direct=no&report_type=3&report_type=4",
+      "retrieved_at_utc": "2026-10-31T04:36:51+00:00",
+      "requested_coverage": "2025-01-01..2025-08-02 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "63a40443b18afbaa1875b19153bb431e9af21b10328e759e169f70865e746a1f",
+      "notes": null
+    },
+    {
+      "source_id": "iem_taf",
+      "name": "IEM TAF KDFW",
+      "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/taf.py?station=KDFW&sts=2025-01-01T00:00Z&ets=2025-08-02T00:00Z&fmt=csv",
+      "retrieved_at_utc": "2026-10-31T04:36:56+00:00",
+      "requested_coverage": "2025-01-01..2025-08-02 (end exclusive)",
+      "coverage": "complete_archive",
+      "status": "cached",
+      "hash": "e16947199dc037ebc35b34c4427173c8060fa111c32631d194a45188abfa4d57",
+      "notes": null
+    },
+    {
+      "source_id": "noaa_storm_events",
+      "name": "NOAA Storm Events details 2022",
+      "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2022_c20260625.csv.gz",
+      "retrieved_at_utc": "2026-10-31T04:46:26+00:00",
+      "requested_coverage": "2022",
+      "coverage": "vicinity counties, retrospective",
+      "status": "cached",
+      "hash": "7d6b79d0049a6edec96b061738289daddba90be26fc9afe7b0a6fd617f21452e",
+      "notes": null
+    },
+    {
+      "source_id": "noaa_storm_events",
+      "name": "NOAA Storm Events details 2023",
+      "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2023_c20260323.csv.gz",
+      "retrieved_at_utc": "2026-10-31T04:46:30+00:00",
+      "requested_coverage": "2023",
+      "coverage": "vicinity counties, retrospective",
+      "status": "cached",
+      "hash": "713784bed40d9e5a95b1d6240a654f865f3ef97703713105c7b35437270da134",
+      "notes": null
+    },
+    {
+      "source_id": "noaa_storm_events",
+      "name": "NOAA Storm Events details 2024",
+      "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2024_c20260728.csv.gz",
+      "retrieved_at_utc": "2026-10-31T04:46:35+00:00",
+      "requested_coverage": "2024",
+      "coverage": "vicinity counties, retrospective",
+      "status": "cached",
+      "hash": "2070b83eccab041b36360ab73645b9a249c3eefc5b92b5b3fc0cbba4d9fcc09c",
+      "notes": null
+    },
+    {
+      "source_id": "noaa_storm_events",
+      "name": "NOAA Storm Events details 2025",
+      "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2025_c20260819.csv.gz",
+      "retrieved_at_utc": "2026-10-31T04:46:39+00:00",
+      "requested_coverage": "2025",
+      "coverage": "vicinity counties, retrospective",
+      "status": "cached",
+      "hash": "d9b46b4c6aae554723cadbb9691f3d5258371c02e530ba815d6fe41e4550149f",
+      "notes": null
+    }
+  ],
+  "flights_audit": {
+    "input_rows": 148273,
+    "flight_key_impl": "provisional:src.data_capacity.identity (src.shared absent; verify against Member 2)",
+    "excluded_out_of_date_range": 0,
+    "excluded_no_selected_airport": 122974,
+    "rows_touching_selected_airports": 25299,
+    "excluded_invalid_schedule_fields": 0,
+    "excluded_nonexistent_local_time": 0,
+    "excluded_unresolved_arrival_date": 0,
+    "flagged_dst_ambiguous": 0,
+    "flagged_crs_2400": 0,
+    "collapsed_exact_duplicates": 0,
+    "excluded_conflicting_duplicate_keys": 0,
+    "published_rows": 25299,
+    "unknown_cancellation_status": 0,
+    "missing_dep_delay_noncancelled": 0,
+    "coverage_by_airport": {
+      "ATL": {
+        "departures": 8415,
+        "arrivals": 5429,
+        "departures_by_year": {
+          "2023": 3293,
+          "2024": 3334,
+          "2025": 1788
+        },
+        "arrivals_by_year": {
+          "2023": 2115,
+          "2024": 2024,
+          "2025": 1290
+        }
+      },
+      "DFW": {
+        "departures": 7736,
+        "arrivals": 4032,
+        "departures_by_year": {
+          "2023": 2828,
+          "2024": 3091,
+          "2025": 1817
+        },
+        "arrivals_by_year": {
+          "2023": 1504,
+          "2024": 1579,
+          "2025": 949
+        }
+      }
+    },
+    "coverage_note": "Sampled flights; not complete airport demand. Movements: a flight between two selected airports counts once per airport."
+  },
+  "weather_audit": {
+    "KATL/forecast": {
+      "rows": 61516,
+      "bulletins": 12015,
+      "first_issued_utc": "2022-12-30T01:31:00+00:00",
+      "last_issued_utc": "2025-08-01T23:29:00+00:00",
+      "missing_wind_direction": 8474,
+      "variable_wind": 2830
+    },
+    "KATL/observation": {
+      "rows": 26559,
+      "bulletins": 26558,
+      "first_issued_utc": "2022-12-30T00:52:00+00:00",
+      "last_issued_utc": "2025-08-01T23:52:00+00:00",
+      "missing_wind_direction": 433,
+      "variable_wind": 431
+    },
+    "KDFW/forecast": {
+      "rows": 32476,
+      "bulletins": 8865,
+      "first_issued_utc": "2022-12-30T02:50:00+00:00",
+      "last_issued_utc": "2025-08-01T23:22:00+00:00",
+      "missing_wind_direction": 2626,
+      "variable_wind": 686
+    },
+    "KDFW/observation": {
+      "rows": 26459,
+      "bulletins": 26458,
+      "first_issued_utc": "2022-12-30T00:53:00+00:00",
+      "last_issued_utc": "2025-08-01T23:53:00+00:00",
+      "missing_wind_direction": 433,
+      "variable_wind": 417
+    }
+  },
+  "assumptions": [
+    "METAR available_at = observation time + 10 min (IEM archives no receipt time).",
+    "TAF available_at = issuance + 10 min (issuance-as-availability with latency margin).",
+    "TAF prevailing group valid until the next prevailing group; last group capped at issuance + 24 h.",
+    "TAF older than 12 h at cutoff is treated as stale (not used).",
+    "Runway headings fixed by the challenge: ATL 080, DFW 180 (true).",
+    "No-gust wind: gust = sustained speed. No BKN/OVC/VV layer: ceiling_ft_agl = 30000.",
+    "Flights: arrival-date resolution for non-registry origins uses the implied origin UTC offset (see flights.py)."
+  ],
+  "failures": [],
+  "flight_key_impl": "provisional:src.data_capacity.identity (src.shared absent; verify against Member 2)",
+  "airport_registry": "src.data_capacity.config fallback (src.shared absent)",
+  "limitations": [
+    "Flights are a sample: not complete airport demand; no initial backlog evidence."
+  ],
+  "missing_inputs": [
+    "genuine facility AAR labels (FAA ASPM export)"
+  ]
+}
