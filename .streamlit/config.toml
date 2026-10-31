@@ -1,19 +1,19 @@
 [theme]
 base = "dark"
-primaryColor = "#28C6F4"
-backgroundColor = "#0C1117"
-secondaryBackgroundColor = "#19232E"
-textColor = "#F1F5F9"
-borderColor = "#2A3947"
-linkColor = "#28C6F4"
+primaryColor = "#00D4F5"
+backgroundColor = "#14181B"
+secondaryBackgroundColor = "#20272B"
+textColor = "#EDF1F4"
+borderColor = "#364149"
+linkColor = "#00D4F5"
 baseRadius = "6px"
 buttonRadius = "6px"
 baseFontSize = 14
 font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap, sans-serif"
 showWidgetBorder = true
-dataframeHeaderBackgroundColor = "#19232E"
-dataframeBorderColor = "#2A3947"
-chartCategoricalColors = ["#28C6F4", "#A78BFA", "#62C995"]
+dataframeHeaderBackgroundColor = "#20272B"
+dataframeBorderColor = "#364149"
+chartCategoricalColors = ["#00D4F5", "#8BBBD6", "#69DF82"]
 
 [server]
 headless = true

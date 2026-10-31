@@ -11,10 +11,10 @@ from html import escape
 import streamlit as st
 
 TOKENS = {
-    "bg-app": "#0C1117", "bg-card": "#141C25", "bg-inset": "#19232E", "border": "#2A3947",
-    "text-primary": "#F1F5F9", "text-secondary": "#93A4B5", "text-on-accent": "#0C1117",
-    "cyan": "#28C6F4", "amber": "#F4BC49", "red": "#F26B73", "green": "#62C995", "violet": "#A78BFA",
-    "cat-vfr": "#62C995", "cat-mvfr": "#3B9BFF", "cat-ifr": "#F26B73", "cat-lifr": "#A97BF5",
+    "bg-app": "#14181B", "bg-card": "#1B2023", "bg-inset": "#20272B", "border": "#364149",
+    "text-primary": "#EDF1F4", "text-secondary": "#ADBAC5", "text-on-accent": "#10171B",
+    "cyan": "#00D4F5", "amber": "#FFCD38", "red": "#FF4B4B", "green": "#69DF82", "violet": "#8BBBD6",
+    "cat-vfr": "#69DF82", "cat-mvfr": "#40BAF5", "cat-ifr": "#FF4B4B", "cat-lifr": "#C78ADA",
     "space-xs": "4px", "space-sm": "8px", "space-md": "12px", "space-lg": "16px", "space-xl": "24px",
     "radius-sm": "4px", "radius-md": "6px",
 }
@@ -138,6 +138,13 @@ CSS = _ROOT + """
 .cat-col{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text-secondary);font-size:11px}
 .footnote{color:var(--text-secondary);font-size:11px;line-height:14px;text-align:right}
 .brand-row,.head-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.st-key-scenario-baseline{border:1px solid #A3AFB8!important;background:linear-gradient(145deg,#252B30,#191E22)}
+.st-key-scenario-hold{border:1px solid var(--amber)!important;background:linear-gradient(145deg,#302A1B,#1B2023)}
+.st-key-scenario-reroute{border:1px solid var(--cyan)!important;background:linear-gradient(145deg,#183039,#1B2023)}
+.st-key-scenario-hold strong{color:var(--amber)}
+.st-key-scenario-reroute strong{color:var(--cyan)}
+.st-key-app-header,.st-key-toolbar{background:linear-gradient(180deg,#22282D,#171C20)}
+[class*="st-key-card-"],.tile{box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
 """
 
 # Undocumented Streamlit structure. Each rule is cosmetic, so a rename only loosens the layout.

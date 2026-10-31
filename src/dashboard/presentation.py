@@ -56,8 +56,8 @@ def render(bundle, snapshot, window):
             ('2. Weather · hold', 'Maintain route · illustrative hold', '17:05Z',55,0,300,18),
             ('3. Weather · reroute', 'Illustrative alternate path', '16:30Z',20,120,650,6),
         ]
-        for col, (title, subtitle, arrival, delay, distance, fuel, connections) in zip(cols, scenarios):
-            with col, st.container(border=True):
+        for col, scenario_key, (title, subtitle, arrival, delay, distance, fuel, connections) in zip(cols, ('baseline', 'hold', 'reroute'), scenarios):
+            with col, st.container(border=True, key=f'scenario-{scenario_key}'):
                 st.markdown(f"**{title}**")
                 st.caption(subtitle)
                 st.table(pd.DataFrame({'Field':['Arrival UTC','Added delay','Added distance','Added fuel','Connections at risk'],

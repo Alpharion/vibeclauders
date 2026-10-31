@@ -14,21 +14,21 @@ STATIC = Path(__file__).resolve().parent / "static"
 
 WATCHLIST_CSS = """
 .rail{display:flex;flex-direction:column;gap:12px;font-family:Inter,system-ui,sans-serif}
-.card{display:flex;flex-direction:column;gap:8px;width:100%;box-sizing:border-box;text-align:left;font:inherit;color:#F1F5F9;background:#141C25;border:1px solid #2A3947;border-radius:6px;padding:12px;cursor:pointer}
-.card[aria-pressed=true]{background:#19232E;border-color:#28C6F4}
-.card:focus-visible{outline:2px solid #28C6F4;outline-offset:2px}
+.card{display:flex;flex-direction:column;gap:8px;width:100%;box-sizing:border-box;text-align:left;font:inherit;color:#EDF1F4;background:#1B2023;border:1px solid #364149;border-radius:6px;padding:12px;cursor:pointer}
+.card[aria-pressed=true]{background:linear-gradient(135deg,#17313D,#1B2023);border-color:#00D4F5;box-shadow:inset 0 0 0 1px #00D4F5,0 0 10px #00D4F520}
+.card:focus-visible{outline:2px solid #00D4F5;outline-offset:2px}
 .title{font-size:14px;line-height:20px;font-weight:500}
 .now{display:flex;gap:12px;align-items:center}
-.now svg{width:36px;height:36px;flex:none;fill:none;stroke:#F1F5F9;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.now svg{width:36px;height:36px;flex:none;fill:none;stroke:#EDF1F4;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .line{display:flex;gap:12px;align-items:center;font-size:15px;line-height:20px;font-weight:600}
-.small{color:#93A4B5;font-size:12px;line-height:16px;margin-top:3px}
-.chip{display:inline-block;min-width:30px;text-align:center;padding:3px 7px;border-radius:4px;font-size:11px;line-height:14px;font-weight:600;color:#0C1117;background:#2A3947}
-.chip.VFR{background:#62C995}.chip.MVFR{background:#3B9BFF}.chip.IFR{background:#F26B73}.chip.LIFR{background:#A97BF5}.chip.Unknown{color:#93A4B5;background:#19232E;box-shadow:inset 0 0 0 1px #2A3947}
-hr{width:100%;border:0;border-top:1px solid #2A3947;margin:0}
-.leads{display:flex;gap:4px;align-items:center;color:#93A4B5;font-size:11px;line-height:14px;font-weight:500}
+.small{color:#ADBAC5;font-size:12px;line-height:16px;margin-top:3px}
+.chip{display:inline-block;min-width:30px;text-align:center;padding:3px 7px;border-radius:4px;font-size:11px;line-height:14px;font-weight:600;color:#14181B;background:#364149}
+.chip.VFR{background:#69DF82}.chip.MVFR{background:#40BAF5}.chip.IFR{background:#FF4B4B}.chip.LIFR{background:#C78ADA}.chip.Unknown{color:#ADBAC5;background:#20272B;box-shadow:inset 0 0 0 1px #364149}
+hr{width:100%;border:0;border-top:1px solid #364149;margin:0}
+.leads{display:flex;gap:4px;align-items:center;color:#ADBAC5;font-size:11px;line-height:14px;font-weight:500}
 .status{display:flex;gap:8px;align-items:center;font-size:12px;line-height:16px}
 .status i{width:8px;height:8px;border-radius:50%}
-.status.available{color:#62C995}.status.available i{background:#62C995}.status.cached{color:#F4BC49}.status.cached i{background:#F4BC49}.status.unavailable{color:#F26B73}.status.unavailable i{background:#F26B73}
+.status.available{color:#69DF82}.status.available i{background:#69DF82}.status.cached{color:#FFCD38}.status.cached i{background:#FFCD38}.status.unavailable{color:#FF4B4B}.status.unavailable i{background:#FF4B4B}
 """
 
 WATCHLIST_JS = """
