@@ -238,6 +238,7 @@ def run_all(airports_codes, start, end, *, cache_only=False, refresh=False, flig
                     f"No files matching {_rel(capacity.ASPM_DIR)}/*.csv at run time."],
                 "requested_extract": ASPM_REQUEST,
                 "attempts": load_aar_attempts(),
+                "gate_2_decision": (read_json(capacity.ASPM_DIR / "attempts.json") or {}).get("gate_2_decision"),
                 "overlap_feasibility": "IEM TAF/METAR cover 2022-12-30..2025-08-01 for both airports, so any ASPM extract "
                                        "for 2023-01..2025-07 would overlap fully with cutoff-safe features."},
         "probes": probes,

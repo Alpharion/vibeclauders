@@ -95,3 +95,12 @@ def test_published_json_is_lf(path):
     if not path.exists():
         pytest.skip("not published")
     assert b"\r\n" not in path.read_bytes()
+
+
+def test_decoding_is_independent_of_source_row_order():
+    # IEM returns the same rows in varying order between downloads
+    lines = taf().splitlines()
+    shuffled = "\n".join([lines[0]] + lines[1:][::-1]) + "\n"
+    a = decode_taf(taf(), ATL, "s").reset_index(drop=True)
+    b = decode_taf(shuffled, ATL, "s").reset_index(drop=True)
+    pd.testing.assert_frame_equal(a, b)

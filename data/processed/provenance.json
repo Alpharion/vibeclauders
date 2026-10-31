@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
-  "run_id": "m1-20261031T060631Z-6c6e38",
-  "generated_at_utc": "2026-10-31T06:10:34+00:00",
+  "run_id": "m1-20261031T062924Z-d9dfcd",
+  "generated_at_utc": "2026-10-31T06:32:22+00:00",
   "producer": "member-1/data_capacity",
   "status": "partial",
   "sources": [

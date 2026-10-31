@@ -117,6 +117,8 @@ def decode_metar(text: str, ap: Airport, source_ref: str) -> pd.DataFrame:
     df = pd.read_csv(StringIO(text), comment="#")
     if df.empty:
         return pd.DataFrame()
+    # IEM row order is not stable between downloads; decode in a canonical order
+    df = df.sort_values(["valid", "metar"], kind="stable").reset_index(drop=True)
     obs = pd.to_datetime(df["valid"], utc=True)
     speed = pd.to_numeric(df["sknt"], errors="coerce")
     direction = pd.to_numeric(df["drct"], errors="coerce")
@@ -223,6 +225,9 @@ def decode_taf(text: str, ap: Airport, source_ref: str) -> pd.DataFrame:
     df = pd.read_csv(StringIO(text))
     if df.empty:
         return pd.DataFrame()
+    # IEM row order is not stable between downloads; decode in a canonical order
+    df = df.sort_values(["product_id", "valid", "fx_valid", "ftype", "raw"], kind="stable",
+                        na_position="first").reset_index(drop=True)
     issued = pd.to_datetime(df["valid"], utc=True)
     start = pd.to_datetime(df["fx_valid"], utc=True)
     end = pd.to_datetime(df["fx_valid_end"], utc=True, errors="coerce")
