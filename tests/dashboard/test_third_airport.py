@@ -33,7 +33,7 @@ def test_unregistered_airport_stays_unsupported():
 def test_app_serves_configured_airport(run, tmp_path, registered):
     c.publish_risk(tmp_path, table=kord_predictions())
     app = run(tmp_path)
-    assert "KORD" in app.selectbox(key="airport").options
+    assert "ORD · Chicago" in app.selectbox(key="airport").options
     app.selectbox(key="airport").set_value("KORD").run()
     app.radio(key="horizon").set_value(6).run()
     assert not app.exception
@@ -43,7 +43,7 @@ def test_app_serves_configured_airport(run, tmp_path, registered):
 
 def test_unconfigured_airport_does_not_appear_in_app(run, tmp_path):
     c.publish_risk(tmp_path, table=kord_predictions())
-    assert "KORD" not in run(tmp_path).selectbox(key="airport").options
+    assert not any("ORD" in option for option in run(tmp_path).selectbox(key="airport").options)
 
 
 def test_missing_heading_is_refused_not_guessed(run, tmp_path, monkeypatch):

@@ -62,7 +62,7 @@ def forecast_table(message: dict | None) -> pd.DataFrame:
                 "Condition": period.get("fcstChange") or "Prevailing",
                 "Probability %": period.get("probability"),
                 "Wind kt": period.get("wspd"),
-                "Direction °": period.get("wdir"),
+                "Direction °": str(period.get("wdir", "")),  # Numeric degrees, or VRB when variable.
                 "Gust kt": period.get("wgst"),
                 "Visibility SM": str(period.get("visib", "")),
                 "Weather": period.get("wxString") or "",

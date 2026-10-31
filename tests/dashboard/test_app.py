@@ -35,26 +35,26 @@ def test_launch_with_no_artifacts(run, tmp_path):
 def test_launch_with_partial_artifacts(run, tmp_path):
     c.publish_risk(tmp_path)
     body = text(run(tmp_path))
-    assert "Schedule risk: ✅" in body and "AAR forecast: ⛔" in body
+    assert "Schedule risk: Available" in body and "AAR forecast: Unavailable" in body
     assert "Schedule-only model" in body
 
 
 def test_launch_with_malformed_artifacts(run, root):
     (root / "artifacts/risk/predictions.parquet").write_bytes(b"garbage")
     (root / "artifacts/capacity/manifest.json").write_text("{")
-    assert "Schedule risk: ⛔" in text(run(root))
+    assert "Schedule risk: Unavailable" in text(run(root))
 
 
 def test_valid_artifacts_and_selection_updates_panels(run, root):
     app = run(root)
-    assert "2025-07-15 12:00 UTC" in text(app) and "Flights scored" in [m.label for m in app.metric]
+    assert "Frozen" not in text(app) and "12:00 UTC" in text(app) and "Flights scored" in [m.label for m in app.metric]
     app.radio(key="horizon").set_value(12).run()
     assert "Unsupported selection" in text(app)
-    assert "+12 h lead" in text(app)
+    assert "+12 h." in text(app)
     app.radio(key="horizon").set_value(6).run()
     app.selectbox(key="airport").set_value("KDFW").run()
     body = text(app)
-    assert "KDFW" in body and "No decision output" in body
+    assert "DFW · Forecast picture" in body and "No decision output" in body
 
 
 def test_outcomes_locked_until_reveal(run, root):

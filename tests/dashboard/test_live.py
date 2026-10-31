@@ -107,8 +107,14 @@ def test_live_fetch_leaves_replay_unchanged(app, monkeypatch):
     monkeypatch.setattr(requests, "get", fake_get)
     app.run()
     before = [(m.label, m.value) for m in app.metric]
+    app.radio(key="mode").set_value("Live weather").run()
     app.button(key="live-fetch").click().run()
     assert not app.exception
-    after = [(m.label, m.value) for m in app.metric]
-    assert after[: len(before)] == before
-    assert ("Reported category", "VFR") in after
+    assert ("Reported category", "VFR") in [(m.label, m.value) for m in app.metric]
+    app.radio(key="mode").set_value("Historical replay").run()
+    assert [(m.label, m.value) for m in app.metric] == before
+
+
+def test_variable_wind_direction_stays_one_column_type():
+    message = {"fcsts": [{"timeFrom": 1, "timeTo": 2, "wdir": "VRB"}, {"timeFrom": 2, "timeTo": 3, "wdir": 70}]}
+    assert list(live.forecast_table(message)["Direction °"]) == ["VRB", "70"]

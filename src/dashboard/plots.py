@@ -13,11 +13,12 @@ from src.shared import AIRPORTS
 
 REFERENCE_PATH = Path(__file__).resolve().parents[2] / "data" / "reference" / "airports.json"
 
-SERIES = ["#3987e5", "#d95926", "#199e70"]
-INK = "#f0efec"
-INK_SECONDARY = "#c3c2b7"
-GRID = "#3a3a37"
-SURFACE = "#10151D"
+SERIES = ["#22B8F0", "#A78BFA", "#4ADE9A"]
+FLAG = "#F2B95D"
+INK = "#E7EEF6"
+INK_SECONDARY = "#AFC1D2"
+GRID = "#2B4257"
+SURFACE = "rgba(0,0,0,0)"
 
 
 def _layout(figure: go.Figure, title: str, y_title: str, height: int = 320) -> go.Figure:
@@ -131,7 +132,7 @@ def great_circle(start: tuple[float, float], end: tuple[float, float]) -> tuple[
     return lat, np.degrees(np.arctan2(xyz[:, 1], xyz[:, 0]))
 
 
-def route_map(routes: pd.DataFrame, selected_iata: str, points=None) -> tuple[go.Figure | None, int]:
+def route_map(routes: pd.DataFrame, selected_iata: str, points=None, flagged=frozenset()) -> tuple[go.Figure | None, int]:
     """Return the map and the number of movements lacking coordinates."""
     points = airport_points() if points is None else points
     if selected_iata not in points:
@@ -143,29 +144,44 @@ def route_map(routes: pd.DataFrame, selected_iata: str, points=None) -> tuple[go
             continue
         codes.update((route.origin, route.dest))
         lat, lon = great_circle(points[route.origin], points[route.dest])
-        color = SERIES[0] if route.direction == "Arrival" else SERIES[1]
+        is_flagged = (route.origin, route.dest) in flagged
+        group = "Flagged departure" if is_flagged else route.direction
+        color = FLAG if is_flagged else (SERIES[0] if route.direction == "Arrival" else SERIES[1])
         label = f"{route.origin} → {route.dest}: {route.flights} scheduled {route.direction.lower()}(s)"
         figure.add_scattergeo(
-            lat=lat, lon=lon, mode="lines", line={"color": color, "width": 2}, name=route.direction,
-            legendgroup=route.direction, showlegend=route.direction not in seen,
+            lat=lat, lon=lon, mode="lines", name=group, legendgroup=group, showlegend=group not in seen,
+            line={"color": color, "width": 2, "dash": "dash" if is_flagged else "solid"},
             text=[label] * len(lat), hovertemplate="%{text}<extra></extra>",
         )
-        seen.add(route.direction)
+        seen.add(group)
     ordered = sorted(codes)
     figure.add_scattergeo(
         lat=[points[c][0] for c in ordered], lon=[points[c][1] for c in ordered], text=ordered,
-        mode="markers+text", textposition="top center", textfont={"color": INK, "size": 11},
-        marker={"size": [13 if c == selected_iata else 8 for c in ordered], "color": INK, "line": {"color": SURFACE, "width": 2}},
+        mode="markers+text", textposition="top center", textfont={"color": INK, "size": 12},
+        marker={"size": [15 if c == selected_iata else 8 for c in ordered], "color": INK, "line": {"color": SERIES[0], "width": 2}},
         showlegend=False, hovertemplate="%{text}<extra></extra>",
     )
     figure.update_geos(
-        scope="north america", showland=True, landcolor="#22303D", showlakes=False, bgcolor=SURFACE,
-        showcountries=True, countrycolor=GRID, showsubunits=True, subunitcolor=GRID,
-        lataxis_range=[18, 53], lonaxis_range=[-129, -59],
+        scope="north america", showland=True, landcolor="#16293A", showlakes=True, lakecolor="#0A1520",
+        bgcolor="rgba(0,0,0,0)", showcountries=True, countrycolor=GRID, showsubunits=True, subunitcolor=GRID,
+        showcoastlines=True, coastlinecolor=GRID, lataxis_range=[22, 50], lonaxis_range=[-125, -65],
     )
-    _layout(figure, "Scheduled connections (schematic)", "", 470)
-    figure.update_layout(hovermode="closest")
+    _layout(figure, "", "", 470)
+    figure.update_layout(hovermode="closest", margin={"l": 0, "r": 0, "t": 8, "b": 0})
     return figure, unmapped
+
+
+def ceiling_by_lead(leads: list[str], ceilings: list[float]) -> go.Figure:
+    figure = go.Figure(
+        go.Scatter(
+            x=leads, y=ceilings, mode="lines+markers+text", text=[f"{c:,.0f} ft" for c in ceilings],
+            textposition="top center", textfont={"color": INK}, line={"color": SERIES[0], "width": 2},
+            marker={"size": 9}, hovertemplate="%{x}: %{y:,.0f} ft<extra></extra>",
+        )
+    )
+    _layout(figure, "", "Ceiling (ft AGL)", 250)
+    figure.update_layout(margin={"l": 56, "r": 20, "t": 22, "b": 34}, hovermode="closest")
+    return figure
 
 
 def aar_lines(rows: pd.DataFrame, icao: str, horizon: int) -> go.Figure:
