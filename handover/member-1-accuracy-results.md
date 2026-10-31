@@ -69,3 +69,15 @@ Implementation details and focused tests: `arrival-inputs-results.md`, `capacity
 ## Follow-up priority
 
 Present the working model, actual baseline comparisons, a failure case and provenance first. Next model work should test a predeclared better capacity proxy or severe-weather treatment with chronological evaluation and adequate support; sparse severe regimes and missing uncertainty remain real gaps. Any whole-airport scaling needs independent coverage assumptions/evidence. Demonstrating operational delay savings requires a separately validated intervention simulation. These are follow-ups, not claims of this 15-minute delivery.
+
+## Team handoff
+
+Fetch `origin/codex/member-1-accuracy-integration` and review it against main. Use a clean checkout; keep existing local work intact. Install the repository requirements, then run `python -m tools.delivery.verify_release` and `python -m streamlit run app.py`.
+
+Demo: Historical replay, ATL, cutoff 12 July 2025 20:00 UTC, +3h, outcomes hidden. In Compare → Proposed actions, inspect the two departure review priorities, then the illustrative scenario's assumptions, capacity anchor and estimated backlog. Change airport/lead to check exact-key handling. Reveal outcomes only when demonstrating the false alarm. The old operational decision snapshot is still separately gated and is not substituted at a different key.
+
+Merge after reviewing the current combined verification and performing the browser/map/rehearsal checks in `SUBMISSION-CHECKLIST.md`. This branch does not alter the published risk/capacity models or original operational decision publication. The three experiment/validation chats are complete; subsequent missing-input work was implemented by parallel agents in this integration checkout.
+
+## Final automated verification
+
+Stable extracted-package gate: **verified**, 501 tests passed, risk verifier exit 0 and 13 app smoke checks passed. Runtime fingerprint: `52ecbb7c5a0aacc3ac7889be7a391987cab27f4fabf1a7cb6e038e3996eaec49`. Published artifacts/data/dependencies are byte-unchanged against integrated main. Final commit and ZIP hash are in the adjacent package receipt after documentation freeze. Human browser/map checks, rehearsal and supervisor acceptance remain pending.

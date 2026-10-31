@@ -2,9 +2,9 @@
   "member": "1",
   "baseline_commit": "737b46852c2d4b98e7c01e68ed7e3888f6542c5c",
   "result_commit": "5805f89b8ae908b330e1e981536f52ae1725c2ee",
-  "state": "integration_verification_in_progress",
+  "state": "ready_for_review",
   "started_at_utc": "2026-10-31T07:19:14Z",
-  "updated_at_utc": "2026-10-31T07:32:00Z",
+  "updated_at_utc": "2026-10-31T08:01:25.776372+00:00",
   "elapsed_minutes": 13,
   "p0_completed": [
     "Traffic-chart crash fixed: reporting_chart draws the cutoff as a shape plus a separate annotation; test_actual_traffic_counts_need_reveal passes with masking unchanged",
@@ -86,7 +86,7 @@
     "Windows only; Linux not run from this machine"
   ],
   "next_steps": [
-    "Complete combined gate and push integration branch for review",
+    "Review and merge codex/member-1-accuracy-integration",
     "Human browser/map check and three-minute rehearsal",
     "Independent capacity validation and intervention evaluation remain future work"
   ],
@@ -99,6 +99,7 @@
     "consumer_validation": "implemented",
     "missing_input_followup": "implemented as explicit illustrative scenario and exact-key dashboard review priorities",
     "details": "handover/member-1-accuracy-results.md",
-    "combined_gate": "pending stable-tree verification"
+    "combined_gate": "verified: 501 tests passed; risk verifier and 13 real-artifact app checks passed",
+    "runtime_fingerprint": "52ecbb7c5a0aacc3ac7889be7a391987cab27f4fabf1a7cb6e038e3996eaec49"
   }
 }

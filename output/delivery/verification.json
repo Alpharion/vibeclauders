@@ -2,27 +2,27 @@
   "schema_version": "1.0",
   "status": "verified",
   "scope": "combined_runtime",
-  "generated_at_utc": "2026-10-31T07:39:25.863833+00:00",
+  "generated_at_utc": "2026-10-31T08:01:07.754568+00:00",
   "source": {
-    "commit": "ddc7b24a520b0a4776440240dfccaa72fb14f953",
+    "commit": "0fe43855efbdb18d3b979472cd7b922fdadffb98",
     "dirty": true,
-    "status": "M output/delivery/VERIFICATION.md\n M output/delivery/controller-brief.json\n M output/delivery/verification.json",
-    "branch": "codex/challenge5-readiness-reviewed"
+    "status": "M handover/member-1-accuracy-results.md\n M output/delivery/VERIFICATION.md\n M output/delivery/verification.json",
+    "branch": "codex/member-1-accuracy-integration"
   },
-  "runtime_fingerprint": "8303c9cb6eb5126446e8af66dd225863ce5cd70bdfae14161bf0784450989c15",
+  "runtime_fingerprint": "52ecbb7c5a0aacc3ac7889be7a391987cab27f4fabf1a7cb6e038e3996eaec49",
   "runtime_unchanged": true,
   "tested_archive": {
-    "archive": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\tested.zip",
-    "sha256": "17cef3d04aafa89f6ac700ad82049f84a72870eeb54d49031032737e494ad966",
-    "payload_files": 148,
-    "archive_bytes": 32372659,
+    "archive": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-ywb2nmxy\\tested.zip",
+    "sha256": "b195d6403b5931036621253b8e0e80d4daa7a5c2eaaab1f94bf38fce924cabf1",
+    "payload_files": 171,
+    "archive_bytes": 32435001,
     "source": {
-      "commit": "ddc7b24a520b0a4776440240dfccaa72fb14f953",
+      "commit": "39db77537b02b06e1001378d484a90fd77131614",
       "dirty": true,
-      "status": "M output/delivery/controller-brief.json",
-      "branch": "codex/challenge5-readiness-reviewed"
+      "status": "M handover/JUDGING-DEMO.md\n M handover/member-1-weather-accuracy-results.json\n M handover/member-1-weather-accuracy-results.md\n M output/delivery/VERIFICATION.md\n M output/delivery/verification.json\n M src/dashboard/app.py\n M src/dashboard/views.py\n M src/data_capacity/weather_accuracy.py\n M tools/delivery/package.py\n?? handover/arrival-inputs-results.md\n?? handover/capacity-scenario-results.md\n?? handover/member-1-accuracy-results.md\n?? output/delivery/arrival-scenario.json\n?? src/flight_risk/arrival_inputs.py\n?? src/flight_risk/arrival_scenario.py\n?? src/flight_risk/capacity_scenario.py\n?? tests/dashboard/test_review_actions.py\n?? tests/flight_risk/test_arrival_inputs.py\n?? tests/flight_risk/test_arrival_scenario.py\n?? tests/flight_risk/test_capacity_scenario.py\n?? tools/delivery/arrival_scenario.py",
+      "branch": "codex/member-1-accuracy-integration"
     },
-    "runtime_fingerprint": "8303c9cb6eb5126446e8af66dd225863ce5cd70bdfae14161bf0784450989c15",
+    "runtime_fingerprint": "52ecbb7c5a0aacc3ac7889be7a391987cab27f4fabf1a7cb6e038e3996eaec49",
     "verification_status": "unverified_or_stale_execution_evidence",
     "producer_runs": [
       "m1-20261031T065014Z-eacdd5",
@@ -40,8 +40,8 @@
         "verify"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 3.34,
-      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\risk_verify.log",
+      "elapsed_seconds": 6.57,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-ywb2nmxy\\risk_verify.log",
       "log_sha256": "9de83d24e4d4b385b14018ebc56f605deb56ee465060b822e7c38b418c54a6c5"
     },
     {
@@ -53,20 +53,20 @@
         "-q",
         "--tb=short",
         "--basetemp",
-        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\pytest",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-ywb2nmxy\\pytest",
         "--junitxml",
-        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\pytest.xml"
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-ywb2nmxy\\pytest.xml"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 68.61,
-      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\full_suite.log",
-      "log_sha256": "79bb38eb9e209da2d23ea641a4820a1e0dbae4c38d6fea9209c24da643441d13",
+      "elapsed_seconds": 135.79,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-ywb2nmxy\\full_suite.log",
+      "log_sha256": "43fa5261f6fea047f787ad44dca384caa0a204518db1b97e0eb9a2e55fd6a98f",
       "test_counts": {
-        "tests": 395,
+        "tests": 501,
         "failures": 0,
         "errors": 0,
         "skipped": 0,
-        "passed": 395
+        "passed": 501
       }
     },
     {
@@ -75,12 +75,12 @@
         "-m",
         "tools.delivery.smoke_app",
         "--report",
-        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\app.json"
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-ywb2nmxy\\app.json"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 19.06,
-      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\app_smoke.log",
-      "log_sha256": "7e4ce6ddaeb8e68fb4441916c57378a5100b546975bb15bf709d085504762f50",
+      "elapsed_seconds": 43.52,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-ywb2nmxy\\app_smoke.log",
+      "log_sha256": "095e3ed3930dd339cae0c79e4cc6b9db6c7424d2742487f7d030a7f6e9a407fc",
       "app_result": {
         "status": "passed",
         "checks": [
