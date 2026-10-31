@@ -31,7 +31,8 @@ from .features import FEATURE_COLUMNS
 ASPM_DIR = PUBLIC_DIR / "aspm"
 LABEL_KIND = "facility_aar"
 MODEL_VERSION = "aar-hgb-v1"
-EXTRA_FEATURES = ["crosswind_upper_kt", "crosswind_gust_kt", "cond_thunderstorm_flag", "cond_min_visibility_sm",
+EXTRA_FEATURES = ["crosswind_upper_kt", "crosswind_gust_kt", "frozen_precip_flag", "cond_frozen_precip_flag",
+                  "obs_frozen_precip_flag", "cond_thunderstorm_flag", "cond_min_visibility_sm",
                   "cond_min_ceiling_ft_agl", "cond_max_gust_kt", "obs_wind_speed_kt", "obs_crosswind_kt",
                   "obs_tailwind_kt", "obs_visibility_sm", "obs_ceiling_ft_agl", "obs_precip_flag",
                   "obs_thunderstorm_flag"]
