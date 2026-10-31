@@ -14,7 +14,8 @@ import numpy as np
 import pandas as pd
 
 from src.shared import AIRPORTS
-from .data import HORIZONS, expand_horizons, join_weather, load_flights
+from .data import HORIZONS, WEATHER_FEATURES, expand_horizons, join_weather, load_flights
+from .evaluation import retrospective_evaluation
 from .metrics import classification_metrics, normalized_delay_metrics, reliability_bins
 from .model import baseline_probabilities, choose_threshold, fit_candidates, fit_historical_baseline
 
@@ -63,10 +64,11 @@ def _metric_rows(test, probabilities, thresholds, baseline_probs, baseline_thres
     return rows, details
 
 
-def _sources(sample_path, canonical_path, weather_features_path):
+def _sources(sample_path, canonical_path, weather_features_path, storm_events_path=None):
     paths = [Path(canonical_path)] if canonical_path and Path(canonical_path).exists() else [Path(sample_path)]
-    if weather_features_path and Path(weather_features_path).exists():
-        paths.append(Path(weather_features_path))
+    for optional in [weather_features_path, storm_events_path]:
+        if optional and Path(optional).exists():
+            paths.append(Path(optional))
     records = []
     for path in paths:
         digest = sha256()
@@ -81,7 +83,7 @@ def _runtime():
     return {"python": platform.python_version(), "python_executable": sys.executable, "platform": platform.platform(), "libraries": {name: version(name) for name in ["numpy", "pandas", "scipy", "scikit-learn", "pyarrow", "joblib"]}}
 
 
-def build_artifacts(sample_path, canonical_path=None, weather_features_path=None, airport_registry=None):
+def build_artifacts(sample_path, canonical_path=None, weather_features_path=None, airport_registry=None, storm_events_path=None):
     registry = airport_registry or AIRPORTS
     flights = load_flights(sample_path, canonical_path, registry)
     train = flights.eligible[flights.eligible.split.eq("train")]
@@ -95,6 +97,7 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
     test = test_candidate[test_candidate.asof_utc.ge(selection_end)].copy().reset_index(drop=True)
     if test.empty:
         raise ValueError("No held-out test predictions after model-selection cutoff")
+    weather_table = None
     weather_model, weather_report, weather_matched = None, {"status": "unavailable", "reason": "No cutoff-safe engineered weather features supplied"}, []
     limitations = [
         "Flight source coverage is retained; sample predictions are not complete airport demand.",
@@ -109,7 +112,8 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
         weather_report["reason"] = f"Requested weather features path does not exist: {weather_features_path}"
     if weather_features_path is not None and Path(weather_features_path).exists():
         try:
-            joined, weather_audit = join_weather(expanded, pd.read_parquet(weather_features_path))
+            weather_table = pd.read_parquet(weather_features_path)
+            joined, weather_audit = join_weather(expanded, weather_table)
             weather_train = joined[joined.split.eq("train") & joined.weather_available]
             weather_validation = joined[joined.split.eq("validation") & joined.weather_available]
             weather_model_candidate = fit_candidates(weather_train, weather_validation, include_weather=True)
@@ -170,7 +174,10 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
     predictions["weather_available_at_utc"] = test.weather_available_at_utc if "weather_available_at_utc" in test else pd.Series(pd.NaT, index=predictions.index, dtype="datetime64[ns, UTC]")
     baseline_probs = baseline_probabilities(historical_baseline, test)
     metrics, detail = _metric_rows(test, probabilities, thresholds, baseline_probs, baseline_threshold)
-    sources = _sources(sample_path, canonical_path, weather_features_path)
+    sources = _sources(sample_path, canonical_path, weather_features_path, storm_events_path)
+    # Outcome/storm-based evaluation runs only after every prediction is fixed.
+    retrospective = retrospective_evaluation(test, probabilities, thresholds, model_kind, baseline_probs, baseline_threshold, WEATHER_FEATURES, storm_events_path, weather_table)
+    capabilities["storm_cohort_evaluation"] = {"status": retrospective["storm_annotation"]["status"], "use": "retrospective evaluation only"}
     evaluation = {
         "schema_version": SCHEMA_VERSION, "run_id": run_id, "generated_at_utc": generated, "producer": "member-2", "runtime": runtime,
         "status": "available" if (model_kind == "weather_enhanced").all() else "partial",
@@ -186,6 +193,7 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
         "prediction_rows": int(len(predictions)), "unique_test_flights": int(predictions.flight_id.nunique()),
         "excluded_test_horizon_rows_before_selection_end": int(len(test_candidate) - len(test)),
         "limitations": limitations, "sources": sources, "missing_inputs": missing_inputs, "capabilities": capabilities,
+        **retrospective,
     }
     failed = test[(probabilities >= thresholds).astype(int) != test.severe_delay.to_numpy()].copy()
     evaluation["failure_case"] = None
@@ -219,8 +227,8 @@ def _atomic(path, writer):
     temporary.replace(path)
 
 
-def run_pipeline(sample_path, output_dir, canonical_path=None, weather_features_path=None, airport_registry=None):
-    artifacts = build_artifacts(sample_path, canonical_path, weather_features_path, airport_registry)
+def run_pipeline(sample_path, output_dir, canonical_path=None, weather_features_path=None, airport_registry=None, storm_events_path=None):
+    artifacts = build_artifacts(sample_path, canonical_path, weather_features_path, airport_registry, storm_events_path)
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
     _atomic(output / "predictions.parquet", lambda path: artifacts.predictions.to_parquet(path, index=False))
