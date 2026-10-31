@@ -5,3 +5,9 @@
 aspm/*
 !aspm/README.md
 !aspm/attempts.json
+!bts/
+bts/*
+!bts/filtered/
+!bts/filtered/*.parquet
+!bts/filtered/*.meta.json
+!bts/filtered/README.md
