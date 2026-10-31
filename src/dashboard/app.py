@@ -88,24 +88,23 @@ def controls(bundle: Bundle) -> tuple[Snapshot | None, int]:
     return snapshot, st.session_state["window"]
 
 
-def cutoff_control(bundle: Bundle, index: pd.DataFrame, icao: str, airport) -> Snapshot:
+def cutoff_control(bundle: Bundle, index: pd.DataFrame, icao: str, airport) -> Snapshot | None:
     horizon = st.session_state["horizon"]
-    rows, busiest, date, hour = choose_cutoff(index, icao, horizon)
-    stamp = views.utc(f"{date} {hour}")
-    counts = views.scored_counts(index, icao, horizon)
-    dates = sorted(rows["asof_utc"].dt.strftime("%Y-%m-%d").unique())
-    per_date = counts.groupby(counts.index.strftime("%Y-%m-%d")).sum()
-    with st.popover(f"Replay cutoff · {stamp:%d %b %Y · %H:%M} UTC", icon=":material/calendar_month:", key=f"cutoff-{icao}"):
-        jump_to(bundle, icao, busiest)
-        date = st.selectbox("Date (UTC)", dates, key=f"date-{icao}", format_func=lambda d: f"{d} · {per_date.get(d, 0)} scored")
-        on_date = rows[rows["asof_utc"].dt.strftime("%Y-%m-%d") == date]
-        hours = sorted(on_date["asof_utc"].dt.strftime("%H:%M").unique())
-        hour = st.selectbox(
-            "Hour (UTC)", hours, key=f"hour-{icao}-{date}",
-            format_func=lambda h: f"{h} · {counts.get(views.utc(f'{date} {h}'), 0)} scored",
-        )
-        st.number_input("Planning window (hours)", 1, 24, key="window")
-    return Snapshot(airport, views.utc(f"{date} {hour}"), horizon)
+    busiest = views.busiest_cutoffs(index, icao, horizon, count=10)
+    if busiest.empty:
+        st.info("No scored replay timings for this airport and horizon.")
+        return None
+    options = busiest["asof_utc"].tolist()
+    counts = busiest.set_index("asof_utc")["predictions"]
+    key = f"top-replay-{icao}-{horizon}"
+    if st.session_state.get(key) not in options:
+        st.session_state[key] = options[0]
+    stamp = st.selectbox(
+        "Top 10 replay timings · most scored first", options, key=key, width=370,
+        format_func=lambda t: f"{t:%d %b %Y %H:%M} UTC · {int(counts.loc[t])} scored",
+        help="Ranked by scored flights for the selected airport and horizon. Ties use earliest cutoff first.",
+    )
+    return Snapshot(airport, stamp, horizon)
 
 
 def jump_to(bundle: Bundle, icao: str, busiest: pd.DataFrame) -> None:

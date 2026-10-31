@@ -167,8 +167,8 @@ CSS = _ROOT + """
 .flight-risk-card.red{background:linear-gradient(110deg,#342637,#142238)}
 .st-key-main{max-width:1700px;margin:0 auto;width:100%}
 @media(min-width:1100px){
- .st-key-main:has(.st-key-card-flight-watchlist){height:calc(100dvh - min(var(--watchlist-height,200px),50dvh) - 135px)!important;max-height:calc(100dvh - min(var(--watchlist-height,200px),50dvh) - 135px)!important;min-height:0!important;overflow-y:auto;padding-bottom:20px}
- .st-key-card-flight-watchlist{position:fixed!important;bottom:12px;left:28px;right:28px;width:auto!important;z-index:2147483000;height:min(var(--watchlist-height,200px),50dvh);max-height:50dvh;overflow:hidden;box-shadow:0 -12px 32px #050D1A99;padding:16px 20px}
+ .st-key-main:has(.st-key-card-flight-watchlist){height:calc(100dvh - min(200px,50dvh) - 135px)!important;max-height:calc(100dvh - min(200px,50dvh) - 135px)!important;min-height:0!important;overflow-y:auto;padding-bottom:20px}
+ .st-key-card-flight-watchlist{position:fixed!important;bottom:12px;left:28px;right:28px;width:auto!important;z-index:2147483000;height:min(200px,50dvh);max-height:50dvh;overflow:hidden;box-shadow:0 -12px 32px #050D1A99;padding:16px 20px}
  .st-key-card-flight-watchlist .flight-risk-grid{display:grid;grid-template-columns:repeat(var(--flight-columns,3),minmax(0,1fr));gap:20px}
  .st-key-card-flight-watchlist .flight-risk-card{flex:0 0 250px}
 }

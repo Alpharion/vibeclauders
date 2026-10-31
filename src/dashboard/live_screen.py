@@ -65,7 +65,6 @@ def panel(replay_mode: str, footer: str, interval: int | None) -> None:
                 with st.container(horizontal=True, vertical_alignment="center"):
                     theme.title(f"{AIRPORTS[icao]['iata']} · Live weather", "Selected airport · current conditions and outlook")
                     st.space("stretch")
-                    st.button("Return to replay →", key="live-return", on_click=return_to_replay, args=(replay_mode,), width="content")
                 if feed is None:
                     st.info("Nothing is fetched until you ask, so replay and offline demos need no network.")
                 else:

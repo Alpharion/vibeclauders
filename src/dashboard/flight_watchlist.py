@@ -28,26 +28,13 @@ def flight_cards(rows):
     return f'<div class="flight-risk-grid" style="--flight-columns:{columns}">' + ''.join(cards) + '</div>'
 
 
-def resize_watchlist(delta):
-    st.session_state["watchlist-height"] = max(140, min(440, st.session_state.get("watchlist-height", 200) + delta))
-
-
-def reset_watchlist():
-    st.session_state["watchlist-height"] = 200
-
-
 def render(bundle, snapshot):
     if snapshot is None:
         return
-    height = st.session_state.setdefault("watchlist-height", 200)
-    st.html(f"<style>:root{{--watchlist-height:{height}px}}</style>")
     with st.container(border=True, key="card-flight-watchlist"):
         with st.container(horizontal=True, vertical_alignment="center", key="watchlist-controls"):
             theme.card_title(f"{snapshot.airport.iata} · Flight watchlist · +{snapshot.horizon_hours}h")
             st.space("stretch")
-            st.button("− Shrink", key="watchlist-shrink", on_click=resize_watchlist, args=(-60,), disabled=height <= 140, width="content")
-            st.button("+ Expand", key="watchlist-grow", on_click=resize_watchlist, args=(60,), disabled=height >= 440, width="content")
-            st.button("Reset", key="watchlist-reset", on_click=reset_watchlist, width="content")
         with st.container(key="watchlist-body"):
             scored = views.risk_rows(bundle, snapshot)
             flights = bundle.table("flights")
@@ -61,7 +48,7 @@ def render(bundle, snapshot):
             else:
                 rows = pd.DataFrame()
             if rows.empty:
-                st.info("No sampled departures at this target hour. Change the cutoff using ‘Jump to’ for a populated snapshot. No flights or risk scores are fabricated.")
+                st.info("No sampled departures at this target hour. Choose another top replay timing or horizon. No flights or risk scores are fabricated.")
                 return
             if "carrier" in rows and "flight_number" in rows:
                 rows["Flight"] = rows["carrier"].astype("string").fillna("") + " " + rows["flight_number"].astype("string").fillna("")
