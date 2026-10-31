@@ -103,6 +103,35 @@ def risk_rows(bundle: Bundle, snapshot: Snapshot) -> pd.DataFrame | None:
     return rows
 
 
+def review_priorities(bundle: Bundle, snapshot: Snapshot) -> tuple[dict | None, str | None]:
+    """Cutoff-safe human review, independent of operational queue prerequisites.
+
+    Use prediction evidence only: no observed flight outcomes or nearby-key fallback.
+    The bundle loader already verified the producer's publication hashes.
+    """
+    from tools.delivery.controller_brief import summarize
+
+    rows = bundle.table("predictions")
+    if rows is None:
+        return None, bundle.problem("predictions")
+    group = bundle.groups.get("risk")
+    manifest = group.manifest if group is not None else None
+    if not manifest or manifest.get("status") not in ("available", "partial"):
+        return None, "No usable risk publication supports review priorities."
+    try:
+        brief = summarize(rows, snapshot.airport.icao, snapshot.asof_utc,
+                          snapshot.horizon_hours, manifest.get("run_id"))
+    except (ValueError, TypeError, KeyError, OverflowError) as error:
+        return None, f"Prediction evidence rejected: {error}"
+    # The CLI's separate-brief limitation is not applicable to this dashboard view.
+    brief["limitations"] = [
+        "Historical replay; sampled departures, not complete airport traffic.",
+        "Human review priorities only; probabilities are not calibrated guarantees.",
+        "No flight times, metering rates or routing instructions are issued.",
+    ]
+    return brief, None
+
+
 def scored_flights(flights: pd.DataFrame, snapshot: Snapshot) -> pd.DataFrame:
     """Departures in [target, target+1h), the cohort the risk model scores."""
     start = snapshot.target_hour_utc

@@ -31,20 +31,9 @@ B = incumbent; A = candidate. RMSE targets high-demand observed reporting-carrie
 
 Window snapshots: 17574; common eligible: 5325; distinct airport/target-hour pairs across leads: 1775. Excluded for demand/input criteria: 12249; missing observed: 0; missing/future features: 0; unavailable predictions B/A: 0/0.
 
-### Updated January–July 2025 backtest
+### Test-set disclosure
 
-|Airport|Lead|n|Pinball B → A|RMSE B → A|Coverage B → A|
-|---|---:|---:|---:|---:|---:|
-|KATL|3|827|2.052588 → 2.036929|22.666040 → 22.325759|0.9722 → 0.9686|
-|KATL|6|827|2.062733 → 2.045345|22.764349 → 22.420705|0.9722 → 0.9698|
-|KATL|12|827|2.067110 → 2.032950|22.762668 → 22.131839|0.9710 → 0.9577|
-|KDFW|3|1412|2.366898 → 2.366013|22.286786 → 22.183854|0.8697 → 0.8697|
-|KDFW|6|1412|2.373626 → 2.373654|22.067795 → 21.980277|0.8654 → 0.8654|
-|KDFW|12|1412|2.366997 → 2.365496|21.838222 → 21.793446|0.8640 → 0.8619|
-
-Window snapshots: 30522; common eligible: 6717; distinct airport/target-hour pairs across leads: 2239. Excluded for demand/input criteria: 23805; missing observed: 12; missing/future features: 0; unavailable predictions B/A: 0/0.
-
-2025 was inspected previously by the team. This is an updated held-out backtest, not pristine external validation. Rejection was locked on late-2024 metrics before computing these values, and was not changed by 2025. Deterministic regeneration during report/check completion reproduced the identical decision; no candidate parameters were tuned.
+The initial branch inspected 2025 after locking rejection. Integration removed that comparison from the final evidence because its window included cutoffs before selection ended. The final experiment skips test-set scoring for a rejected candidate; any accepted-candidate replay now requires cutoff >= selection end. The late-2024 results and rejection are unchanged. Neither the existing team backtest nor that earlier inspection is pristine external validation. No further tuning used 2025.
 
 ## Support and failure
 
@@ -56,7 +45,7 @@ Failure example: {'airport': 'KATL', 'target_hour_utc': '2024-09-03 12:00:00+00:
 
 ## Reproduction and checks
 
-`python -m src.data_capacity.weather_accuracy` exits 0 and writes the machine-readable report. It verifies committed capacity manifest/input hashes before loading, stores those hashes and source hashes, stores both fitted models, locks validation selection before reporting 2025, and never calls publish or modifies production behavior.
+`python -m src.data_capacity.weather_accuracy` exits 0 and writes the machine-readable report. It verifies committed capacity manifest/input hashes before loading, stores those hashes and source hashes, stores both fitted models, locks validation selection and skips test scoring after rejection, and never calls publish or modifies production behavior.
 
 `python -m pytest tests/data_capacity/test_capacity_weather_accuracy.py tests/data_capacity/test_capacity_estimate.py tests/dashboard/test_capacity_estimate.py -q` initially exited 1: 14 passed, 19 fixture setup errors because the sandbox default temporary directory could not be created. No assertion failures.
 
@@ -68,4 +57,4 @@ Rerun with TEMP/TMP pointing to checkout `tmp/weather-test-runtime`, plus `--bas
 
 No facility AAR labels exist. Capacity remains a reporting-carrier throughput proxy; no whole-airport scaling, invented intervals, operational savings, or queue activation. Production source, risk/data/dependencies/shared source and all published artifacts remain unchanged. No 2025 tuning. This branch adds only the reusable experiment, tests, and these two reports. No new publication run exists.
 
-Delivery: local commit complete. Default git push failed resolving GitHub (getaddrinfo thread failed). An elevated push was rejected by automatic approval review because it deemed the GitHub destination/source-and-results payload insufficiently authorized. No workaround attempted; coordinator can integrate the local commit. Explicit approval is required to push this branch/payload to https://github.com/Alpharion/vibeclauders.git.
+Delivery: local commit complete. Default git push failed resolving GitHub (getaddrinfo thread failed). An elevated push was rejected by automatic approval review because it deemed the GitHub destination/source-and-results payload insufficiently authorized. No workaround attempted; coordinator can integrate the local commit. That branch remains local. The coordinator has the user’s earlier explicit GitHub push/handoff instructions and is publishing the reviewed integration separately; see member-1-accuracy-results.md for delivery status.

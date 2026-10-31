@@ -124,9 +124,14 @@ def run(output: Path):
               "experiment_sha256": sha256_file(Path(__file__)), "validation": validation, "decision_locked_before_2025": locked,
               "model": candidate, "incumbent_model": incumbent,
               "publication_changed": False}
-    # Choice above is immutable: test metrics cannot reject/adopt the candidate.
-    result["updated_2025_backtest"] = score(snap, incumbent, candidate, snap.split == "test")
-    result["test_disclosure"] = "2025 already inspected by team; updated held-out backtest, not pristine external validation. Not used in selection."
+    # Rejected candidates do not warrant another test-set evaluation. For an
+    # accepted candidate, only cutoffs after selection can represent a replay.
+    selection_end = ce._boundary_utc(resolve_airports(["KATL", "KDFW"]), "2024-12-31")
+    result["updated_2025_backtest"] = (
+        score(snap, incumbent, candidate, (snap.split == "test") & (snap.asof_utc >= selection_end))
+        if locked["adopt"] else None
+    )
+    result["test_disclosure"] = "2025 previously inspected by team and the initial weather experiment; not pristine external validation. Final report skips rescoring a rejected candidate. Any accepted-candidate replay excludes cutoffs before selection ended."
     output.write_text(json.dumps(result, indent=2, allow_nan=False), encoding="utf-8")
     print(json.dumps(locked))
 
