@@ -1,0 +1,20 @@
+{
+  "member": null,
+  "baseline_commit": "737b46852c2d4b98e7c01e68ed7e3888f6542c5c",
+  "result_commit": null,
+  "state": "not_started",
+  "started_at_utc": null,
+  "updated_at_utc": null,
+  "elapsed_minutes": null,
+  "p0_completed": [],
+  "owned_files_changed": [],
+  "artifacts": [],
+  "checks": [],
+  "frozen_input_hashes_unchanged": null,
+  "used_other_member_new_outputs": false,
+  "known_inherited_failures": [],
+  "new_failures": [],
+  "limitations": [],
+  "next_steps": [],
+  "supervisor_acceptance": null
+}
