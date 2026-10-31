@@ -70,3 +70,18 @@ def render_weather_actions(row, snapshot, bundle=None):
         st.caption("Uses the same published predictions and probability ≥ threshold rule as the selected airport's risk view. Pairing means shared forecast exposure, not a causal explanation of a flight's prediction; schedule-only predictions remain labelled by model kind.")
     st.caption("Review triggers: thunderstorm flag; visibility <3 SM; ceiling <1,000 ft AGL; gusts ≥25 kt. These are screening thresholds, not airport or aircraft operating limits. Conditional groups describe possible conditions, not a probability. Human review is required; no clearance, rescheduling or measured benefit is implied.")
     st.caption("Historical METAR base rates below provide context only and do not trigger these recommendations. Later observations revealed for evaluation are excluded.")
+
+
+def render_priority_actions(bundle, snapshot):
+    """Keep triggered operational follow-ups above the weather/map panels."""
+    from src.dashboard import views
+    row, _ = views.weather_feature_row(bundle, snapshot)
+    items, problem = recommendations(row, snapshot.asof_utc)
+    if items:
+        st.markdown("### Priority weather follow-up")
+        for item in items:
+            st.warning(f"**{item['Condition']} · {item['Forecast basis']}** — {item['Recommended review']}")
+        flights = paired_flights(bundle, snapshot)
+        st.caption(f"{len(flights)} departures flagged in this watchlist. Confirm operational restrictions before acting.")
+    elif problem:
+        st.warning("Weather inputs unavailable — obtain the latest METAR/TAF and confirm restrictions with operations. Follow-up placeholder; current hazards are unverified.")

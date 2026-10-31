@@ -167,12 +167,12 @@ CSS = _ROOT + """
 .flight-risk-card.red{background:linear-gradient(110deg,#342637,#142238)}
 .st-key-main{max-width:1700px;margin:0 auto;width:100%}
 @media(min-width:1100px){
- .st-key-main:has(.st-key-card-flight-watchlist){height:calc(100dvh - 365px)!important;max-height:calc(100dvh - 365px)!important;min-height:0!important;overflow-y:auto;padding-bottom:20px}
- .st-key-card-flight-watchlist{position:fixed!important;bottom:12px;left:28px;right:28px;width:auto!important;z-index:2147483000;height:230px;max-height:230px;overflow:auto;box-shadow:0 -12px 32px #050D1A99;padding:16px 20px}
- .st-key-card-flight-watchlist .flight-risk-grid{display:flex;overflow-x:auto;gap:16px}
+ .st-key-main:has(.st-key-card-flight-watchlist){height:calc(100dvh - min(var(--watchlist-height,200px),50dvh) - 135px)!important;max-height:calc(100dvh - min(var(--watchlist-height,200px),50dvh) - 135px)!important;min-height:0!important;overflow-y:auto;padding-bottom:20px}
+ .st-key-card-flight-watchlist{position:fixed!important;bottom:12px;left:28px;right:28px;width:auto!important;z-index:2147483000;height:min(var(--watchlist-height,200px),50dvh);max-height:50dvh;overflow:auto;box-shadow:0 -12px 32px #050D1A99;padding:16px 20px}
+ .st-key-card-flight-watchlist .flight-risk-grid{display:flex;overflow-x:auto;gap:20px}
  .st-key-card-flight-watchlist .flight-risk-card{flex:0 0 250px}
 }
-.concept-weather-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:12px 0 20px}
+.concept-weather-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:12px 0 20px}
 .concept-metric{background:#1B2D46;border:1px solid #2B405D;border-radius:10px;padding:18px 14px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .concept-metric svg{width:24px;height:24px;color:#4DA3FF}
 .concept-metric span{font-size:13px;color:#A7B9D0}.concept-metric strong{font-size:23px;color:#E8F0FA;line-height:1.2;overflow-wrap:anywhere}
@@ -191,7 +191,14 @@ CSS = _ROOT + """
 UNSTABLE_CSS = """
 .stMainBlockContainer,.block-container{padding:0!important;max-width:none!important}
 [data-testid=stHeader]{display:none}
-.st-key-main [data-testid=stHorizontalBlock]{gap:24px}
+.st-key-main [data-testid=stHorizontalBlock]{gap:28px}
+.st-key-card-flight-watchlist [data-testid=stVerticalBlock]{row-gap:8px!important}
+.flight-review-badge{font-size:10px;color:#FFCD38;border:1px solid #8B7139;border-radius:4px;padding:2px 4px;margin-left:5px}
+body:has([role=dialog]) .st-key-card-flight-watchlist{visibility:hidden}
+[data-baseweb=tab-list]{gap:10px!important;padding:6px!important;background:#142238;border:1px solid #2B405D;border-radius:10px}
+button[data-baseweb=tab]{padding:10px 24px!important;border-radius:7px!important;background:#1B2D46!important;color:#BFCFE3!important;font-weight:600!important}
+button[data-baseweb=tab][aria-selected=true]{background:#2466A8!important;color:#FFFFFF!important;box-shadow:inset 0 0 0 1px #73BAFF}
+button[data-baseweb=tab]:hover{background:#2B405D!important}
 .st-key-main [data-testid=stVerticalBlock]{row-gap:18px}
 .st-key-main [data-testid=stVerticalBlockBorderWrapper]{padding:6px}
 .st-key-main [data-baseweb=tab-panel]{padding-top:20px}

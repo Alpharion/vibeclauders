@@ -7,6 +7,8 @@ from src.dashboard import views, plots, theme
 
 def render(bundle, snapshot, window):
     from src.dashboard import replay
+    from src.dashboard.weather_actions import render_priority_actions
+    render_priority_actions(bundle, snapshot)
     left, right = st.columns([1.05, 1], gap="medium")
     outlook = views.airport_outlook(bundle, snapshot.airport.icao, snapshot.asof_utc)
     with left, st.container(border=True, key="concept-weather-panel"):

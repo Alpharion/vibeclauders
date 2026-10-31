@@ -124,7 +124,12 @@ def on_map_horizon() -> None:
         st.session_state["horizon"] = choice
 
 
-def map_section(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
+@st.dialog("Airport connections", width="large")
+def expanded_map(bundle, snapshot, window):
+    map_section(bundle, snapshot, window, expanded=True)
+
+
+def map_section(bundle: Bundle, snapshot: Snapshot, window: int, expanded=False) -> None:
     flights = bundle.table("flights")
     columns = ["origin", "dest", "direction", "flights"]
     routes = views.route_counts(flights, snapshot.airport, snapshot.asof_utc, window) if flights is not None else pd.DataFrame(columns=columns)
@@ -144,7 +149,7 @@ def map_section(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
     text, alert = weather_banner(bundle, snapshot)
     note = f"Sampled {window}-hour connections are schematic, not flown routes"
     payload.update(
-        title="Airport connections", tag=None, age=None, height=330, viewKey=f"{snapshot.airport.icao}",
+        title="Airport connections", tag=None, age=None, height=600 if expanded else 330, viewKey=f"{snapshot.airport.icao}",
         banner={"text": text, "alert": alert}, flag=f"Observed radar {radar:%H:%M} UTC · no forecast layer published",
         layerButtons=[
             {"key": "weather", "label": "Weather", "disabled": False, "reason": ""},
@@ -154,8 +159,13 @@ def map_section(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
         stops=outputs.forecast_valid_labels(snapshot), validLabel=f"Forecast valid {clock(snapshot.target_hour_utc)} UTC",
         note=f"{note}. {unmapped} movements lack coordinates." if unmapped else f"{note}.",
     )
-    with card("map"):
-        components.ops_map(payload, "ops-map", on_airport_change=on_map_airport, on_horizon_change=on_map_horizon)
+    with card("map-expanded" if expanded else "map"):
+        if expanded:
+            components.ops_map(payload, "ops-map-expanded")
+        else:
+            if st.button("Expand map", key="expand-ops-map", width="content"):
+                expanded_map(bundle, snapshot, window)
+            components.ops_map(payload, "ops-map", on_airport_change=on_map_airport, on_horizon_change=on_map_horizon)
 
 
 def controller_snapshot(bundle: Bundle, snapshot: Snapshot, reveal: bool, forecasts: MovementForecasts) -> None:
@@ -285,10 +295,6 @@ def review_brief_download(bundle: Bundle, snapshot: Snapshot) -> None:
 def weather_tab(bundle: Bundle, snapshot: Snapshot) -> None:
     from src.dashboard.presentation import render as render_presentation
     render_presentation(bundle, snapshot, st.session_state.get("window", 6))
-    from src.dashboard.weather_actions import render_weather_actions
-    row, _ = views.weather_feature_row(bundle, snapshot)
-    with st.expander("Weather follow-up actions", expanded=False):
-        render_weather_actions(row, snapshot, bundle)
 
 
 def weather_detail(bundle: Bundle, snapshot: Snapshot) -> None:

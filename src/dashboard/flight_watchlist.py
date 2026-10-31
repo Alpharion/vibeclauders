@@ -21,8 +21,8 @@ def flight_cards(rows):
         if pd.isna(departure):
             departure = row.get("scheduled_dep_utc_y", row.get("scheduled_dep_utc_x"))
         when = pd.Timestamp(departure).strftime("%d %b %H:%M UTC") if pd.notna(departure) else "Time unavailable"
-        threshold_text = f"{threshold:.1%}" if pd.notna(threshold) else "Unknown"
-        cards.append(f'<article class="flight-risk-card {tone}"><div class="flight-risk-head"><b>{escape(str(name))}</b><span>{escape(str(row.get("origin", "")))} → {escape(str(row.get("dest", "Unknown")))}</span></div><div class="flight-risk-score"><strong>{value}</strong><span>delay &gt;45 min</span></div><div class="flight-risk-status">{status} · threshold {threshold_text}</div><div class="flight-risk-meta">{when}</div></article>')
+        review_badge = '<span class="flight-review-badge">REVIEW</span>' if status == "REVIEW" else ""
+        cards.append(f'<article class="flight-risk-card {tone}"><div class="flight-risk-head"><b>{escape(str(name))} {review_badge}</b><span>{escape(str(row.get("origin", "")))} → {escape(str(row.get("dest", "Unknown")))}</span></div><div class="flight-risk-score"><strong>{value}</strong><span>delay &gt;45 min</span></div><div class="flight-risk-meta">{when}</div></article>')
     return '<div class="flight-risk-grid">' + ''.join(cards) + '</div>'
 
 
@@ -30,8 +30,12 @@ def render(bundle, snapshot):
     if snapshot is None:
         return
     with st.container(border=True, key="card-flight-watchlist"):
-        theme.card_title(f"{snapshot.airport.iata} · Flight watchlist")
-        st.caption(f"Cutoff {snapshot.asof_utc:%d %b %H:%M} UTC · +{snapshot.horizon_hours}h · departures {snapshot.target_hour_utc:%d %b %H:%M}–{snapshot.target_hour_utc + pd.Timedelta(hours=1):%H:%M} UTC · sampled flights, not all airport traffic")
+        with st.container(horizontal=True, vertical_alignment="center"):
+            theme.card_title(f"{snapshot.airport.iata} · Flight watchlist · +{snapshot.horizon_hours}h")
+            st.space("stretch")
+            with st.popover("Adjust height", width="content"):
+                height = st.slider("Watchlist height (px)", 180, 420, 200, step=20, key="watchlist-height")
+        st.html(f"<style>:root{{--watchlist-height:{height}px}}</style>")
         scored = views.risk_rows(bundle, snapshot)
         flights = bundle.table("flights")
         if scored is not None and not scored.empty:
@@ -51,7 +55,7 @@ def render(bundle, snapshot):
         theme.html(flight_cards(rows.head(6)))
         if len(rows) > 6:
             st.caption(f"Showing the 6 highest-risk flights of {len(rows)}. Full list below.")
-        st.caption("Delay probability: cyan ≤20% · amber >20% · red ≥50% · grey unscored. REVIEW follows the flight’s alert threshold.")
+        st.caption("Sampled departures · cyan ≤20% · amber >20% · red ≥50% · REVIEW = alert threshold met.")
         names = {"dest":"Destination", "scheduled_dep_utc":"Departure UTC", "probability_severe_delay":"Delay >45 min probability", "threshold":"Review threshold", "flight_id":"Flight ID"}
         columns = [c for c in ["Flight", "dest", "scheduled_dep_utc", "Review status", "probability_severe_delay", "threshold", "flight_id"] if c in rows]
         with st.expander("All flights and review status"):
