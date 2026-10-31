@@ -148,7 +148,7 @@ RISK_TABLES = {
     ),
     "normalized_metrics": TableSpec(
         "artifacts/risk/normalized_metrics.parquet", METRIC_COLUMNS,
-        ("airport", "period_start_utc"), ("period_start_utc", "period_end_utc"), _check_metrics,
+        ("airport", "period_start_utc", "split"), ("period_start_utc", "period_end_utc"), _check_metrics,
     ),
 }
 DECISION_TABLES = {

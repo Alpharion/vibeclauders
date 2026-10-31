@@ -119,3 +119,16 @@ def test_fingerprint_changes_with_new_run(root):
 )
 def test_schedule_only_identification(kind, expected):
     assert is_schedule_only(kind) is expected
+
+
+def test_utc_day_spanning_two_splits_is_valid(tmp_path):
+    # Splits use local dates, so one UTC day can hold rows from two splits.
+    frame = c.metrics()
+    frame.loc[1, ["period_start_utc", "period_end_utc", "split"]] = [
+        frame.loc[0, "period_start_utc"], frame.loc[0, "period_end_utc"], "validation",
+    ]
+    c.publish(
+        tmp_path, {"artifacts/risk/normalized_metrics.parquet": frame}, {},
+        "artifacts/risk/manifest.json", c.RUN,
+    )
+    assert len(load_bundle(tmp_path).table("normalized_metrics")) == len(frame)

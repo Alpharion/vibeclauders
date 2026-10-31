@@ -197,3 +197,10 @@ def test_route_counts_match_planning_movements():
     movements = views.planning_movements(c.flights(), KATL, c.ASOF, 6)
     assert routes["flights"].sum() == movements["movements"]
     assert set(routes["direction"]) == {"Arrival", "Departure"}
+
+
+def test_history_pools_a_day_split_across_cohorts():
+    frame = c.pd.concat([c.metrics().iloc[:1], c.metrics().iloc[:1].assign(split="validation")])
+    rollup = views.history_rollup(frame, "D")
+    assert len(rollup) == 1
+    assert rollup["eligible_departures"].item() == 16
