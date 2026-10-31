@@ -1,0 +1,121 @@
+import json
+
+import pytest
+
+from src.dashboard.data import fingerprint, is_schedule_only, load_bundle
+from tests.dashboard import conftest as c
+
+
+def status(bundle, name):
+    return bundle.capability(name).status
+
+
+def test_absent_artifacts_are_unavailable_with_reasons(tmp_path):
+    bundle = load_bundle(tmp_path)
+    assert bundle.tables == {}
+    assert status(bundle, "Schedule risk") == "unavailable"
+    assert "manifest.json is not published" in bundle.capability("Schedule risk").reasons[0]
+
+
+def test_valid_publication_loads(root):
+    bundle = load_bundle(root)
+    assert len(bundle.table("predictions")) == 4
+    assert status(bundle, "Schedule risk") == "available"
+    assert status(bundle, "Weather risk") == "unavailable"
+    assert status(bundle, "AAR forecast") == "available"
+    assert status(bundle, "Flight rescheduling") == "unavailable"
+
+
+def test_file_without_manifest_is_not_ready(root):
+    (root / "artifacts/risk/manifest.json").unlink()
+    assert load_bundle(root).table("predictions") is None
+
+
+def test_partial_write_fails_hash_check(root):
+    path = root / "artifacts/risk/predictions.parquet"
+    path.write_bytes(path.read_bytes()[:200])
+    bundle = load_bundle(root)
+    assert bundle.table("predictions") is None
+    assert "SHA256" in bundle.problem("predictions")
+
+
+def test_undeclared_file_is_rejected(root):
+    path = root / "artifacts/risk/manifest.json"
+    manifest = json.loads(path.read_text())
+    del manifest["outputs"]["artifacts/risk/predictions.parquet"]
+    path.write_text(json.dumps(manifest))
+    assert "no hash declared" in load_bundle(root).problem("predictions")
+
+
+@pytest.mark.parametrize("content", ["{not json", '{"schema_version": NaN}', "[]"])
+def test_malformed_manifest_is_rejected(root, content):
+    (root / "artifacts/risk/manifest.json").write_text(content)
+    bundle = load_bundle(root)
+    assert bundle.table("predictions") is None
+    assert "rejected" in bundle.problem("predictions")
+
+
+def test_incompatible_schema_version_is_rejected(root):
+    path = root / "artifacts/risk/manifest.json"
+    manifest = json.loads(path.read_text())
+    manifest["schema_version"] = "1.0"
+    path.write_text(json.dumps(manifest))
+    assert "schema_version" in load_bundle(root).problem("predictions")
+
+
+def test_duplicate_prediction_keys_are_rejected(tmp_path):
+    table = c.predictions()
+    c.publish_risk(tmp_path, table=c.pd.concat([table, table.iloc[[0]]]))
+    assert "duplicate" in load_bundle(tmp_path).problem("predictions")
+
+
+def test_invalid_probability_is_rejected(tmp_path):
+    table = c.predictions().assign(probability_severe_delay=1.5)
+    c.publish_risk(tmp_path, table=table)
+    assert "outside [0, 1]" in load_bundle(tmp_path).problem("predictions")
+
+
+def test_null_probability_is_rejected(tmp_path):
+    table = c.predictions()
+    table.loc[0, "probability_severe_delay"] = None
+    c.publish_risk(tmp_path, table=table)
+    assert "outside [0, 1]" in load_bundle(tmp_path).problem("predictions")
+
+
+def test_inconsistent_target_hour_is_rejected(tmp_path):
+    table = c.predictions()
+    table["target_hour_utc"] = table["asof_utc"]
+    c.publish_risk(tmp_path, table=table)
+    assert "target_hour_utc" in load_bundle(tmp_path).problem("predictions")
+
+
+def test_naive_timestamps_are_rejected(tmp_path):
+    table = c.predictions()
+    table["asof_utc"] = table["asof_utc"].dt.tz_localize(None)
+    c.publish_risk(tmp_path, table=table)
+    assert "not timezone-aware UTC" in load_bundle(tmp_path).problem("predictions")
+
+
+def test_mixed_run_is_rejected(tmp_path):
+    c.publish_risk(tmp_path, table=c.predictions().assign(run_id="older"))
+    assert "run_id differs" in load_bundle(tmp_path).problem("predictions")
+
+
+def test_evaluation_from_other_run_is_rejected(tmp_path):
+    c.publish_risk(tmp_path, evaluation=c.envelope("older", metrics=[]))
+    assert "run_id differs" in load_bundle(tmp_path).problem("risk_evaluation")
+
+
+def test_fingerprint_changes_with_new_run(root):
+    before = fingerprint(root)
+    table = c.predictions().assign(probability_severe_delay=0.9)
+    c.publish_risk(root, table=table)
+    assert fingerprint(root) != before
+
+
+@pytest.mark.parametrize(
+    ("kind", "expected"),
+    [("schedule_only", True), ("schedule-hgb", True), ("weather_enhanced", False), ("schedule+weather", False)],
+)
+def test_schedule_only_identification(kind, expected):
+    assert is_schedule_only(kind) is expected

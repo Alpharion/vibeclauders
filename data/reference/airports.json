@@ -1,0 +1,7 @@
+{
+  "schema_version": "2.0",
+  "airports": [
+    {"icao": "KATL", "iata": "ATL", "name": "Atlanta Hartsfield-Jackson", "timezone": "America/New_York", "runway_heading_deg": 80, "station": "KATL", "latitude": 33.6367, "longitude": -84.4281},
+    {"icao": "KDFW", "iata": "DFW", "name": "Dallas/Fort Worth", "timezone": "America/Chicago", "runway_heading_deg": 180, "station": "KDFW", "latitude": 32.8968, "longitude": -97.0380}
+  ]
+}

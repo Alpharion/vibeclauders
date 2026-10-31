@@ -1,0 +1,53 @@
+{
+  "member": 3,
+  "schema_version": "2.0",
+  "state": "in_progress",
+  "started_at_utc": null,
+  "updated_at_utc": "2026-10-31T05:03:02+00:00",
+  "elapsed_minutes": null,
+  "completed": [
+    "Built airport registry, v2 validated artifact reader, replay UI, tests, requirements and README evidence matrix",
+    "Recovered flight_key from Member 2's published failure-example ID using the supplied CSV"
+  ],
+  "artifacts": [],
+  "commands_tested": ["python -m pytest tests/dashboard -q"],
+  "test_results": [
+    {
+      "command": "python -m pytest tests/dashboard -q",
+      "result": "passed",
+      "evidence": "62 passed on synthetic fixtures; no real producer artifacts were available"
+    }
+  ],
+  "blockers": [
+    {
+      "requirement": "Real end-to-end integration",
+      "reason": "artifacts/, data/processed/ and the original src/ tree are absent from this checkout",
+      "evidence": "git ls-tree shows only .gitignore on all branches; the Windows workspace path is not on this machine",
+      "owner": "Supervisor, Members 1 and 2",
+      "next_action": "Transfer Member 2's artifacts/risk/ bundle and Member 1 outputs, then launch and record run IDs"
+    },
+    {
+      "requirement": "flight_key and AIRPORTS compatibility",
+      "reason": "Original src/shared.py was not available; flight_key was recovered from one ID and AIRPORTS' original shape is unknown",
+      "evidence": "One ID matched, with a four-digit time, so zero-padding of earlier times is unverified",
+      "owner": "Member 2",
+      "next_action": "Diff against the original src/shared.py and keep its behaviour"
+    }
+  ],
+  "next_steps": [
+    "Load real artifacts and confirm the manifest file-listing shape against declared_hashes",
+    "Run the recorded end-to-end sequence and prepare the three-minute demo"
+  ],
+  "contract_changes_requested": [
+    {
+      "request": "Add nullable aar_observed to artifacts/capacity/forecast.parquet for held-out rows",
+      "reason": "Required AAR observed-versus-predicted trend has no contracted source",
+      "impact": "Additive optional field; Member 1 produces, Member 3 consumes"
+    },
+    {
+      "request": "Specify the manifest file-listing key and shape",
+      "reason": "Contract requires paths, row counts and SHA256 but names only artifact_hashes in passing",
+      "impact": "Reader accepts artifact_hashes, outputs, artifacts or files; anything else is rejected visibly"
+    }
+  ]
+}

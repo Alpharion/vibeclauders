@@ -1,0 +1,13 @@
+# Dashboard (imported by app.py, src/dashboard and tests/dashboard).
+streamlit>=1.65,<2
+pandas>=3.0,<4
+pyarrow>=23
+plotly>=7.1,<8
+pytest>=9
+# Member 2 pipeline, versions as reported in member-2-results.md.
+numpy>=2.4
+scipy>=1.18
+scikit-learn>=1.9
+joblib>=1.5
+# Member 1 acquisition.
+requests
