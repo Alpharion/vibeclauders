@@ -7,6 +7,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 SCHEMA_VERSION = "2.0"
@@ -314,6 +315,36 @@ def _check_estimate(df: pd.DataFrame) -> list[str]:
             problems.append(f"usable rows with null {column}")
         elif (df.loc[usable, column] > df.loc[usable, "asof_utc"]).any():
             problems.append(f"usable rows with {column} after the cutoff")
+    # Usable proxy rates and support must survive numeric coercion, including infinities.
+    for column in ("aar_pred", "support_n"):
+        values = pd.to_numeric(df.loc[usable, column], errors="coerce")
+        valid = np.isfinite(values) & (values >= 0)
+        if column == "support_n":
+            valid &= values == np.floor(values)
+            valid &= ~df.loc[usable, column].map(lambda value: isinstance(value, (bool, np.bool_)))
+        if not valid.all():
+            problems.append(f"usable {column} must be finite nonnegative" + (" integers" if column == "support_n" else ""))
+    for column in ("population", "estimation_method", "assumptions_id", "model_version", "validation_target", "uncertainty_kind"):
+        valid = df[column].map(lambda value: isinstance(value, str) and bool(value.strip()))
+        if not valid.all():
+            problems.append(f"{column} must be nonempty text")
+    for column in ("estimation_method", "assumptions_id", "model_version", "population", "validation_target"):
+        if df[column].nunique(dropna=False) > 1:
+            problems.append(f"{column} differs within forecast publication")
+    if (df.loc[usable, "model_train_end_utc"] > df.loc[usable, "model_selection_end_utc"]).any():
+        problems.append("model_train_end_utc after model_selection_end_utc")
+    if not df["population"].str.contains("reporting carrier", case=False, na=False).all():
+        problems.append("population must identify reporting carriers")
+    if not (df["validation_target"] == "high_demand_observed_reporting_carrier_arrivals").all():
+        problems.append("validation_target must identify the reporting-carrier throughput proxy")
+    # Any supplied interval must be complete, finite, nonnegative and enclose its estimate.
+    bounds_present = df[["aar_lower", "aar_upper"]].notna().any(axis=1)
+    lower = pd.to_numeric(df.loc[bounds_present, "aar_lower"], errors="coerce")
+    upper = pd.to_numeric(df.loc[bounds_present, "aar_upper"], errors="coerce")
+    pred = pd.to_numeric(df.loc[bounds_present, "aar_pred"], errors="coerce")
+    if not (np.isfinite(lower) & np.isfinite(upper) & np.isfinite(pred)
+            & (lower >= 0) & (lower <= pred) & (pred <= upper)).all():
+        problems.append("bounds must be finite nonnegative and enclose aar_pred")
     no_bounds = df["uncertainty_kind"] == "unavailable"
     if df.loc[no_bounds, ["aar_lower", "aar_upper"]].notna().any().any():
         problems.append("bounds present although uncertainty_kind is unavailable")
@@ -477,6 +508,35 @@ def _load_group(root, manifest_path, specs, documents, tables, docs) -> Group:
         else:
             docs[name] = document
     return group
+
+
+def _validate_estimate_publication(tables: dict, docs: dict, group: Group) -> None:
+    """Compare declared metadata when present; legacy envelope-only docs remain supported."""
+    table = tables.get("capacity_estimate")
+    if table is None:
+        return
+    problems = []
+    for name in ESTIMATE_DOCUMENTS:
+        if name not in docs:
+            problems.append(f"{name} missing or rejected")
+    mapping = {"model_version": "model_version", "assumptions_id": "assumptions_id",
+               "population": "population", "label_kind": "label_kind",
+               "validation_target": "validation_target", "method": "estimation_method"}
+    for name in ESTIMATE_DOCUMENTS:
+        document = docs.get(name, {})
+        if document and document.get("status") not in ("available", "partial"):
+            problems.append(f"{name} is unavailable")
+        for field, column in mapping.items():
+            if field not in document:
+                continue
+            value = document[field]
+            if field == "method" and isinstance(value, dict):
+                value = value.get("name")
+            if not isinstance(value, str) or not value.strip() or not table[column].eq(value).all():
+                problems.append(f"{name} {field} differs from forecast")
+    if problems:
+        group.problems.setdefault("capacity_estimate", []).extend(problems)
+        tables.pop("capacity_estimate", None)
 
 
 def is_schedule_only(model_kind: str) -> bool:
@@ -669,6 +729,7 @@ def load_bundle(root: Path) -> Bundle:
             root, "artifacts/capacity_estimate/manifest.json", ESTIMATE_TABLES, ESTIMATE_DOCUMENTS, tables, docs,
         ),
     }
+    _validate_estimate_publication(tables, docs, groups["capacity_estimate"])
     for name, relative in (
         ("provenance", "data/processed/provenance.json"),
         ("data_access", "artifacts/capacity/data_access.json"),
