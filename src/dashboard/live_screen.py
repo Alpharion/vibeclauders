@@ -76,7 +76,9 @@ def panel(replay_mode: str, footer: str, interval: int | None) -> None:
                     with st.expander("Source freshness and observation history"):
                         status_column(feed, icao, now)
                         recent_section(feed, icao)
-                html(f'<div class="footnote">{footer}</div>')
+                from src.dashboard.live_flights import render as render_live_flights
+                render_live_flights(icao, now)
+                html('<div class="footnote">Live inputs · experimental predictions · human review required</div>')
 
     body()
 
@@ -91,7 +93,7 @@ def toolbar(now: pd.Timestamp) -> str:
         st.selectbox("Auto-refresh", list(AUTO_REFRESH), key="live-auto", label_visibility="collapsed", format_func=lambda v: f"Auto-refresh: {v}", width=180)
         st.button("Refresh", key="live-fetch", type="primary", on_click=refresh, width="content")
         st.space("stretch")
-        html(badge("OBSERVED · NO LIVE TRAFFIC", "cyan"))
+        html(badge("LIVE WEATHER · FLIGHT REVIEW", "cyan"))
     return icao
 
 

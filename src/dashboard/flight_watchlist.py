@@ -21,7 +21,7 @@ def flight_cards(rows):
         if pd.isna(departure):
             departure = row.get("scheduled_dep_utc_y", row.get("scheduled_dep_utc_x"))
         when = pd.Timestamp(departure).strftime("%d %b %H:%M UTC") if pd.notna(departure) else "Time unavailable"
-        review_badge = '<span class="flight-review-badge">REVIEW</span>' if status == "REVIEW" else ""
+        review_badge = '<span class="flight-review-badge">REVIEW</span>' if status == "REVIEW" or row.get("Review", False) else ""
         cards.append(f'<article class="flight-risk-card {tone}"><div class="flight-risk-head"><b>{escape(str(name))} {review_badge}</b><span>{escape(str(row.get("origin", "")))} → {escape(str(row.get("dest", "Unknown")))}</span></div><div class="flight-risk-score"><strong>{value}</strong><span>delay &gt;45 min</span></div><div class="flight-risk-meta">{when}</div></article>')
     count = len(cards)
     columns = 3 if count and count % 3 == 0 else 2 if count and count % 2 == 0 else max(count, 1)
