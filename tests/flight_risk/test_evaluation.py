@@ -111,3 +111,23 @@ def test_schedule_only_run_still_explains_misses_and_false_alarms(sample, tmp_pa
     # The schedule-only fixture cannot separate classes, so both error kinds must occur.
     cases = {case["kind"] for case in build_artifacts(sample, storm_events_path=storm_file(tmp_path, sample)).evaluation["failure_cases"]}
     assert {"missed", "false_alarm"} <= cases and "declined" not in cases
+
+
+def test_calibration_decision_ignores_test_outcomes_and_adopts_only_material_gains():
+    from src.flight_risk.evaluation import calibration_experiment
+    rng = np.random.default_rng(27)
+    dates = pd.date_range("2024-01-01", "2024-12-31", periods=2000)
+    labels = (rng.random(2000) < .1).astype(int)
+    overconfident = np.where(labels == 1, .6, .4) + rng.normal(0, .15, 2000).clip(-.35, .35)
+    test_probs = rng.random(500)
+    first = calibration_experiment("demo", dates, labels, overconfident, rng.integers(0, 2, 500), test_probs)
+    second = calibration_experiment("demo", dates, labels, overconfident, 1 - rng.integers(0, 2, 500), test_probs)
+    assert first["adopted"] and first["adopted"] == second["adopted"]
+    assert first["validation_relative_gain"] == second["validation_relative_gain"]
+    # Labels drawn from the stated probabilities, so Platt scaling has nothing material to fix.
+    calibrated_already = rng.uniform(.02, .4, 20000)
+    calibrated_labels = (rng.random(20000) < calibrated_already).astype(int)
+    long_dates = pd.date_range("2024-01-01", "2024-12-31", periods=20000)
+    assert not calibration_experiment("demo", long_dates, calibrated_labels, calibrated_already, labels[:500], test_probs)["adopted"]
+    one_class = calibration_experiment("demo", dates, np.zeros(2000, dtype=int), overconfident, labels[:500], test_probs)
+    assert one_class["status"] == "unavailable" and not one_class["adopted"]

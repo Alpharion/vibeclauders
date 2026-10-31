@@ -219,6 +219,45 @@ def failure_cases(test, probabilities, thresholds, model_kind, storm_nearest, we
     return cases
 
 
+CALIBRATION_SPLIT_DATE = "2024-09-01"
+CALIBRATION_MIN_RELATIVE_GAIN = 0.01
+
+
+def _logit(probabilities):
+    clipped = np.clip(np.asarray(probabilities, dtype=float), 1e-6, 1 - 1e-6)
+    return np.log(clipped / (1 - clipped))[:, None]
+
+
+def calibration_experiment(model_name, validation_dates, validation_labels, validation_probs, test_labels, test_probs):
+    """Platt scaling, adopted only if a later slice of validation improves Brier materially.
+
+    The decision never reads test outcomes; test Brier is reported for transparency only.
+    """
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import brier_score_loss
+
+    dates = pd.to_datetime(pd.Series(validation_dates)).to_numpy()
+    labels, probs = np.asarray(validation_labels, dtype=int), np.asarray(validation_probs, dtype=float)
+    early = dates < np.datetime64(CALIBRATION_SPLIT_DATE)
+    if early.all() or not early.any() or len(set(labels[early])) < 2 or len(set(labels[~early])) < 2:
+        return {"status": "unavailable", "reason": "Validation slices lack both classes", "adopted": False}
+    fitted = LogisticRegression(C=1e6).fit(_logit(probs[early]), labels[early])
+    raw_late = float(brier_score_loss(labels[~early], probs[~early]))
+    calibrated_late = float(brier_score_loss(labels[~early], fitted.predict_proba(_logit(probs[~early]))[:, 1]))
+    relative_gain = (raw_late - calibrated_late) / raw_late if raw_late else 0.0
+    full = LogisticRegression(C=1e6).fit(_logit(probs), labels)
+    return {
+        "status": "available", "method": "Platt scaling on model log-odds (monotonic, so rankings and alerts are unchanged)",
+        "model": model_name, "adopted": bool(relative_gain >= CALIBRATION_MIN_RELATIVE_GAIN),
+        "decision_rule": f"Fit on validation before {CALIBRATION_SPLIT_DATE}, adopt only if Brier on later validation falls by at least {CALIBRATION_MIN_RELATIVE_GAIN:.0%}; test outcomes are not used",
+        "validation_late_brier_raw": raw_late, "validation_late_brier_calibrated": calibrated_late, "validation_relative_gain": relative_gain,
+        "test_brier_raw_reported_only": float(brier_score_loss(test_labels, test_probs)),
+        "test_brier_calibrated_reported_only": float(brier_score_loss(test_labels, full.predict_proba(_logit(test_probs))[:, 1])),
+        "validation_mean_probability": float(probs.mean()), "validation_severe_rate": float(labels.mean()),
+        "test_mean_probability": float(np.mean(test_probs)), "test_severe_rate": float(np.mean(test_labels)),
+    }
+
+
 def retrospective_evaluation(test, probabilities, thresholds, model_kind, baseline_probs, baseline_threshold, weather_features, storm_events_path=None, weather_table=None):
     test = test.reset_index(drop=True).assign(_alert=probabilities >= thresholds)
     result = {"impact": impact(test, baseline_probs), "alert_rates": alert_rates(test), "storm_cohorts": [],

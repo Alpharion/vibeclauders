@@ -12,10 +12,11 @@ from uuid import uuid4
 import joblib
 import numpy as np
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
 
 from src.shared import AIRPORTS
 from .data import HORIZONS, WEATHER_FEATURES, expand_horizons, join_weather, load_flights
-from .evaluation import retrospective_evaluation
+from .evaluation import _logit, calibration_experiment, retrospective_evaluation
 from .metrics import classification_metrics, normalized_delay_metrics, reliability_bins
 from .model import baseline_probabilities, choose_threshold, fit_candidates, fit_historical_baseline
 
@@ -146,6 +147,17 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
             model_kind[mask] = "weather_enhanced"
     if (model_kind == "schedule_only").any():
         limitations.append("Schedule-only probabilities do not model approaching weather and repeat across horizons; horizon labels identify prediction cutoffs, not measured lead-time sensitivity.")
+    # Calibration is decided on validation only, for the model that scores most held-out rows.
+    primary, primary_validation, primary_kind = (weather_model, weather_validation, "weather_enhanced") if weather_model is not None else (schedule_model, validation, "schedule_only")
+    primary_rows = model_kind == primary_kind
+    calibration = calibration_experiment(primary.name, primary_validation.flight_date, primary_validation.severe_delay, primary.predict(primary_validation), test.severe_delay[primary_rows], probabilities[primary_rows])
+    calibrator = None
+    if calibration["adopted"]:
+        calibrator = LogisticRegression(C=1e6).fit(_logit(primary.predict(primary_validation)), primary_validation.severe_delay)
+        # Monotonic transform of probability and threshold leaves every alert unchanged.
+        probabilities[primary_rows] = calibrator.predict_proba(_logit(probabilities[primary_rows]))[:, 1]
+        thresholds[primary_rows] = calibrator.predict_proba(_logit([primary.threshold]))[0, 1]
+        limitations[3] = f"{primary_kind} probabilities are Platt-calibrated on 2024 validation data; other rows are uncalibrated. Brier score and held-out reliability bins quantify calibration."
     run_id = uuid4().hex
     generated = datetime.now(timezone.utc).isoformat()
     runtime = _runtime()
@@ -185,7 +197,8 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
         "selection_end_utc": selection_end.isoformat(),
         "selection_rule": "Model: maximum validation average precision, then minimum Brier; threshold: maximum validation F1, ties use higher threshold",
         "pr_auc_definition": "Average precision (non-interpolated PR summary)",
-        "calibration_method": "No post-hoc calibrator; held-out Brier and ten fixed reliability bins reported",
+        "calibration_method": ("Platt scaling adopted for " + calibration["model"] + " rows; " if calibration["adopted"] else "No post-hoc calibrator adopted (see calibration_experiment); ") + "held-out Brier and ten fixed reliability bins reported",
+        "calibration_experiment": calibration,
         "threshold": schedule_model.threshold, "candidate_validation": schedule_model.candidate_validation,
         "baseline": {"name": "training-only airport/local-hour smoothed severe-delay rate", "threshold": baseline_threshold, "smoothing_prior_count": 20},
         "weather_model": weather_report, "weather_matched_test": weather_matched,
@@ -213,7 +226,7 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
         "artifacts": ["model.joblib", "predictions.parquet", "normalized_metrics.parquet", "evaluation.json"],
         "limitations": limitations, "missing_inputs": missing_inputs, "capabilities": capabilities,
     }
-    return PipelineArtifacts(predictions, normalized, evaluation, manifest, {"schedule_model": schedule_model, "weather_model": weather_model, "historical_baseline": historical_baseline, "baseline_threshold": baseline_threshold, "schema_version": SCHEMA_VERSION, "run_id": run_id, "selection_end_utc": selection_end.isoformat(), "producer": "member-2", "runtime": runtime})
+    return PipelineArtifacts(predictions, normalized, evaluation, manifest, {"schedule_model": schedule_model, "weather_model": weather_model, "historical_baseline": historical_baseline, "baseline_threshold": baseline_threshold, "calibrator": calibrator, "schema_version": SCHEMA_VERSION, "run_id": run_id, "selection_end_utc": selection_end.isoformat(), "producer": "member-2", "runtime": runtime})
 
 
 def json_bytes(report):
