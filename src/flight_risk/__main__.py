@@ -12,7 +12,7 @@ from uuid import uuid4
 
 import pandas as pd
 
-from .pipeline import run_pipeline
+from .pipeline import json_bytes, run_pipeline
 from .recommendations import build_recommendations
 from .simulation import simulate_arrival_queue
 
@@ -68,7 +68,7 @@ def _optional_input(value, default):
 
 def _atomic_json(path, report):
     temp = path.with_name(path.name + ".tmp")
-    temp.write_text(json.dumps(report, indent=2, allow_nan=False), encoding="utf-8")
+    temp.write_bytes(json_bytes(report))
     temp.replace(path)
 
 

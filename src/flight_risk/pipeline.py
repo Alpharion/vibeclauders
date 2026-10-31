@@ -208,6 +208,11 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
     return PipelineArtifacts(predictions, normalized, evaluation, manifest, {"schedule_model": schedule_model, "weather_model": weather_model, "historical_baseline": historical_baseline, "baseline_threshold": baseline_threshold, "schema_version": SCHEMA_VERSION, "run_id": run_id, "selection_end_utc": selection_end.isoformat(), "producer": "member-2", "runtime": runtime})
 
 
+def json_bytes(report):
+    """Platform-independent JSON bytes: LF line endings, so published hashes hold on every checkout."""
+    return (json.dumps(report, indent=2, allow_nan=False) + "\n").encode("utf-8")
+
+
 def _atomic(path, writer):
     temporary = path.with_name(path.name + ".tmp")
     writer(temporary)
@@ -221,9 +226,9 @@ def run_pipeline(sample_path, output_dir, canonical_path=None, weather_features_
     _atomic(output / "predictions.parquet", lambda path: artifacts.predictions.to_parquet(path, index=False))
     _atomic(output / "normalized_metrics.parquet", lambda path: artifacts.normalized_metrics.to_parquet(path, index=False))
     _atomic(output / "model.joblib", lambda path: joblib.dump(artifacts.model_bundle, path))
-    _atomic(output / "evaluation.json", lambda path: path.write_text(json.dumps(artifacts.evaluation, indent=2, allow_nan=False), encoding="utf-8"))
+    _atomic(output / "evaluation.json", lambda path: path.write_bytes(json_bytes(artifacts.evaluation)))
     artifacts.manifest["artifact_hashes"] = {name: sha256((output / name).read_bytes()).hexdigest() for name in artifacts.manifest["artifacts"]}
     artifacts.manifest["artifact_records"] = [{"path": name, "sha256": artifacts.manifest["artifact_hashes"][name], "row_count": artifacts.manifest["artifact_row_counts"][name]} for name in artifacts.manifest["artifacts"]]
     # Manifest last lets readers detect a mixed generation while publishing.
-    _atomic(output / "manifest.json", lambda path: path.write_text(json.dumps(artifacts.manifest, indent=2, allow_nan=False), encoding="utf-8"))
+    _atomic(output / "manifest.json", lambda path: path.write_bytes(json_bytes(artifacts.manifest)))
     return {"output_dir": str(output.resolve()), "artifacts": {name: str((output / name).resolve()) for name in artifacts.manifest["artifacts"] + ["manifest.json"]}, "evaluation": artifacts.evaluation, "manifest": artifacts.manifest}
