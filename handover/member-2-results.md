@@ -89,6 +89,8 @@ python -m src.flight_risk verify
 python -m pytest tests/flight_risk -q --basetemp=tmp/pt-31
 ```
 
+**Clean-clone check:** a `git archive` export of commit `707b4d5`, which has the bytes a fresh clone receives on any platform, gives `verify` passed and all Member 2 tests passing. Before the LF fix, the same check failed `verify` with a hash mismatch on `evaluation.json`. The export's full suite gives 136 passed and 2 failed; both failures are Member 1's `tests/data_capacity/test_manifest.py` (CRLF-hashed capacity JSON, plan task 1.1).
+
 All commands exited 0. **96 Member 2 tests passed.** `verify` reported `passed`, model status `partial`, decision status `unavailable`, 10,604 predictions / 3,537 flights / both airports / leads 3, 6, 12. The `tmp/` directory must exist before running pytest with `--basetemp=tmp/...`.
 
 Member 2 test coverage includes storm events never changing predictions, small-cohort withholding, equal-workload baseline ties, alert-rate counts, failure-case kinds, calibration decisions independent of test labels, third-airport scoring through the registry only, LF-only published JSON, leakage under changed test outcomes, original-date/2400 splits, daylight-saving ambiguity, cancelled labels, source/availability/feature validity, queue conservation, stale/mismatched populations, complete hourly windows, capacity target provenance, model selection timing, manifest tampering, generation mismatch, typed unavailable outputs and CLI publication. Test fixtures stay under tests/tmp and are not passed off as real data.
