@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
-  "run_id": "c5a9e8584a3843b29612df39d8de5f96",
-  "generated_at_utc": "2026-10-31T04:17:39.539119+00:00",
+  "run_id": "b3747032ae754cc9be967b9e4ab681b9",
+  "generated_at_utc": "2026-10-31T05:11:47.438072+00:00",
   "status": "partial",
   "producer": "member-2",
   "runtime": {
@@ -26,9 +26,14 @@
   "model_version": "member2-risk-v2",
   "sources": [
     {
-      "path": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\data\\weather\\Flight_Data_With_Weather_Final.csv",
-      "sha256": "9a9d80659da6e9833c8360583476d71e42937ccf5e42870902b90b57c2c99ba7",
-      "size_bytes": 63972945
+      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\f4810a2312374d549e760e2ee75dccba\\0-flights.parquet",
+      "sha256": "6e446d7c1948333d122bb1fb64b6dd5546537c343e3defbfcf4b07c83ee9b4de",
+      "size_bytes": 2472318
+    },
+    {
+      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\f4810a2312374d549e760e2ee75dccba\\1-weather_features.parquet",
+      "sha256": "5d7fce98d0c80938398d7e0a6af55a9bd15d8410bf7b656be244099e560c29bd",
+      "size_bytes": 5417236
     }
   ],
   "selection_end_utc": "2025-01-01T06:00:00+00:00",
@@ -52,7 +57,26 @@
     "carrier",
     "dest"
   ],
-  "weather_feature_allowlist": [],
+  "weather_feature_allowlist": [
+    "month",
+    "day_of_week",
+    "local_hour",
+    "scheduled_duration_min",
+    "distance_miles",
+    "horizon_hours",
+    "crosswind_kt",
+    "tailwind_kt",
+    "wind_speed_kt",
+    "wind_gust_kt",
+    "visibility_sm",
+    "ceiling_ft_agl",
+    "temperature_c",
+    "precip_flag",
+    "thunderstorm_flag",
+    "airport",
+    "carrier",
+    "dest"
+  ],
   "artifacts": [
     "model.joblib",
     "predictions.parquet",
@@ -68,7 +92,7 @@
     "Schedule-only probabilities do not model approaching weather and repeat across horizons; horizon labels identify prediction cutoffs, not measured lead-time sensitivity."
   ],
   "missing_inputs": [
-    "sufficient_cutoff_safe_weather_features_for_train_validation_test"
+    "cutoff_safe_weather_features_for_missing_held_out_snapshots"
   ],
   "capabilities": {
     "schedule_risk": {
@@ -76,13 +100,13 @@
       "test_rows": 10604
     },
     "weather_risk": {
-      "status": "unavailable",
-      "weather_enhanced_prediction_rows": 0,
-      "reason": "No cutoff-safe engineered weather features supplied"
+      "status": "partial",
+      "weather_enhanced_prediction_rows": 10599,
+      "reason": "Weather model fitted, but held-out weather coverage is incomplete; no performance claim for missing snapshots"
     },
     "weather_model_evaluation": {
-      "status": "unavailable",
-      "matched_test_cohorts": 0
+      "status": "partial",
+      "matched_test_cohorts": 6
     },
     "normalized_observed_delays": {
       "status": "available",
@@ -90,30 +114,30 @@
     }
   },
   "artifact_hashes": {
-    "model.joblib": "08f39f90ca5638b8755707163bb744157965661565e502e0af11c58415335022",
-    "predictions.parquet": "3dddf574411eca51e2be298b0f34168bcf4bf49dd2b9c1ddb2ad438f29002556",
-    "normalized_metrics.parquet": "44a595975f5033e17f8b6aa3fbd9239e68b546eea65022dd8968310547191a77",
-    "evaluation.json": "243c106517eb4cc58c71f64e47773a1103fb79d39fbfbfc58efc3619b4cd3008"
+    "model.joblib": "31c1e21519fb52f79500b8ebc2135ed0a70da12e91d342d01d9d96d5a5250ca5",
+    "predictions.parquet": "fd8f1fa2a42d918093ab0e8003f9e5348515c3f6533fcbebec2410c31bf4d8d9",
+    "normalized_metrics.parquet": "7432b6e328c9f2a7070d755e7ef15c2a1fa33640c04b8718da855f8f6c5dec39",
+    "evaluation.json": "0cecd7676e07dcb50aa386741ef113de7efba09e2d17dbbb21f8c9c03fe2071f"
   },
   "artifact_records": [
     {
       "path": "model.joblib",
-      "sha256": "08f39f90ca5638b8755707163bb744157965661565e502e0af11c58415335022",
+      "sha256": "31c1e21519fb52f79500b8ebc2135ed0a70da12e91d342d01d9d96d5a5250ca5",
       "row_count": null
     },
     {
       "path": "predictions.parquet",
-      "sha256": "3dddf574411eca51e2be298b0f34168bcf4bf49dd2b9c1ddb2ad438f29002556",
+      "sha256": "fd8f1fa2a42d918093ab0e8003f9e5348515c3f6533fcbebec2410c31bf4d8d9",
       "row_count": 10604
     },
     {
       "path": "normalized_metrics.parquet",
-      "sha256": "44a595975f5033e17f8b6aa3fbd9239e68b546eea65022dd8968310547191a77",
+      "sha256": "7432b6e328c9f2a7070d755e7ef15c2a1fa33640c04b8718da855f8f6c5dec39",
       "row_count": 1891
     },
     {
       "path": "evaluation.json",
-      "sha256": "243c106517eb4cc58c71f64e47773a1103fb79d39fbfbfc58efc3619b4cd3008",
+      "sha256": "0cecd7676e07dcb50aa386741ef113de7efba09e2d17dbbb21f8c9c03fe2071f",
       "row_count": null
     }
   ]

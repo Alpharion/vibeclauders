@@ -25,6 +25,15 @@ def test_hashes_and_rows_match():
             assert len(pd.read_parquet(p)) == o["rows"]
 
 
+def test_artifact_hashes_are_manifest_relative():
+    m = load()
+    hashes = m["artifact_hashes"]
+    assert len(hashes) == len(m["outputs"])
+    assert "weather_features.parquet" in hashes and "../../data/processed/flights.parquet" in hashes
+    for rel, digest in hashes.items():
+        assert sha256_file(CAPACITY_DIR / rel) == digest, rel
+
+
 def test_single_generation():
     m = load()
     for name in ("evaluation", "data_access"):

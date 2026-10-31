@@ -2,6 +2,7 @@
 -> (genuine AAR model if labels exist) -> reports -> manifest (published last)."""
 from __future__ import annotations
 
+import os
 import platform
 import sys
 from pathlib import Path
@@ -249,6 +250,8 @@ def run_all(airports_codes, start, end, *, cache_only=False, refresh=False, flig
         "flight_key_impl": FLIGHT_KEY_IMPL, "airport_registry": registry_source(),
         "outputs": [{"name": k, "path": _rel(p), "rows": rows(p), "sha256": sha256_file(p), "schema_version": SCHEMA_VERSION}
                     for k, p in outputs.items()],
+        # contract 2.0 section 2: manifest-directory-relative path -> SHA256
+        "artifact_hashes": {os.path.relpath(p, CAPACITY_DIR).replace(os.sep, "/"): sha256_file(p) for p in outputs.values()},
         "split": {"basis": "airport-local date", "train": "2023", "validate": "2024", "test": "2025-01-01..2025-07-31"},
         "coverage": {"flights": fl_audit["coverage_by_airport"], "weather_features": feat_cov},
         "capabilities": {

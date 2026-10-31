@@ -1,7 +1,7 @@
 {
   "member": 2,
   "schema_version": "2.0",
-  "updated_at_utc": "2026-10-31T04:19:09.836008+00:00",
+  "updated_at_utc": "2026-10-31T05:13:50.512816+00:00",
   "state": "ready_for_review",
   "completed": [
     "Revised comprehensive plan and v2 shared contract",
@@ -10,53 +10,56 @@
     "Implemented optional verified-weather consumer and matched evaluation",
     "Published normalized history and held-out failure evidence",
     "Implemented gated arrival queue and review advisory",
-    "Verified CLI and 85 passing tests"
+    "Verified CLI and 85 passing tests",
+    "Merged Member 1 run and added contract artifact_hashes to its manifest writer (user-authorized)",
+    "Refreshed with verified canonical flights and weather features; weather-enhanced model selected"
   ],
   "artifacts": [
     {
       "path": "artifacts/risk/manifest.json",
-      "run_id": "c5a9e8584a3843b29612df39d8de5f96",
-      "status": "partial"
+      "run_id": "b3747032ae754cc9be967b9e4ab681b9",
+      "status": "partial",
+      "coverage": "KATL/KDFW, leads 3/6/12, test 2025-01-01..2025-07-31; 10,599/10,604 rows weather-enhanced"
     },
     {
       "path": "artifacts/risk/decision_manifest.json",
-      "run_id": "29aa2c83afca4a70829e72696b07fc0e",
-      "status": "unavailable"
+      "run_id": "b82893a4224744aa8c4a54228060f1f0",
+      "status": "unavailable",
+      "coverage": null
     },
     {
       "path": "handover/member-2-results.md",
-      "status": "available"
+      "run_id": null,
+      "status": "available",
+      "coverage": null
     }
   ],
   "commands_tested": [
+    "python -m src.data_capacity run --bts-months 2023-01",
     "python -m src.flight_risk train",
     "python -m src.flight_risk decide --airport KATL --asof 2025-07-15T12:00:00Z --window-hours 6",
     "python -m src.flight_risk verify",
-    "python -m pytest tests/flight_risk -q --basetemp=tmp/pytest-member2-final-01"
+    "python -m pytest tests/flight_risk -q --basetemp=tmp/pytest-m2-refresh-01",
+    "python -m pytest tests/data_capacity -q --basetemp=tmp/pytest-m1-03"
   ],
   "test_results": [
     {
-      "command": "python -m pytest tests/flight_risk -q --basetemp=tmp/pytest-member2-final-01",
+      "command": "python -m pytest tests/flight_risk -q --basetemp=tmp/pytest-m2-refresh-01",
       "result": "passed",
-      "evidence": "85 passed, 1 non-fatal joblib Windows core-discovery warning; exit 0"
+      "evidence": "85 passed; exit 0"
+    },
+    {
+      "command": "python -m pytest tests/data_capacity -q --basetemp=tmp/pytest-m1-03",
+      "result": "passed",
+      "evidence": "42 passed; exit 0"
     },
     {
       "command": "python -m src.flight_risk verify",
       "result": "passed",
-      "evidence": "10,604 predictions / 3,537 flights / both airports / leads3,6,12; model partial, decisions unavailable; exit 0"
+      "evidence": "10,604 predictions / 3,537 flights / KATL,KDFW / leads 3,6,12; model partial, decisions unavailable; exit 0"
     }
   ],
   "blockers": [
-    {
-      "requirement": "Weather-enhanced held-out evaluation",
-      "reason": "Verified external weather features absent",
-      "evidence": {
-        "status": "unavailable",
-        "reason": "No cutoff-safe engineered weather features supplied"
-      },
-      "next_action": "Publish accepted canonical/weather inputs and rerun train",
-      "owner": "Member 1, followed by Member 3 integration"
-    },
     {
       "requirement": "Supported arrival queues and AAR forecasting",
       "reason": "Genuine capacity, complete arrival demand and cutoff backlog absent",
@@ -77,9 +80,9 @@
     }
   ],
   "next_steps": [
-    "External supervisors launch/review Members 1 and 3 using prepared handoffs",
-    "Member 3 reruns Member 2 pipeline with accepted Member 1 outputs",
-    "Refresh results and perform final whole-project acceptance"
+    "Obtain genuine FAA ASPM AAR extract (Member 1 supervisor) and rerun data_capacity, then train/decide/verify",
+    "Member 3 integrates refreshed run b3747032ae754cc9be967b9e4ab681b9 into the v2 dashboard",
+    "Final whole-project acceptance"
   ],
   "contract_changes_requested": []
 }
