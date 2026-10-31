@@ -11,9 +11,10 @@
   "label_kind": "observed_reporting_carrier_arrivals",
   "not_aar": "Forecast of observed reporting-carrier arrivals per hour (throughput). NOT the facility Airport Arrival Rate (AAR): counts are limited by demand, by BTS coverage and by upstream flow programmes, so they do not measure runway capacity. Never report this as AAR or AAR RMSE.",
   "team_agreement": {
-    "status": "pending",
-    "required_by": "parallel-plan section 7 (all three members at Gate 2)",
-    "note": "Built at Member 1's request; Member 3 should not present it until agreement is recorded."
+    "status": "agreed",
+    "recorded_date": "2026-10-31",
+    "authority": "User confirmed: the team agrees, implement the plan",
+    "scope": "Present the currently published reporting-carrier arrivals forecast and evaluation; not facility AAR or a departure-volume forecast."
   },
   "assumptions": [
     "Airline schedules are published well before the cutoff, so the target hour's scheduled count is treated as known at cutoff. BTS CRS times reconstruct that schedule (not an as-of snapshot) and include flights later cancelled.",

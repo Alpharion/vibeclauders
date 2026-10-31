@@ -365,7 +365,9 @@ def network_nodes(
         scored = scored.assign(code=destination, is_flagged=flagged(scored))
         summary = scored.groupby("code").agg(best=("probability_severe_delay", "max"), any_flag=("is_flagged", "any"))
         nodes["max_probability"] = nodes["code"].map(summary["best"])
-        nodes["flagged"] = nodes["code"].map(summary["any_flag"]).fillna(False).astype(bool)
+        # Empty/all-unmatched Arrow maps can infer null[pyarrow], which cannot
+        # accept False. Establish a nullable Boolean dtype before filling.
+        nodes["flagged"] = nodes["code"].map(summary["any_flag"]).astype("boolean").fillna(False).astype(bool)
     return nodes
 
 

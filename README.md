@@ -12,7 +12,7 @@ A local Streamlit decision-support prototype for an **airport flow planner** at 
 
 The unified build includes the Figma dashboard, repaired watchlist registration, exact-cutoff departure review priorities, weather-condition recommendations paired with high-risk flights, illustrative arrival scenarios, and model/data-processing evidence. All five tabs are retained.
 
-The release gate passed **537 tests**, risk-publication verification and dashboard smoke checks. The authoritative machine-readable record is [`output/delivery/verification.json`](output/delivery/verification.json); its runtime fingerprint binds these checks to the packaged code and inputs. Browser map availability, rehearsal and supervisor acceptance remain manual checks.
+The full suite passes **546 tests**, including Arrow-null map regression coverage. Release status, risk-publication verification and dashboard smoke results are recorded in [`output/delivery/verification.json`](output/delivery/verification.json); its runtime fingerprint binds those checks to the packaged code and inputs. Browser map availability, rehearsal and supervisor acceptance remain manual checks.
 
 For the recommendations demo select **DFW, 2025-07-31 11:00 UTC, +12h**, then **Weather → Weather-condition recommendations → Paired high-risk departures**. The matching departure has 31.44% severe-delay probability against a 14.60% threshold. Pairing means shared forecast context, not causal attribution. See [`handover/weather-recommendations-demo.md`](handover/weather-recommendations-demo.md).
 
