@@ -81,12 +81,18 @@ def outcomes_bar(reveal: bool, name: str, detail: str) -> None:
 
 
 def overview_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool, forecasts: MovementForecasts) -> None:
-    left, right = st.columns([2.75, 1], gap="small")
+    theme.title("ATC overview", f"{snapshot.airport.iata} · Forecast operational picture · {window_label(snapshot)}")
+    map_section(bundle, snapshot, window)
+    left, right = st.columns(2, gap="medium")
     with left:
-        theme.title("ATC overview", f"{snapshot.airport.iata} · Forecast operational picture · {window_label(snapshot)}")
-        map_section(bundle, snapshot, window)
+        movement_card(bundle, snapshot, reveal, forecasts)
     with right:
-        controller_snapshot(bundle, snapshot, reveal, forecasts)
+        capacity_card(bundle, snapshot)
+    left, right = st.columns(2, gap="medium")
+    with left:
+        weather_risk_card(bundle, snapshot)
+    with right:
+        response_card(bundle, snapshot)
     outcomes_bar(reveal, "overview", "Historical replay shows forecasts and scheduled demand only.")
 
 
@@ -517,8 +523,7 @@ def traffic_tiles(traffic, snapshot: Snapshot, forecasts: MovementForecasts) -> 
         else tile("Scheduled demand", f"{arrivals + departures:.0f}", f"{arrivals:.0f} arrivals + {departures:.0f} departures · SCHEDULED", "", "calendar", badge("SCHEDULED"))
     )
     cards = [forecast_tile("Incoming", incoming, "cyan", "landing", "arrival"), forecast_tile("Outgoing", outgoing, "violet", "takeoff", "departure"), total, scheduled]
-    for column, markup in zip(st.columns(4, gap="small"), cards):
-        html(markup, column)
+    html('<div class="metric-grid">' + "".join(cards) + "</div>")
 
 
 def hourly_charts(rows: pd.DataFrame, snapshot: Snapshot) -> None:
@@ -684,8 +689,7 @@ def revealed_summary(bundle: Bundle, snapshot: Snapshot, results: list, forecast
         tile("False alerts", counts["false"], "Alert, event not in reports", "red", "cross"),
         tile("Missed events", counts["missed"], "No alert, event observed", "amber", "alert"),
     ]
-    for column, markup in zip(st.columns(4, gap="small"), tiles):
-        html(markup, column)
+    html('<div class="metric-grid">' + "".join(tiles) + "</div>")
     if counts["unscored"]:
         st.caption(f"{counts['unscored']} scenario(s) unscored: missing observations are not confirmed non-events.")
     left, right = st.columns([55, 45], gap="small")
@@ -805,8 +809,7 @@ def outcome_section(bundle: Bundle, snapshot: Snapshot) -> None:
         tile("Forecast alerts", counts["alerts"]), tile("Matched alerts", counts["matched"]),
         tile("False alerts", counts["false"]), tile("Missed events", counts["missed"]),
     ]
-    for column, markup in zip(st.columns(4, gap="small"), tiles):
-        html(markup, column)
+    html('<div class="metric-grid">' + "".join(tiles) + "</div>")
     if counts["excluded"]:
         st.caption(f"{counts['excluded']} flight(s) excluded: cancelled or no delay label, never counted as on time.")
     columns = ["flight_id", "probability_severe_delay", "threshold", "dep_delay_min", "result"]
