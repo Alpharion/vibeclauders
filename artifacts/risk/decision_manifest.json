@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0",
   "producer": "member-2-decision-support",
-  "run_id": "cb6148fc59fd46afbe30c5dae43e7c46",
-  "generated_at_utc": "2026-10-31T05:55:24.617268+00:00",
+  "run_id": "70afa0e88de3428581af497d64d0a859",
+  "generated_at_utc": "2026-10-31T06:33:19.500644+00:00",
   "status": "unavailable",
   "airport": "KATL",
   "asof_utc": "2025-07-15T12:00:00+00:00",
@@ -12,11 +12,11 @@
   },
   "artifact_hashes": {
     "queue.parquet": "36df452094d3e3ca5d9ede65321aac9ad6dc427245390d338681db3b06a2af60",
-    "recommendations.json": "3f2210f00d6251b617a0ed09d98422a098612864cd9955c5d2c9d1dd2b1c3dd8"
+    "recommendations.json": "9779e451f1146bf347e06a8120039c5747e512b6bfd3d7b4c7f59b3bd22ac539"
   },
-  "upstream_run_id": "m1-20261031T050536Z-89e2f0",
+  "upstream_run_id": "m1-20261031T060631Z-6c6e38",
   "input_hashes": {
-    "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\capacity\\forecast.parquet": "95d1492700f05d681f72dc91f319958cec577f53b81f59e83edbcdecf67fc7c0"
+    "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\capacity\\forecast.parquet": "676f034938806a57788c1d1e4849eea772c83dea63d9d39c30f878ec86287e14"
   },
   "missing_inputs": [
     "demand: verified input table unavailable",

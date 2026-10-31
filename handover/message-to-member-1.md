@@ -1,8 +1,19 @@
 # To Member 1's supervisor (data and AAR, branch `zeph`)
 
-From Member 2, 31 October 2026. Checked against `main` at `ac7e0f9`.
+From Member 2, 31 October 2026.
 
-## Capacity manifest hashes fail on any fresh checkout (plan task 1.1)
+## Update after `zeph` at `aef4aa8`
+
+Member 2 merged `zeph` into `hm` and retrained on capacity run `m1-20261031T054026Z-670c8c`. The LF fix (1.1) resolves the problem below: your manifest now verifies from a fresh working copy. The TAF/METAR validity fix (1.4) changed only `cond_*` and `taf_group_valid_to_utc`, which Member 2 does not use, so Member 2's predictions and metrics are unchanged.
+
+Two new items, both in your paths:
+
+1. **`tests/data_capacity/test_capacity.py::test_published_forecast_schema_and_honest_status` fails.** `capacity.FORECAST_COLUMNS` now includes `aar_observed`, but the published `artifacts/capacity/forecast.parquet` does not have that column. The code was updated without republishing. Rerun `python -m src.data_capacity run --cache-only` and commit the outputs.
+2. **`artifacts/capacity/traffic_hourly.parquet` is not published**, although commit `aef4aa8` adds the traffic code (plan 1.3). Member 3's dashboard shows "Reporting-carrier traffic unavailable: artifacts/capacity/traffic_hourly.parquet is not published". Publish it and list it in the capacity manifest, or record why it is unavailable.
+
+The original report follows for reference.
+
+## Capacity manifest hashes fail on any fresh checkout (plan task 1.1, now fixed on `zeph`)
 
 **Problem.** The JSON files in `artifacts/capacity/` and `data/processed/` were hashed with Windows CRLF line endings, but git stores them with LF. `.gitattributes` (`artifacts/** -text`, `data/processed/*.json -text`) now checks them out as LF on every platform, including Windows. So every fresh clone gets bytes that don't match `artifacts/capacity/manifest.json`.
 

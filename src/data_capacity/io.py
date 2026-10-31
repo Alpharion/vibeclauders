@@ -65,7 +65,8 @@ def _atomic_write(path: Path, writer: Callable[[Path], None]) -> None:
 
 def write_json(path: Path, payload: dict) -> None:
     text = json.dumps(_jsonable(payload), indent=2, allow_nan=False, ensure_ascii=False)
-    _atomic_write(path, lambda p: p.write_text(text + "\n", encoding="utf-8"))
+    # LF on every OS so published hashes are platform-independent
+    _atomic_write(path, lambda p: p.write_text(text + "\n", encoding="utf-8", newline="\n"))
 
 
 def write_parquet(path: Path, df: pd.DataFrame) -> None:

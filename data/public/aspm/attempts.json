@@ -1,0 +1,26 @@
+{
+  "note": "Log of every attempt to obtain genuine facility AAR labels (plan task 1.2). Append one entry per request or reply; keep entries factual. The pipeline copies this list into artifacts/capacity/data_access.json.",
+  "attempts": [
+    {
+      "at_utc": "2026-10-31T04:28:08Z",
+      "channel": "automated access check by the Member 1 agent",
+      "requested_by": "Member 1 agent",
+      "request": "Check whether FAA ASPM hourly/quarter-hour AAR is downloadable without credentials",
+      "response": "https://www.aspm.faa.gov/ offers only 'Direct Login' and 'MyAccess Login' for ASPM; the public APM pages (Airport Analysis, City Pair, Taxi Times) give delay metrics, not AAR. A scripted query against the report server was not attempted because it would bypass the account requirement.",
+      "status": "refused_no_credentials"
+    },
+    {
+      "at_utc": "2026-10-31T06:29:12Z",
+      "channel": "hackathon organisers (reported to the agent by the team's Member 1)",
+      "requested_by": "team",
+      "request": "Genuine facility AAR (Airport Arrival Acceptance Rate) data for ATL and DFW",
+      "response": "No arrival acceptance rate data was provided by the organisers. at_utc is when this was reported to the agent; the organisers' actual reply time was not recorded.",
+      "status": "not_provided"
+    }
+  ],
+  "gate_2_decision": {
+    "decided_at_utc": "2026-10-31T06:29:12Z",
+    "decision": "AAR unmet",
+    "basis": "ASPM requires credentials the team does not have; organisers provided no AAR data. No proxy is published (parallel-plan section 7)."
+  }
+}

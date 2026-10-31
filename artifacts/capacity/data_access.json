@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
-  "run_id": "m1-20261031T050536Z-89e2f0",
-  "generated_at_utc": "2026-10-31T05:10:55+00:00",
+  "run_id": "m1-20261031T062924Z-d9dfcd",
+  "generated_at_utc": "2026-10-31T06:32:22+00:00",
   "producer": "member-1/data_capacity",
   "status": "partial",
   "decision": "AAR UNAVAILABLE: FAA ASPM hourly/quarter-hour AAR requires an authenticated ASPM account (Direct Login / MyAccess). No credentialed export is present. Weather (IEM METAR/TAF), BTS and NOAA sources are automatically accessible.",
@@ -41,6 +41,29 @@
       ],
       "drop_location": "data/public/aspm/<anything>.csv",
       "label_definition_required": "Facility-set called AAR (not actual arrival throughput, not GDP program rate, not efficiency AAR)"
+    },
+    "attempts": [
+      {
+        "at_utc": "2026-10-31T04:28:08Z",
+        "channel": "automated access check by the Member 1 agent",
+        "requested_by": "Member 1 agent",
+        "request": "Check whether FAA ASPM hourly/quarter-hour AAR is downloadable without credentials",
+        "response": "https://www.aspm.faa.gov/ offers only 'Direct Login' and 'MyAccess Login' for ASPM; the public APM pages (Airport Analysis, City Pair, Taxi Times) give delay metrics, not AAR. A scripted query against the report server was not attempted because it would bypass the account requirement.",
+        "status": "refused_no_credentials"
+      },
+      {
+        "at_utc": "2026-10-31T06:29:12Z",
+        "channel": "hackathon organisers (reported to the agent by the team's Member 1)",
+        "requested_by": "team",
+        "request": "Genuine facility AAR (Airport Arrival Acceptance Rate) data for ATL and DFW",
+        "response": "No arrival acceptance rate data was provided by the organisers. at_utc is when this was reported to the agent; the organisers' actual reply time was not recorded.",
+        "status": "not_provided"
+      }
+    ],
+    "gate_2_decision": {
+      "decided_at_utc": "2026-10-31T06:29:12Z",
+      "decision": "AAR unmet",
+      "basis": "ASPM requires credentials the team does not have; organisers provided no AAR data. No proxy is published (parallel-plan section 7)."
     },
     "overlap_feasibility": "IEM TAF/METAR cover 2022-12-30..2025-08-01 for both airports, so any ASPM extract for 2023-01..2025-07 would overlap fully with cutoff-safe features."
   },
@@ -83,139 +106,546 @@
   "acquisition": {
     "weather": [
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/ATL_20221230_20230101.csv",
-        "status": "downloaded",
-        "rows": 76
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/ATL_20221230_20230101.csv",
+        "status": "cached",
+        "rows": 76,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KATL_20221230_20230101.csv",
-        "status": "downloaded",
-        "rows": 170
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KATL_20221230_20230101.csv",
+        "status": "cached",
+        "rows": 170,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/ATL_20230101_20240101.csv",
-        "status": "downloaded",
-        "rows": 10306
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/ATL_20230101_20240101.csv",
+        "status": "cached",
+        "rows": 10306,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KATL_20230101_20240101.csv",
-        "status": "downloaded",
-        "rows": 22965
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KATL_20230101_20240101.csv",
+        "status": "cached",
+        "rows": 22965,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/ATL_20240101_20250101.csv",
-        "status": "downloaded",
-        "rows": 10156
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/ATL_20240101_20250101.csv",
+        "status": "cached",
+        "rows": 10156,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KATL_20240101_20250101.csv",
-        "status": "downloaded",
-        "rows": 23968
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KATL_20240101_20250101.csv",
+        "status": "cached",
+        "rows": 23968,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/ATL_20250101_20250802.csv",
-        "status": "downloaded",
-        "rows": 6021
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/ATL_20250101_20250802.csv",
+        "status": "cached",
+        "rows": 6021,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KATL_20250101_20250802.csv",
-        "status": "downloaded",
-        "rows": 14413
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KATL_20250101_20250802.csv",
+        "status": "cached",
+        "rows": 14413,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/DFW_20221230_20230101.csv",
-        "status": "downloaded",
-        "rows": 48
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/DFW_20221230_20230101.csv",
+        "status": "cached",
+        "rows": 48,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KDFW_20221230_20230101.csv",
-        "status": "downloaded",
-        "rows": 37
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KDFW_20221230_20230101.csv",
+        "status": "cached",
+        "rows": 37,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/DFW_20230101_20240101.csv",
-        "status": "downloaded",
-        "rows": 10159
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/DFW_20230101_20240101.csv",
+        "status": "cached",
+        "rows": 10159,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KDFW_20230101_20240101.csv",
-        "status": "downloaded",
-        "rows": 12177
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KDFW_20230101_20240101.csv",
+        "status": "cached",
+        "rows": 12170,
+        "dropped_empty_groups": 7
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/DFW_20240101_20250101.csv",
-        "status": "downloaded",
-        "rows": 10323
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/DFW_20240101_20250101.csv",
+        "status": "cached",
+        "rows": 10323,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KDFW_20240101_20250101.csv",
-        "status": "downloaded",
-        "rows": 12599
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KDFW_20240101_20250101.csv",
+        "status": "cached",
+        "rows": 12599,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_metar/DFW_20250101_20250802.csv",
-        "status": "downloaded",
-        "rows": 5929
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_metar/DFW_20250101_20250802.csv",
+        "status": "cached",
+        "rows": 5929,
+        "dropped_empty_groups": 0
       },
       {
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/iem_taf/KDFW_20250101_20250802.csv",
-        "status": "downloaded",
-        "rows": 7663
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/iem_taf/KDFW_20250101_20250802.csv",
+        "status": "cached",
+        "rows": 7662,
+        "dropped_empty_groups": 1
       }
     ],
     "bts": [
       {
         "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_1.zip",
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/bts/ontime_2023_01.zip",
-        "retrieved_at_utc": "2026-10-31T05:07:24+00:00",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_01.zip",
+        "retrieved_at_utc": "2026-10-31T04:45:42+00:00",
         "sha256": "327924faa362d360747e9e4cf37f461c877441916321754f1789fadd61fd403a",
         "bytes": 27068766,
-        "status": "downloaded",
+        "status": "cached",
         "attempts": 1,
         "source_id": "bts_ontime_prezip",
         "month": "2023-01",
-        "filtered_path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_01.parquet",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_01.parquet",
         "filtered_rows": 93215
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_2.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_02.zip",
+        "retrieved_at_utc": "2026-10-31T05:45:03+00:00",
+        "sha256": "bfa6eb7bebb53f10603110aa11bdebf00a89f51d870b331f6565181bb943ddbf",
+        "bytes": 24730977,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2023-02",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_02.parquet",
+        "filtered_rows": 87164
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_3.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_03.zip",
+        "retrieved_at_utc": "2026-10-31T05:46:20+00:00",
+        "sha256": "1a61dce7c50e5c4f074ebff69a833840f4c6be4e71d4a4707be540ace9e6d58b",
+        "bytes": 28954576,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2023-03",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_03.parquet",
+        "filtered_rows": 100826
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_4.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_04.zip",
+        "retrieved_at_utc": "2026-10-31T05:57:22+00:00",
+        "sha256": "adf3ecf6e3763a55c2acfc1fcf1c0ee0ac5a7ca079cb16cf15be5e39b921f7b4",
+        "bytes": 27994592,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2023-04",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_04.parquet",
+        "filtered_rows": 99764
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_5.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_05.zip",
+        "retrieved_at_utc": "2026-10-31T05:57:32+00:00",
+        "sha256": "aec2e926b11e55f88dd0ac48b649492048b4eba0983f1a564e746546568185b4",
+        "bytes": 28333534,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2023-05",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_05.parquet",
+        "filtered_rows": 104181
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_6.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_06.zip",
+        "retrieved_at_utc": "2026-10-31T05:57:28+00:00",
+        "sha256": "67dc6b993ba2e7c2175a874da7a8fbf12081c23c87523c0a5cd7d2f3e50450a1",
+        "bytes": 29075972,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2023-06",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_06.parquet",
+        "filtered_rows": 106224
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_7.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_07.zip",
+        "retrieved_at_utc": "2026-10-31T05:57:19+00:00",
+        "sha256": "b1b73635dcb2add363bb001d95c3f951e0ce4fc32130cbc76b565a531ced2146",
+        "bytes": 30208166,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2023-07",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_07.parquet",
+        "filtered_rows": 110699
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_8.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_08.zip",
+        "retrieved_at_utc": "2026-10-31T05:58:38+00:00",
+        "sha256": "d374aa3ec2b844d47c675d17cf71f2ade0af07b20670f9b8a2c6c1f5fe5d57bd",
+        "bytes": 29539237,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2023-08",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_08.parquet",
+        "filtered_rows": 110440
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_9.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_09.zip",
+        "retrieved_at_utc": "2026-10-31T05:58:35+00:00",
+        "sha256": "4e7bc3f76857accd1d4e493f03fb5ba2c1f68e82496cf16fd61addf4d8464cfa",
+        "bytes": 28047499,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2023-09",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_09.parquet",
+        "filtered_rows": 104723
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_10.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_10.zip",
+        "retrieved_at_utc": "2026-10-31T05:58:45+00:00",
+        "sha256": "a92cc51c6bb1e7fcf2732e27ac36ebbc92293acf8e3c0b33126abe28698ecf51",
+        "bytes": 29452902,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2023-10",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_10.parquet",
+        "filtered_rows": 108995
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_11.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_11.zip",
+        "retrieved_at_utc": "2026-10-31T05:58:50+00:00",
+        "sha256": "9ad54595568704a1cb7d821908611c220cf36da4d9a5ccea03b4deb9053b5025",
+        "bytes": 27573257,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2023-11",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_11.parquet",
+        "filtered_rows": 102004
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2023_12.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2023_12.zip",
+        "retrieved_at_utc": "2026-10-31T05:59:59+00:00",
+        "sha256": "c8391a3f06749b6ee4dec493fb7974f398b9d066a4e731c4cbb8932eddb774ce",
+        "bytes": 28818502,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2023-12",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2023_12.parquet",
+        "filtered_rows": 102430
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_1.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2024_01.zip",
+        "retrieved_at_utc": "2026-10-31T05:59:59+00:00",
+        "sha256": "fe089b45523f9d4ac0ccd0e176a543d274e914ee5ae5bd384dbaafc7dc06ebfd",
+        "bytes": 27573265,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2024-01",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2024_01.parquet",
+        "filtered_rows": 98819
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_2.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2024_02.zip",
+        "retrieved_at_utc": "2026-10-31T05:59:48+00:00",
+        "sha256": "8463683d100504a97847497d2f2281008fd9add9639bf7436a9747032df15f9a",
+        "bytes": 25086854,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2024-02",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2024_02.parquet",
+        "filtered_rows": 94043
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_3.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2024_03.zip",
+        "retrieved_at_utc": "2026-10-31T06:00:14+00:00",
+        "sha256": "e2c5021406f480e813a52a2ed795c251eb1169613da6a416daf88236db8c9013",
+        "bytes": 29313663,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2024-03",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2024_03.parquet",
+        "filtered_rows": 106933
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_4.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2024_04.zip",
+        "retrieved_at_utc": "2026-10-31T06:01:05+00:00",
+        "sha256": "d8b1e88626a7375d351962917fe5ec132660c1636dc8b91f778627c769e0e15a",
+        "bytes": 28540589,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2024-04",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2024_04.parquet",
+        "filtered_rows": 105567
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_5.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2024_05.zip",
+        "retrieved_at_utc": "2026-10-31T06:01:23+00:00",
+        "sha256": "03e4ae26c2d1247de02d0b9a4d87160f8021718abf475a1421de9c45b7d68b04",
+        "bytes": 31139902,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2024-05",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2024_05.parquet",
+        "filtered_rows": 112851
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_6.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2024_06.zip",
+        "retrieved_at_utc": "2026-10-31T06:01:36+00:00",
+        "sha256": "4f329439fd6892aaf89b32908191b2a007e70f775e2551181a22e704ef28a0ab",
+        "bytes": 31226761,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2024-06",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2024_06.parquet",
+        "filtered_rows": 112966
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_7.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2024_07.zip",
+        "retrieved_at_utc": "2026-10-31T06:01:44+00:00",
+        "sha256": "4d992fee134137b3fa43094d7e8cf4a8e6feaa6a422cffb4063f1ed6c7f3f731",
+        "bytes": 34427174,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2024-07",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2024_07.parquet",
+        "filtered_rows": 117143
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_8.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2024_08.zip",
+        "retrieved_at_utc": "2026-10-31T06:02:22+00:00",
+        "sha256": "58d651379af90cc44635657e95fe098567ff954046aec21d6d2cd18424a317f9",
+        "bytes": 30854511,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2024-08",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2024_08.parquet",
+        "filtered_rows": 113577
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_9.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2024_09.zip",
+        "retrieved_at_utc": "2026-10-31T06:02:43+00:00",
+        "sha256": "c0df7503b0050ca46099dab1edfffa33464a0a1031ad712c542af6a4ecece24c",
+        "bytes": 28433978,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2024-09",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2024_09.parquet",
+        "filtered_rows": 107803
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_10.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2024_10.zip",
+        "retrieved_at_utc": "2026-10-31T06:02:53+00:00",
+        "sha256": "a417136d6c1663736437dfeeacefa5b93b82e9db322c863c2f57b19bdd3f04fb",
+        "bytes": 29418453,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2024-10",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2024_10.parquet",
+        "filtered_rows": 114259
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_11.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2024_11.zip",
+        "retrieved_at_utc": "2026-10-31T06:03:04+00:00",
+        "sha256": "26b6e89e7c1f66163a412380c743c648eb470a9017074de4efbd209f1e09860a",
+        "bytes": 28149354,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2024-11",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2024_11.parquet",
+        "filtered_rows": 105306
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_12.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2024_12.zip",
+        "retrieved_at_utc": "2026-10-31T06:03:44+00:00",
+        "sha256": "a324577aa76d1f0aa36239f8010b6b5270fea0ff5ac846177753b76a42c5d01c",
+        "bytes": 30150370,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2024-12",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2024_12.parquet",
+        "filtered_rows": 108579
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_1.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2025_01.zip",
+        "retrieved_at_utc": "2026-10-31T06:03:50+00:00",
+        "sha256": "868387dcedaef1b8d8392e608e642219fde50d594c3cf2094aec858167629ccf",
+        "bytes": 27108664,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2025-01",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2025_01.parquet",
+        "filtered_rows": 96939
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_2.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2025_02.zip",
+        "retrieved_at_utc": "2026-10-31T06:03:59+00:00",
+        "sha256": "12dc8dbdb3c8b3c20d4c00a8b188196ae202f781a8760871ae502a9c733d0ecd",
+        "bytes": 25302583,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2025-02",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2025_02.parquet",
+        "filtered_rows": 90058
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_3.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2025_03.zip",
+        "retrieved_at_utc": "2026-10-31T06:04:34+00:00",
+        "sha256": "9c80fbc2112cdbf3f0613ec2001ba019b3ad75511cd69657080736e7eda9cef4",
+        "bytes": 30544825,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2025-03",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2025_03.parquet",
+        "filtered_rows": 105988
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_4.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2025_04.zip",
+        "retrieved_at_utc": "2026-10-31T06:05:13+00:00",
+        "sha256": "f3718431e988e2afd53a1714dfca37f67355b6fc06b02eb506bffa39300d608c",
+        "bytes": 29369186,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2025-04",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2025_04.parquet",
+        "filtered_rows": 101279
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_5.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2025_05.zip",
+        "retrieved_at_utc": "2026-10-31T06:05:10+00:00",
+        "sha256": "17c3419d7169b313b2bc8ddd3fd57e1e2d4d959c35f2da17f6a5610d4bac7d63",
+        "bytes": 30830593,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2025-05",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2025_05.parquet",
+        "filtered_rows": 107787
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_6.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2025_06.zip",
+        "retrieved_at_utc": "2026-10-31T06:05:26+00:00",
+        "sha256": "087b75e4e059516ca1181e58955d062f341933adb2706e5b2404ed10c9ecbdc6",
+        "bytes": 31131411,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2025-06",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2025_06.parquet",
+        "filtered_rows": 110741
+      },
+      {
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_7.zip",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/ontime_2025_07.zip",
+        "retrieved_at_utc": "2026-10-31T06:06:00+00:00",
+        "sha256": "74309a3a734d5104b4c212390c06eb3acacff15124b9cea49ba7d69a609a0d19",
+        "bytes": 32208704,
+        "status": "cached",
+        "attempts": 1,
+        "source_id": "bts_ontime_prezip",
+        "month": "2025-07",
+        "filtered_path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/bts/filtered/ontime_ATL_DFW_2025_07.parquet",
+        "filtered_rows": 113838
       }
     ],
+    "bts_failed_months": [],
     "storms": [
       {
         "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2022_c20260625.csv.gz",
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2022_c20260625.csv.gz",
-        "retrieved_at_utc": "2026-10-31T05:10:23+00:00",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2022_c20260625.csv.gz",
+        "retrieved_at_utc": "2026-10-31T04:46:26+00:00",
         "sha256": "7d6b79d0049a6edec96b061738289daddba90be26fc9afe7b0a6fd617f21452e",
         "bytes": 11817849,
-        "status": "downloaded",
+        "status": "cached",
         "attempts": 1,
         "year": 2022
       },
       {
         "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2023_c20260323.csv.gz",
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2023_c20260323.csv.gz",
-        "retrieved_at_utc": "2026-10-31T05:10:27+00:00",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2023_c20260323.csv.gz",
+        "retrieved_at_utc": "2026-10-31T04:46:30+00:00",
         "sha256": "713784bed40d9e5a95b1d6240a654f865f3ef97703713105c7b35437270da134",
         "bytes": 12888092,
-        "status": "downloaded",
+        "status": "cached",
         "attempts": 1,
         "year": 2023
       },
       {
         "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2024_c20260728.csv.gz",
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2024_c20260728.csv.gz",
-        "retrieved_at_utc": "2026-10-31T05:10:32+00:00",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2024_c20260728.csv.gz",
+        "retrieved_at_utc": "2026-10-31T04:46:35+00:00",
         "sha256": "2070b83eccab041b36360ab73645b9a249c3eefc5b92b5b3fc0cbba4d9fcc09c",
         "bytes": 12693243,
-        "status": "downloaded",
+        "status": "cached",
         "attempts": 1,
         "year": 2024
       },
       {
         "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2025_c20260819.csv.gz",
-        "path": "C:/Users/simho/OneDrive/Desktop/AutonomousSG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2025_c20260819.csv.gz",
-        "retrieved_at_utc": "2026-10-31T05:10:38+00:00",
+        "path": "C:/Users/zepht/Documents/Autonomous SG/vibeclauders/data/public/noaa_storms/StormEvents_details-ftp_v1.0_d2025_c20260819.csv.gz",
+        "retrieved_at_utc": "2026-10-31T04:46:39+00:00",
         "sha256": "d9b46b4c6aae554723cadbb9691f3d5258371c02e530ba815d6fe41e4550149f",
         "bytes": 12585209,
-        "status": "downloaded",
+        "status": "cached",
         "attempts": 1,
         "year": 2025
       }
