@@ -36,9 +36,9 @@ function ensureMap(state, data) {
   const labelPane = map.createPane('labels');
   labelPane.style.zIndex = 350;
   labelPane.style.pointerEvents = 'none';
-  L.polygon(LOWER_48, {pane: 'fallback', color: '#3A4C5E', weight: 1, fillColor: '#1E2A36', fillOpacity: 1, interactive: false}).addTo(map);
-  state.base = L.tileLayer(data.basemap, {maxZoom: 12, zIndex: 1, attribution: 'Tiles © Esri'}).addTo(map);
-  L.tileLayer(data.labels, {maxZoom: 12, pane: 'labels'}).addTo(map);
+  L.polygon(LOWER_48, {pane: 'fallback', color: '#3A4C5E', weight: 1, fillColor: '#2E4A5F', fillOpacity: 1, interactive: false}).addTo(map);
+  state.base = L.tileLayer(data.basemap, {maxZoom: 12, zIndex: 1, className: 'basemap', attribution: 'Tiles © Esri'}).addTo(map);
+  L.tileLayer(data.labels, {maxZoom: 12, pane: 'labels', className: 'map-labels'}).addTo(map);
   state.layers.weather = L.layerGroup().addTo(map);
   state.layers.connections = L.layerGroup().addTo(map);
   state.layers.flagged = L.layerGroup().addTo(map);
