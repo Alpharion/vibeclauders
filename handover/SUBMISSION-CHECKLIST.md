@@ -1,6 +1,6 @@
 # Combined release and submission checklist
 
-Current state: **not accepted for submission**. Member 1's completed work and the parallel accuracy/input follow-ups are integrated on `codex/member-1-accuracy-integration`; automated verification is complete, while human acceptance remains pending. Member 1 published the chart fix and capacity proxy at `5805f89b8ae908b330e1e981536f52ae1725c2ee`, run `m1-capest-20261031T072310Z-a27968`; this is a ready-for-review publication, not acceptance. The baseline chart failure must pass the combined gate.
+Current state: **not accepted for submission**. Member 1's completed work and the parallel accuracy/input follow-ups are integrated on `codex/member-1-accuracy-integration`; the earlier 501-test gate is historical after the main UI merge and readiness changes; use the new runtime-bound report below. Human acceptance remains pending. Member 1 published the chart fix and capacity proxy at `5805f89b8ae908b330e1e981536f52ae1725c2ee`, run `m1-capest-20261031T072310Z-a27968`; this is a ready-for-review publication, not acceptance. The baseline chart failure must pass the combined gate.
 
 ## Automated gate
 
@@ -41,10 +41,11 @@ Confirm `execution_evidence_matches` is true and verification status is `verifie
 
 | Field | Value |
 |---|---|
-| Tested runtime commit | `0fe4385` implementation; runtime fingerprint in verification.json; final documentation-frozen commit in archive receipt |
+| Tested runtime commit | Current runtime fingerprint in verification.json; final documentation-frozen commit in archive receipt. `0fe4385` is historical. |
 | Member 1 publication run | `m1-capest-20261031T072310Z-a27968` (included and hash-verified) |
-| Automated gate result/report | `verified`, `combined_runtime`; 501 passed, risk/app exits 0; `output/delivery/verification.json` |
+| Automated gate result/report | Read current `output/delivery/verification.json` and confirm its runtime fingerprint matches the final package; previous 501-test result is historical. |
 | Final ZIP SHA256 | Adjacent `challenge-5-implementation.sha256` and receipt after documentation freeze |
+| Fresh-environment install | Record actual command/result separately; the release gate alone does not test installation |
 | Browser review and reviewer | Pending |
 | Rehearsal duration | Pending |
 | Submission timestamp and receipt | Pending |

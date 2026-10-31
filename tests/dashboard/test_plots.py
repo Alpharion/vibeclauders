@@ -34,12 +34,13 @@ def test_hub_colour_follows_flight_category():
 
 def test_flagged_route_is_marked():
     data, _ = payload(flagged={("ATL", "LAS")})
-    assert data["lines"][0]["color"] == plots.FLAG and "Flagged flow" in data["legend"]
+    assert data["lines"][0]["color"] == plots.FLAG and "Flagged flow" in [item["label"] for item in data["legend"]]
 
 
-def test_connections_layer_can_be_turned_off():
-    data, _ = payload(connections=False)
+def test_live_map_has_no_routes_or_forecast_layers():
+    data = map_view.live_payload(HUBS, "ATL", None, {"ATL": "KATL"})
     assert data["lines"] == [] and all(m["hub"] for m in data["markers"])
+    assert data["stops"] == []
 
 
 def test_radar_frame_is_never_after_the_cutoff():
@@ -51,11 +52,15 @@ def test_radar_frame_is_never_after_the_cutoff():
     assert payload()[0]["radar"] is None
 
 
-def test_page_embeds_library_and_cannot_close_its_script():
+def test_component_passes_payload_separately_from_executable_code(monkeypatch):
+    from src.dashboard import components
+    captured = {}
+    monkeypatch.setattr(components, "_map_component", lambda: lambda **kwargs: captured.update(kwargs))
     data, _ = payload()
-    data["legend"]["</script>"] = "#fff"
-    page = map_view.map_page(data)
-    assert "L.tileLayer" in page and "<\\/script>" in page
+    data["legend"].append({"label": "</script>", "kind": "line", "color": "#fff"})
+    components.ops_map(data, "test-map")
+    assert captured["data"] is data
+    assert "</script>" in captured["data"]["legend"][-1]["label"]
 
 
 def test_great_circle_ends_at_both_airports():

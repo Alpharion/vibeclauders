@@ -2,13 +2,11 @@
 
 A local Streamlit decision-support prototype for an airport flow planner (Airbus Challenge 5). At a historical cutoff it displays available weather, severe departure-delay probabilities, traffic context and retrospective evaluation. Advisories require human review; the application sends no operational instructions.
 
-## Current delivery baseline
+## Current delivery
 
-Implementation baseline: `737b468` (31 October 2026); original delivery contribution: `24d834b`. The readiness follow-up adds automated release verification, a separate controller review briefing and judging instructions. Member 2 does not modify the frontend, producers or published models. Member 1 separately published commit `5805f89b8ae908b330e1e981536f52ae1725c2ee`; the readiness integration may combine that exact commit for verification. Publication is not supervisor acceptance.
+The integration combines the rebuilt dashboard from main with capacity-proxy validation, exact-cutoff controller review priorities, illustrative arrival scenarios and rubric evidence. Historical sprint ownership and commits remain in `handover/`; they do not describe the current frontend. See `handover/presentation-gap-resolution.md` for the response to the presentation review and `output/delivery/verification.json` for checks tied to the current runtime fingerprint.
 
-**Baseline frontend regression:** `737b468` has a Plotly Timestamp annotation failure. Member 1's published commit includes a fix; only the current combined verification report establishes whether it passes in the release snapshot. See `output/delivery/VERIFICATION.md` and `verification.json` for measured results and verification scope.
-
-The interface on main includes Overview, Weather, Traffic, Compare and Evaluation tabs, historical/live modes, radar/connections/flagged-flow map layers, condition-frequency heatmaps and reporting-carrier traffic charts. Those source files are preserved by Member 2.
+The frontend has Overview, Weather, Traffic, Compare and Evaluation tabs. Compare shows human review priorities and explicitly assumed arrival scenarios; Evaluation explains the model, processing workflow, baselines and limitations. Automated success is separate from browser review, rehearsal and supervisor acceptance.
 
 ## Run
 
@@ -22,6 +20,21 @@ python -m streamlit run app.py
 
 `DASHBOARD_DATA_ROOT` can select another artifact root. Replay predictions are historical backtests, not evidence that a forecast was issued in 2025. Live weather is separate. Browser map tiles require network access even when the local code and artifacts are packaged.
 
+## Automatic public-data processing
+
+From the repository root, the following commands acquire/process public weather and traffic sources, join them to the supplied flight sample, publish the capacity proxy, and train/verify the delay classifier:
+
+```text
+python -m src.data_capacity run
+python -m src.data_capacity estimate-capacity --from-published
+python -m src.flight_risk train
+python -m src.flight_risk verify
+```
+
+The flight sample defaults to `data/weather/Flight_Data_With_Weather_Final.csv`; `run --flights-csv PATH` and `train --sample PATH` select another supplied sample. Public acquisition needs a network; `run --cache-only` uses existing downloads. These are reproduction commands, not claims that processing runs whenever the dashboard opens. Running them creates new publications: use a separate checkout/output experiment and repeat release verification before replacing a demo build. Missing genuine AAR remains explicit; it does not stop the separately labelled capacity estimator.
+
+No LLM is used. Forecasting, quantile estimation and severe-delay classification are statistical tasks with numerical features, chronological evaluation and reproducible rules; controller review text is a fixed template. Airport configuration and generality are tested in `tests/data_capacity/test_generic_airport.py` and `tests/flight_risk/test_airports.py`, including a synthetic third airport. This proves configurability, not accuracy at an untested airport.
+
 ## Current capabilities and evidence
 
 | Capability | Published evidence | Boundary |
@@ -33,11 +46,11 @@ python -m streamlit run app.py
 | Normalised history | `artifacts/risk/normalized_metrics.parquet`, 1,891 rows | Sample cohorts; observed outcomes require reveal |
 | Reporting-carrier traffic | `artifacts/capacity/traffic_hourly.parquet`, 90,524 rows / 31 BTS months | Reconstructed schedules; not complete cutoff demand |
 | Observed-arrivals forecast | 30,465 rows in `throughput_forecast.parquet` | Forecast of reporting-carrier arrivals, not measured facility AAR; baseline UI does not load this forecast |
-| Capacity/AAR estimation | Member 1 published optional `artifacts/capacity_estimate/` in `5805f89` | Reporting-carrier high-demand weather frontier; available only when that publication is included and validated, not facility AAR |
-| Recorded facility AAR | Existing `forecast.parquet` is empty | No independent AAR observations/RMSE; do not relabel throughput as observed AAR |
-| Queue, metering and flight rescheduling | Explicit unavailable decision; typed empty queue | Missing complete demand and cutoff backlog; no operational savings claimed |
+| Capacity/AAR estimation | `artifacts/capacity_estimate/` and its proxy-target RMSE by airport/lead | Reporting-carrier high-demand weather frontier; no independent facility-AAR validation |
+| Recorded facility AAR | Existing `forecast.parquet` is empty | Organisers provide no genuine AAR labels; no independently verified AAR RMSE; do not relabel throughput as observed AAR |
+| Arrival scenarios / operational decisions | Compare displays schedule-derived demand, estimated backlog and constant-capacity scenarios | Assumed reporting-carrier scenario only; verified metering/rescheduling remains unavailable |
 
-At +3h, published risk precision/recall are 26.1%/52.2% for ATL and 23.5%/48.9% for DFW. Weather versus schedule-only average precision is 0.2620 versus 0.2496 (ATL), 0.2485 versus 0.2276 (DFW), on matched cohorts. Alert quality improvement does not establish reduced delays or fuel savings.
+At +3h, published risk precision/recall are 26.1%/52.2% for ATL and 23.5%/48.9% for DFW. Weather versus schedule-only average precision is 0.2620 versus 0.2496 (ATL), 0.2485 versus 0.2276 (DFW), on matched cohorts. At the same alert workload, ATL +3h recall is 52.2% versus 43.2% for the historical-rate baseline: 9.0 percentage points, or about 21% more severe-delay cases detected. Alert quality improvement does not establish reduced delays or fuel savings.
 
 Capacity/data run: `m1-20261031T065014Z-eacdd5`. Risk run: `0949771a54bb4e49b4e215528eb5d46b`. Its frozen inputs refer to the earlier compatible upstream run; the current weather additions do not change the nine risk features. No retraining was performed for packaging.
 
@@ -66,11 +79,11 @@ Choose a fresh writable `--basetemp` per test invocation on restricted Windows e
 
 ## Work ownership and release
 
-Use `handover/sprint-30min/README.md`, the two member prompts, `INTERFACE.md` and `ACCEPTANCE.md`. Older plans and handoffs are historical checkpoints where they conflict with that clarified sprint. Member 1 owns model estimation plus its existing-panel integration; Member 2 owns packaging/evidence. Supervisors merge in either order, rerun combined checks and rebuild the final package. Member 1 reports the estimate and chart fix ready for review; combined automation, browser review and supervisor acceptance remain distinct gates.
+Earlier sprint prompts remain historical checkpoints. Current integration and review evidence are in `handover/member-1-accuracy-results.md` and `handover/presentation-gap-resolution.md`. Review the integration against main, rerun the combined gate after runtime changes, and rebuild after documentation freeze. Browser review, timed rehearsal and supervisor acceptance are separate gates.
 
 ## Controller review and judging
 
-Generate a separate evidence-backed review brief without changing dashboard or queue outputs:
+Compare displays exact-key review priorities. Generate a companion evidence-backed brief with:
 
 ```text
 python -m tools.delivery.controller_brief --airport KATL --asof 2025-07-12T20:00:00Z --lead 3

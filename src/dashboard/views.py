@@ -242,6 +242,10 @@ def mask_outcomes(rows: pd.DataFrame, reveal: bool) -> pd.DataFrame:
     return rows[[c for c in rows.columns if c not in OUTCOME_COLUMNS and "actual" not in c]]
 
 
+def known_value(value, suffix: str = "", digits: int = 0) -> str:
+    return "Unknown" if pd.isna(value) else f"{value:,.{digits}f}{suffix}"
+
+
 def weather_feature_row(bundle: Bundle, snapshot: Snapshot) -> tuple[pd.Series | None, str | None]:
     features = bundle.table("weather_features")
     if features is None:
@@ -327,14 +331,22 @@ def radar_time(asof_utc: pd.Timestamp) -> pd.Timestamp:
     return (asof_utc - pd.Timedelta(minutes=10)).floor("5min")
 
 
-def reporting_series(
-    traffic: pd.DataFrame, airport: Airport, direction: str, asof_utc: pd.Timestamp, reveal: bool, before=3, after=8
-) -> pd.DataFrame:
-    """Hours around the cutoff; a missing hour stays a gap rather than becoming zero."""
-    hours = pd.date_range(asof_utc - pd.Timedelta(hours=before), periods=before + after + 1, freq="h")
-    rows = traffic[(traffic["airport"] == airport.icao) & (traffic["direction"] == direction)]
-    series = rows.set_index("hour_utc").reindex(hours).rename_axis("hour_utc").reset_index()
-    return series[["hour_utc", "scheduled_count"] + (["actual_count"] if reveal else [])]
+def scheduled_at(traffic: pd.DataFrame | None, airport: Airport, hour: pd.Timestamp) -> tuple[float, float]:
+    """Scheduled arrivals and departures in one hour; a missing hour stays NaN, not zero."""
+    if traffic is None:
+        return float("nan"), float("nan")
+    rows = traffic[(traffic["airport"] == airport.icao) & (traffic["hour_utc"] == hour)].set_index("direction")
+    counts = rows["scheduled_count"].astype(float).to_dict() if len(rows) else {}
+    return counts.get("arrival", float("nan")), counts.get("departure", float("nan"))
+
+
+def actual_at(traffic: pd.DataFrame | None, airport: Airport, hour: pd.Timestamp) -> tuple[float, float]:
+    """Actual movements in one hour. Callers show these only after a reveal."""
+    if traffic is None:
+        return float("nan"), float("nan")
+    rows = traffic[(traffic["airport"] == airport.icao) & (traffic["hour_utc"] == hour)].set_index("direction")
+    counts = {d: (float("nan") if pd.isna(v) else float(v)) for d, v in rows["actual_count"].items()} if len(rows) else {}
+    return counts.get("arrival", float("nan")), counts.get("departure", float("nan"))
 
 
 def network_nodes(
@@ -597,16 +609,6 @@ def aar_trend(forecast: pd.DataFrame | None, airport: Airport, horizon: int) -> 
     return rows.sort_values("target_hour_utc")
 
 
-def reporting_traffic(
-    traffic: pd.DataFrame, airport: Airport, asof_utc: pd.Timestamp, window_hours: int, reveal: bool
-) -> pd.DataFrame:
-    """Hourly counts in the window. Missing rows stay missing rather than becoming zero."""
-    hours = pd.date_range(asof_utc, periods=window_hours, freq="h")
-    rows = traffic[(traffic["airport"] == airport.icao) & traffic["hour_utc"].isin(hours)]
-    columns = ["hour_utc", "direction", "scheduled_count"] + (["actual_count"] if reveal else [])
-    return rows.sort_values(["hour_utc", "direction"])[columns]
-
-
 def storm_table(cohorts: list[dict]) -> pd.DataFrame:
     """One row per cohort, airport and lead, with model and baseline side by side."""
     rows = pd.DataFrame(cohorts)
@@ -616,6 +618,14 @@ def storm_table(cohorts: list[dict]) -> pd.DataFrame:
     wide = wide[sorted(wide.columns)].astype(float)
     context = [c for c in ("n", "severe_n", "reason") if c in rows]
     return rows.groupby(key)[context].first().join(wide).reset_index()
+
+
+def reliability_rows(document: dict | None, airport: str, horizon: int) -> list[dict]:
+    """Held-out reliability bins for one airport and lead, when published."""
+    for entry in (document or {}).get("detail") or []:
+        if entry.get("airport") == airport and entry.get("horizon_hours") == horizon:
+            return [bin_ for bin_ in entry.get("reliability") or [] if bin_.get("n")]
+    return []
 
 
 def calibration_note(document: dict | None) -> str | None:
@@ -684,3 +694,23 @@ def find_failure_cases(document: dict | None) -> list:
 
     walk(document or {})
     return found
+
+
+def reporting_series(
+    traffic: pd.DataFrame, airport: Airport, direction: str, asof_utc: pd.Timestamp, reveal: bool, before=3, after=8
+) -> pd.DataFrame:
+    """Hours around the cutoff; a missing hour stays a gap rather than becoming zero."""
+    hours = pd.date_range(asof_utc - pd.Timedelta(hours=before), periods=before + after + 1, freq="h")
+    rows = traffic[(traffic["airport"] == airport.icao) & (traffic["direction"] == direction)]
+    series = rows.set_index("hour_utc").reindex(hours).rename_axis("hour_utc").reset_index()
+    return series[["hour_utc", "scheduled_count"] + (["actual_count"] if reveal else [])]
+
+
+def reporting_traffic(
+    traffic: pd.DataFrame, airport: Airport, asof_utc: pd.Timestamp, window_hours: int, reveal: bool
+) -> pd.DataFrame:
+    """Hourly counts in the window. Missing rows stay missing rather than becoming zero."""
+    hours = pd.date_range(asof_utc, periods=window_hours, freq="h")
+    rows = traffic[(traffic["airport"] == airport.icao) & traffic["hour_utc"].isin(hours)]
+    columns = ["hour_utc", "direction", "scheduled_count"] + (["actual_count"] if reveal else [])
+    return rows.sort_values(["hour_utc", "direction"])[columns]

@@ -17,6 +17,8 @@ def run(monkeypatch):
         cached_bundle.clear()
         app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
         assert not app.exception
+        app.session_state["tab"] = "Compare"
+        app.run()
         return app
 
     return start
@@ -25,6 +27,13 @@ def run(monkeypatch):
 def text(app) -> str:
     parts = [e.value for kind in ("markdown", "warning", "error", "info", "caption", "title", "success") for e in getattr(app, kind)]
     return "\n".join(map(str, parts))
+
+
+def show(app, tab):
+    app.session_state["tab"] = tab
+    app.run()
+    assert not app.exception
+    return app
 
 
 def test_launch_with_no_artifacts(run, tmp_path):
@@ -36,7 +45,7 @@ def test_launch_with_partial_artifacts(run, tmp_path):
     c.publish_risk(tmp_path)
     body = text(run(tmp_path))
     assert "Schedule risk: Available" in body and "AAR forecast: Unavailable" in body
-    assert "Schedule-only model" in body
+    assert "Schedule-only model" in text(show(run(tmp_path), "Traffic"))
 
 
 def test_launch_with_malformed_artifacts(run, root):
@@ -47,28 +56,28 @@ def test_launch_with_malformed_artifacts(run, root):
 
 def test_valid_artifacts_and_selection_updates_panels(run, root):
     app = run(root)
-    assert "Frozen" not in text(app) and "12:00 UTC" in text(app) and "Flights scored" in [m.label for m in app.metric]
-    app.radio(key="horizon").set_value(12).run()
-    assert "Unsupported selection" in text(app)
-    assert "+12 h." in text(app)
-    app.radio(key="horizon").set_value(6).run()
+    assert "12:00 UTC" in text(app)
+    next(w for w in app.get("button_group") if w.key == "horizon").set_value(12).run()
+    assert app.session_state["horizon"] == 12 and not app.exception
+    next(w for w in app.get("button_group") if w.key == "horizon").set_value(6).run()
     app.selectbox(key="airport").set_value("KDFW").run()
-    body = text(app)
-    assert "DFW · Forecast picture" in body and "No decision output" in body
+    assert "DFW" in text(show(app, "Compare")) and "No decision output" in text(app)
+
 
 
 def test_outcomes_locked_until_reveal(run, root):
     app = run(root)
-    assert "Turn on **Reveal outcomes**" in text(app)
+    assert "OUTCOMES HIDDEN" in text(app)
     assert not any("dep_delay_min" in frame.value.columns for frame in app.dataframe)
-    app.toggle(key="reveal").set_value(True).run()
+    app.button(key="reveal-compare").click().run()
+    show(app, "Compare")
     assert any("dep_delay_min" in frame.value.columns for frame in app.dataframe)
 
 
 def test_decision_refused_on_window_change(run, root):
     app = run(root)
     app.number_input(key="window").set_value(3).run()
-    assert "No decision output" in text(app)
+    assert "No decision output" in text(show(app, "Compare"))
 
 
 def test_unavailable_decision_shows_missing_reasons(run, root):
@@ -104,19 +113,19 @@ def test_mixed_models_show_each_threshold_and_counts(run, tmp_path):
     table.loc[1, ["model_kind", "threshold"]] = ["weather_enhanced", 0.12]
     c.publish_risk(tmp_path, table=table)
     app = run(tmp_path)
-    app.radio(key="horizon").set_value(6).run()  # f1 and f2 share only the +6 h key.
-    assert "Schedule-only model** for 1 of 2 flights" in text(app)
+    next(w for w in app.get("button_group") if w.key == "horizon").set_value(6).run()  # f1 and f2 share only the +6 h key.
+    assert "Schedule-only model** for 1 of 2 flights" in text(show(app, "Traffic"))
     assert any(m.value == "0.120 / 0.150" for m in app.metric)
-    assert "1 weather enhanced" in text(app)
+    assert any("Model" in f.value and f.value["Model"].str.contains("Weather", case=False).any() for f in app.dataframe)
 
 
 def test_jump_to_published_decision_sets_cutoff_and_window(run, root):
     app = run(root)
     app.number_input(key="window").set_value(3).run()
-    assert "No decision output" in text(app)
+    assert "No decision output" in text(show(app, "Compare"))
     jump = app.selectbox(key="jump-KATL")
     option = next(o for o in jump.options if o.startswith("Published decision"))
     jump.set_value(option).run()
     assert not app.exception
     assert app.number_input(key="window").value == 6
-    assert "No decision output" not in text(app)
+    assert "No decision output" not in text(show(app, "Compare"))

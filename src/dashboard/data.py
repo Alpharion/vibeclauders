@@ -16,6 +16,10 @@ STATUSES = ("available", "partial", "unavailable")
 SNAPSHOT_KEY = ["airport", "asof_utc", "target_hour_utc", "horizon_hours"]
 
 
+FLIGHT_CATEGORIES = ("VFR", "MVFR", "IFR", "LIFR")
+EXECUTION_STATES = ("not_recorded", "simulated", "executed")
+
+
 class ArtifactError(ValueError):
     """An artifact exists but cannot be trusted."""
 
@@ -107,6 +111,44 @@ def _check_forecast(df: pd.DataFrame) -> list[str]:
     return problems
 
 
+def _check_throughput(df: pd.DataFrame) -> list[str]:
+    problems = _check_snapshot(df, SCORED_HORIZONS)
+    if (df["label_kind"] == "facility_aar").any():
+        problems.append("observed-arrivals forecast must never carry an AAR label")
+    return problems
+
+
+def _check_probabilities(df: pd.DataFrame) -> list[str]:
+    problems = _check_snapshot(df, SCORED_HORIZONS)
+    shares = pd.to_numeric(df["probability"], errors="coerce").dropna()
+    if not shares.between(0, 1).all():
+        problems.append("probability has values outside [0, 1]")
+    categories = df[df["condition"].isin(FLIGHT_CATEGORIES)]
+    if not categories.empty:
+        totals = categories.groupby(["airport", "asof_utc", "horizon_hours"])["probability"].sum()
+        if not totals.between(0.999, 1.001).all():
+            problems.append("flight-category distribution does not sum to 100%")
+    return problems
+
+
+def _check_movements(df: pd.DataFrame) -> list[str]:
+    problems = _check_snapshot(df, SCORED_HORIZONS)
+    if not df["direction"].isin(("arrival", "departure")).all():
+        problems.append("direction must be arrival or departure")
+    if ((df["lower"] > df["forecast"]) | (df["forecast"] > df["upper"])).any():
+        problems.append("interval bounds do not contain the forecast")
+    return problems
+
+
+def _check_actions(df: pd.DataFrame) -> list[str]:
+    problems = _check_snapshot(df, SCORED_HORIZONS)
+    if (df["proposal_utc"] > df["asof_utc"]).any():
+        problems.append("proposal_utc is later than the cutoff")
+    if not df["execution_status"].isin(EXECUTION_STATES).all():
+        problems.append(f"execution_status outside {EXECUTION_STATES}")
+    return problems
+
+
 def _check_traffic(df: pd.DataFrame) -> list[str]:
     problems = []
     if (df["coverage"] != "reporting_carriers").any():
@@ -142,6 +184,12 @@ FLIGHT_COLUMNS = (
     "flight_id", "origin", "dest", "carrier", "flight_number", "scheduled_dep_utc",
     "scheduled_arr_utc", "dep_delay_min", "arr_delay_min", "cancelled", "diverted",
     "coverage", "source_id",
+)
+THROUGHPUT_COLUMNS = (
+    *SNAPSHOT_KEY, "arrivals_pred", "arrivals_lower", "arrivals_upper", "arrivals_observed",
+    "scheduled_arrivals", "status", "label_kind", "source_id", "features_available_at_utc",
+    "model_train_end_utc", "model_selection_end_utc", "run_id", "model_version", "coverage",
+    "population",
 )
 WEATHER_COLUMNS = (
     "airport", "issued_at_utc", "available_at_utc", "valid_from_utc", "valid_to_utc", "kind",
@@ -199,9 +247,48 @@ CAPACITY_TABLES = {
         ),
         _check_forecast,
     ),
+    "throughput_forecast": TableSpec(
+        "artifacts/capacity/throughput_forecast.parquet", THROUGHPUT_COLUMNS, tuple(SNAPSHOT_KEY),
+        (
+            "asof_utc", "target_hour_utc", "features_available_at_utc",
+            "model_train_end_utc", "model_selection_end_utc",
+        ),
+        _check_throughput,
+    ),
     "eligible_flights": TableSpec(
         "data/processed/eligible_flights.parquet", ("flight_id", "airport", "asof_utc"),
         ("flight_id", "airport", "asof_utc"), ("asof_utc",),
+    ),
+}
+# Added for the revised UI. No producer publishes these yet; the app shows why each is unavailable.
+FORECAST_TABLES = {
+    "weather_probabilities": TableSpec(
+        "artifacts/forecast/weather_probabilities.parquet",
+        (
+            *SNAPSHOT_KEY, "valid_from_utc", "valid_to_utc", "condition", "threshold", "probability",
+            "value", "lower", "upper", "features_available_at_utc", "model_version", "source_id",
+            "run_id", "status",
+        ),
+        (*SNAPSHOT_KEY, "condition"),
+        ("asof_utc", "target_hour_utc", "valid_from_utc", "valid_to_utc", "features_available_at_utc"),
+        _check_probabilities,
+    ),
+    "movement_forecast": TableSpec(
+        "artifacts/forecast/movement_forecast.parquet",
+        (
+            *SNAPSHOT_KEY, "direction", "forecast", "lower", "upper", "interval_level", "method",
+            "provenance", "features_available_at_utc", "coverage", "run_id", "status",
+        ),
+        (*SNAPSHOT_KEY, "direction"),
+        ("asof_utc", "target_hour_utc", "features_available_at_utc"), _check_movements,
+    ),
+    "proposed_actions": TableSpec(
+        "artifacts/forecast/proposed_actions.parquet",
+        (
+            *SNAPSHOT_KEY, "condition", "proposal_utc", "action", "eligible_flight_keys",
+            "prerequisites", "execution_status", "simulation", "run_id", "status",
+        ),
+        (*SNAPSHOT_KEY, "condition"), ("asof_utc", "target_hour_utc", "proposal_utc"), _check_actions,
     ),
 }
 
@@ -474,6 +561,7 @@ def _published(group: Group, name: str) -> bool:
 
 def _capabilities(tables, docs, groups) -> list[Capability]:
     risk, decision, capacity = groups["risk"], groups["decision"], groups["capacity"]
+    forecast_group = groups["forecast"]
     predictions = tables.get("predictions")
     kinds = set(predictions["model_kind"]) if predictions is not None else set()
     schedule_kinds = {k for k in kinds if is_schedule_only(k)}
@@ -543,7 +631,7 @@ def _capabilities(tables, docs, groups) -> list[Capability]:
     )
     capabilities.append(
         _capability(
-            "Review advisory", bool(recommendations.get("recommendations")),
+            "Operational advisory", bool(recommendations.get("recommendations")),
             gate or ["no deficit at the published snapshot, so no action is advised"], decision,
         )
     )
@@ -554,7 +642,34 @@ def _capabilities(tables, docs, groups) -> list[Capability]:
             ["no verified flight state/eligibility; revised times are withheld"], decision,
         )
     )
+    capabilities.append(
+        _capability(
+            "Weather probabilities", "weather_probabilities" in tables,
+            forecast_group.problems.get("weather_probabilities", []), forecast_group,
+        )
+    )
+    capabilities.append(_movement_capability(tables, docs, capacity, forecast_group))
+    capabilities.append(
+        _capability(
+            "Published operational actions", "proposed_actions" in tables,
+            forecast_group.problems.get("proposed_actions", []), forecast_group,
+        )
+    )
     return capabilities
+
+
+def _movement_capability(tables, docs, capacity, forecast_group) -> Capability:
+    if "movement_forecast" in tables:
+        return _capability("Movement forecast", True, [], forecast_group)
+    if "throughput_forecast" in tables:
+        return Capability(
+            "Movement forecast", "partial",
+            ["incoming only: observed reporting-carrier arrivals, never AAR; no outgoing forecast published"],
+            capacity.manifest["run_id"],
+        )
+    return _capability(
+        "Movement forecast", False, forecast_group.problems.get("movement_forecast", []), forecast_group
+    )
 
 
 def _watched_paths() -> list[str]:
@@ -562,9 +677,10 @@ def _watched_paths() -> list[str]:
         "artifacts/risk/manifest.json", "artifacts/risk/decision_manifest.json",
         "artifacts/capacity/manifest.json", "artifacts/risk/evaluation.json",
         "artifacts/risk/recommendations.json", "artifacts/capacity/evaluation.json",
+        "artifacts/capacity/throughput_evaluation.json", "artifacts/forecast/manifest.json",
         "artifacts/capacity/data_access.json", "data/processed/provenance.json",
     ]
-    for specs in (RISK_TABLES, DECISION_TABLES, CAPACITY_TABLES, ESTIMATE_TABLES):
+    for specs in (RISK_TABLES, DECISION_TABLES, CAPACITY_TABLES, ESTIMATE_TABLES, FORECAST_TABLES):
         paths.extend(spec.path for spec in specs.values())
     paths.extend(ESTIMATE_DOCUMENTS.values())
     paths.append("artifacts/capacity_estimate/manifest.json")
@@ -601,8 +717,13 @@ def load_bundle(root: Path) -> Bundle:
         ),
         "capacity": _load_group(
             root, "artifacts/capacity/manifest.json", CAPACITY_TABLES,
-            {"capacity_evaluation": "artifacts/capacity/evaluation.json"}, tables, docs,
+            {
+                "capacity_evaluation": "artifacts/capacity/evaluation.json",
+                "throughput_evaluation": "artifacts/capacity/throughput_evaluation.json",
+            },
+            tables, docs,
         ),
+        "forecast": _load_group(root, "artifacts/forecast/manifest.json", FORECAST_TABLES, {}, tables, docs),
         # optional, independently hashed; absence leaves the baseline app unchanged
         "capacity_estimate": _load_group(
             root, "artifacts/capacity_estimate/manifest.json", ESTIMATE_TABLES, ESTIMATE_DOCUMENTS, tables, docs,
