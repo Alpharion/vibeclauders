@@ -637,6 +637,30 @@ def compare_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool, f
         st.info("This comparison uses observed outcomes. Turn on **Reveal outcomes** to view it.", icon="🔒")
     else:
         revealed_summary(bundle, snapshot, results, forecasts)
+    if reveal and not results:
+        traffic_versus(bundle, snapshot, forecasts)
+    if not reveal:
+        arrivals, departures = views.scheduled_at(bundle.table("traffic_hourly"), snapshot.airport, snapshot.target_hour_utc)
+        incoming = forecasts.at(snapshot.target_hour_utc, "arrival")
+        st.markdown("**Target-hour traffic available at this cutoff**")
+        st.dataframe(pd.DataFrame([{
+            "Target (UTC)": str(snapshot.target_hour_utc),
+            "Scheduled arrivals": arrivals, "Scheduled departures": departures,
+            "Forecast arrivals": incoming.forecast if incoming else None,
+        }]), hide_index=True)
+        st.caption("Reconstructed reporting-carrier schedules and published arrival forecast. Reveal outcomes to compare with observed counts; no departure-volume forecast is published.")
+    with st.container(border=True):
+        st.markdown("### ATC follow-up recommendations")
+        operational_actions, missing_reason = outputs.proposed_actions(bundle, snapshot)
+        if not operational_actions:
+            st.warning("PLACEHOLDER FOLLOW-UP — operational recommendation inputs incomplete")
+            st.write("Contact the responsible ATC/flow-management coordinator to confirm restrictions, available arrival capacity and backlog; reconcile airline readiness before considering a flow-management action.")
+            st.caption("Validation needed: " + str(missing_reason) + " No rate, route or departure-time change is proposed by this placeholder.")
+        st.write("Review the flagged departures with airline operations, confirm inbound-aircraft status and current ATC restrictions, and assess the weather conditions below before deciding whether flow-management coordination is needed.")
+        st.caption("Decision support for human follow-up only. These are rule-based review prompts, not issued ATC clearances, validated metering rates or approved flight rescheduling.")
+        from src.dashboard.weather_actions import render_weather_actions
+        weather_row, _ = views.weather_feature_row(bundle, snapshot)
+        render_weather_actions(weather_row, snapshot, bundle)
     from src.dashboard.presentation_actions import review_actions_section, arrival_scenario_section
     with st.container(border=True):
         card_title("Proposed actions", "For human review. Nothing is transmitted.")
@@ -682,6 +706,10 @@ def traffic_versus(bundle: Bundle, snapshot: Snapshot, forecasts: MovementForeca
         return None if pd.isna(number_) else number_
 
     groups = [("Incoming", incoming.forecast if incoming else None, value(actual_in)), ("Outgoing", outgoing.forecast if outgoing else None, value(actual_out))]
+    st.dataframe(pd.DataFrame([{
+        "Direction": label, "Forecast": predicted, "Observed": observed,
+        "Observed minus forecast": observed - predicted if observed is not None and predicted is not None else None,
+    } for label, predicted, observed in groups]), hide_index=True)
     st.plotly_chart(plots.forecast_actual_bars(groups), key="forecast-vs-actual", **CHART)
     if incoming and outgoing:
         scope = "Total"
@@ -728,7 +756,9 @@ def scenario_table(bundle: Bundle, snapshot: Snapshot, results: list, reveal: bo
         rows, classes = [], {}
         for index, result in enumerate(results):
             action = actions.get(result.condition)
-            proposed = escape(str(action["action"])) if action is not None else escape(reason)
+            proposed = escape(str(action["action"])) if action is not None else escape(
+                "PLACEHOLDER — confirm current weather, runway configuration and ATC restrictions with operations; review the affected flights before considering flow changes. Not a validated operational action. Missing evidence: " + str(reason)
+            )
             actual = escape(result.actual) if reveal else "Hidden"
             outcome = escape(result.result) if reveal else "Hidden"
             rows.append(
