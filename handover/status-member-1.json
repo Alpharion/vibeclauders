@@ -3,8 +3,8 @@
   "schema_version": "2.0",
   "state": "ready_for_review",
   "started_at_utc": "2026-10-31T04:28:08Z",
-  "updated_at_utc": "2026-10-31T06:35:00Z",
-  "elapsed_minutes": 127,
+  "updated_at_utc": "2026-10-31T06:58:00Z",
+  "elapsed_minutes": 150,
   "completed": [
     "Plan 1.1: JSON written with LF on every OS; a test fails on any CR in published JSON",
     "Plan 1.2: AAR attempt log (data/public/aspm/attempts.json) copied into data_access.json; 2 entries (ASPM login required; organisers provided no AAR data). Gate 2 decision recorded: AAR unmet",
@@ -14,19 +14,83 @@
     "Reproducibility fix found by the clean run: weather decoding no longer depends on IEM row order; both download sets now give identical outputs (12 feature cells resolved deterministically)",
     "Plan 1.6: airport-generic proof with a test-only registry (synthetic KORD, heading 270); missing heading or timezone refused with the field named; no third airport in artifacts",
     "Plan 2.3 interface: forecast.parquet carries nullable aar_observed",
-    "Merged origin/main into zeph with no conflicts; whole-repo tests pass"
+    "Merged origin/main into zeph with no conflicts; whole-repo tests pass",
+    "Plan section 7 stretch (team agreement pending): observed reporting-carrier arrivals forecast, label observed_reporting_carrier_arrivals, never AAR. Test RMSE 9.26 vs 15.43 baseline; in weather-impacted hours weather beats schedule-only by 1.83 arrivals/hour (95% CI [-3.46, -0.46])",
+    "Additive frozen_precip_flag features (cond_/obs_ variants); contract features unchanged"
   ],
   "artifacts": [
-    {"path": "data/processed/flights.parquet", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "available", "coverage": "ATL/DFW sample flights, local dates 2023-01-01..2025-07-31"},
-    {"path": "artifacts/capacity/weather.parquet", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "available", "coverage": "KATL/KDFW METAR+TAF issued 2022-12-30..2025-08-01"},
-    {"path": "artifacts/capacity/weather_features.parquet", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "available", "coverage": "KATL/KDFW, local dates 2023-01-01..2025-07-31, horizons 3/6/12"},
-    {"path": "artifacts/capacity/traffic_hourly.parquet", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "available", "coverage": "KATL/KDFW hourly, BTS months 2023-01..2025-07, reporting carriers"},
-    {"path": "artifacts/capacity/forecast.parquet", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "unavailable", "coverage": null},
-    {"path": "artifacts/capacity/evaluation.json", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "unavailable", "coverage": null},
-    {"path": "artifacts/capacity/data_access.json", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "partial", "coverage": null},
-    {"path": "data/processed/provenance.json", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "partial", "coverage": null},
-    {"path": "data/processed/storm_events.parquet", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "available", "coverage": "2022-2025 vicinity counties; retrospective only"},
-    {"path": "artifacts/capacity/manifest.json", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "partial", "coverage": null}
+    {
+      "path": "data/processed/flights.parquet",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "available",
+      "coverage": "ATL/DFW sample flights, local dates 2023-01-01..2025-07-31"
+    },
+    {
+      "path": "artifacts/capacity/weather.parquet",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "available",
+      "coverage": "KATL/KDFW METAR+TAF issued 2022-12-30..2025-08-01"
+    },
+    {
+      "path": "artifacts/capacity/weather_features.parquet",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "available",
+      "coverage": "KATL/KDFW, local dates 2023-01-01..2025-07-31, horizons 3/6/12"
+    },
+    {
+      "path": "artifacts/capacity/traffic_hourly.parquet",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "available",
+      "coverage": "KATL/KDFW hourly, BTS months 2023-01..2025-07, reporting carriers"
+    },
+    {
+      "path": "artifacts/capacity/forecast.parquet",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "unavailable",
+      "coverage": null
+    },
+    {
+      "path": "artifacts/capacity/throughput_forecast.parquet",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "available",
+      "coverage": "held-out 2025-01..07, KATL/KDFW, horizons 3/6/12; NOT AAR"
+    },
+    {
+      "path": "artifacts/capacity/throughput_evaluation.json",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "available",
+      "coverage": null
+    },
+    {
+      "path": "artifacts/capacity/evaluation.json",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "unavailable",
+      "coverage": null
+    },
+    {
+      "path": "artifacts/capacity/data_access.json",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "partial",
+      "coverage": null
+    },
+    {
+      "path": "data/processed/provenance.json",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "partial",
+      "coverage": null
+    },
+    {
+      "path": "data/processed/storm_events.parquet",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "available",
+      "coverage": "2022-2025 vicinity counties; retrospective only"
+    },
+    {
+      "path": "artifacts/capacity/manifest.json",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "partial",
+      "coverage": null
+    }
   ],
   "commands_tested": [
     "python -m src.data_capacity bts --workers 4 --months 2023-01 ... 2025-07",
@@ -36,11 +100,31 @@
     "python -m pytest tests -q"
   ],
   "test_results": [
-    {"command": "python -m src.data_capacity bts --workers 4 --months 2023-01 ... 2025-07", "result": "passed", "evidence": "31/31 months downloaded and filtered in 10m16s; 0 failed"},
-    {"command": "python -m src.data_capacity run", "result": "passed", "evidence": "fresh worktree, empty caches: 16m01s, exit 0, 0 failed downloads, run m1-20261031T060631Z-ca753e"},
-    {"command": "python -m src.data_capacity run --cache-only", "result": "passed", "evidence": "run m1-20261031T062924Z-d9dfcd (published); manifest status partial: AAR unavailable only"},
-    {"command": "python -m pytest tests/data_capacity -q", "result": "passed", "evidence": "80 passed in the clean worktree"},
-    {"command": "python -m pytest tests -q", "result": "passed", "evidence": "252 passed on zeph after merging origin/main (Windows)"}
+    {
+      "command": "python -m src.data_capacity bts --workers 4 --months 2023-01 ... 2025-07",
+      "result": "passed",
+      "evidence": "31/31 months downloaded and filtered in 10m16s; 0 failed"
+    },
+    {
+      "command": "python -m src.data_capacity run",
+      "result": "passed",
+      "evidence": "fresh worktree, empty caches: 16m01s, exit 0, 0 failed downloads, run m1-20261031T060631Z-ca753e"
+    },
+    {
+      "command": "python -m src.data_capacity run --cache-only",
+      "result": "passed",
+      "evidence": "run m1-20261031T065014Z-eacdd5 (published); manifest status partial: AAR unavailable only"
+    },
+    {
+      "command": "python -m pytest tests/data_capacity -q",
+      "result": "passed",
+      "evidence": "80 passed in the clean worktree"
+    },
+    {
+      "command": "python -m pytest tests -q",
+      "result": "passed",
+      "evidence": "299 passed on zeph (Windows)"
+    }
   ],
   "blockers": [
     {
@@ -55,5 +139,7 @@
     "Support Member 3 integration of traffic_hourly and the unavailable AAR state",
     "Defects only after Gate 3; the suite has not been run on Linux from this machine"
   ],
-  "contract_changes_requested": []
+  "contract_changes_requested": [
+    "Additive only: artifacts/capacity/throughput_forecast.parquet and throughput_evaluation.json (plan section 7 stretch, needs agreement from all three members before Member 3 presents it); additive frozen_precip_flag columns in weather_features"
+  ]
 }

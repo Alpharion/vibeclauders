@@ -42,6 +42,8 @@ TAF_REQUIRED = ["station", "valid", "fx_valid", "raw", "is_tempo", "fx_valid_end
 PRECIP_RE = re.compile(r"RA|SN|DZ|PL|GR|GS|IC|UP|SG")
 # Thunderstorm includes vicinity thunderstorm (VCTS); documented semantics.
 TS_RE = re.compile(r"TS")
+# Frozen or freezing precipitation (snow, ice pellets, freezing rain/drizzle, ice crystals, small hail, snow grains).
+FROZEN_RE = re.compile(r"SN|PL|FZ|IC|GS|SG")
 VRB_RE = re.compile(r"\bVRB(\d{2,3})(?:G(\d{2,3}))?KT\b")
 NO_CEILING_FT = 30000.0  # documented sentinel: no BKN/OVC/VV layer reported
 
@@ -91,11 +93,12 @@ def acquire(airports: list[Airport], start: pd.Timestamp, end: pd.Timestamp, *, 
 
 # ---------------------------------------------------------------- decoding
 
-def _wx_flags(codes: pd.Series) -> tuple[pd.Series, pd.Series]:
+def _wx_flags(codes: pd.Series) -> tuple[pd.Series, pd.Series, pd.Series]:
     s = codes.fillna("").astype(str)
     precip = s.str.contains(PRECIP_RE).astype("Int8")
     ts = s.str.contains(TS_RE).astype("Int8")
-    return precip, ts
+    frozen = s.str.contains(FROZEN_RE).astype("Int8")
+    return precip, ts, frozen
 
 
 def _ceiling(covers: list, levels: list) -> float:
@@ -131,7 +134,7 @@ def decode_metar(text: str, ap: Airport, source_ref: str) -> pd.DataFrame:
     gust = gust.where(gust.notna(), speed)  # no gust group: peak = sustained (documented)
     covers = df[["skyc1", "skyc2", "skyc3", "skyc4"]].values.tolist()
     levels = df[["skyl1", "skyl2", "skyl3", "skyl4"]].values.tolist()
-    precip, ts = _wx_flags(df["wxcodes"])
+    precip, ts, frozen = _wx_flags(df["wxcodes"])
     tmpf = pd.to_numeric(df["tmpf"], errors="coerce")
     out = pd.DataFrame({
         "airport": ap.icao,
@@ -155,6 +158,7 @@ def decode_metar(text: str, ap: Airport, source_ref: str) -> pd.DataFrame:
         "weather_codes": df["wxcodes"].astype("string"),
         "precip_flag": precip,
         "thunderstorm_flag": ts,
+        "frozen_precip_flag": frozen,
         "is_amendment": False,
         "raw_text": raw,
         "raw_ref": source_ref,
@@ -248,7 +252,7 @@ def decode_taf(text: str, ap: Airport, source_ref: str) -> pd.DataFrame:
     gust = gust.where(~(has_wind & ((gust == 0) | gust.isna())), speed)
     wx = df["presentwx"].map(_parse_list)
     wx_str = wx.map(lambda l: " ".join(l)).astype("string")
-    precip, ts = _wx_flags(wx_str)
+    precip, ts, frozen = _wx_flags(wx_str)
     covers = df["skyc"].map(_parse_list)
     levels = df["skyl"].map(_parse_list)
     has_sky = covers.map(len) > 0
@@ -275,6 +279,7 @@ def decode_taf(text: str, ap: Airport, source_ref: str) -> pd.DataFrame:
         "weather_codes": wx_str,
         "precip_flag": precip.where(wx.map(len) > 0, 0).astype("Int8"),
         "thunderstorm_flag": ts.where(wx.map(len) > 0, 0).astype("Int8"),
+        "frozen_precip_flag": frozen.where(wx.map(len) > 0, 0).astype("Int8"),
         "is_amendment": df["is_amendment"].astype(str).str.lower() == "true",
         "raw_text": raw,
         "raw_ref": source_ref,
@@ -306,7 +311,7 @@ WEATHER_COLUMNS = [
     "airport", "issued_at_utc", "available_at_utc", "valid_from_utc", "valid_to_utc", "kind",
     "condition", "probability", "bulletin_id", "source_id", "source", "wind_direction_deg",
     "wind_speed_kt", "wind_gust_kt", "wind_variable", "visibility_sm", "ceiling_ft_agl",
-    "temperature_c", "weather_codes", "precip_flag", "thunderstorm_flag", "is_amendment",
+    "temperature_c", "weather_codes", "precip_flag", "thunderstorm_flag", "frozen_precip_flag", "is_amendment",
     "raw_text", "raw_ref",
 ]
 

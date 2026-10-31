@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from . import PRODUCER, SCHEMA_VERSION, bts, capacity, features, flights, storms, traffic, weather
+from . import PRODUCER, SCHEMA_VERSION, bts, capacity, features, flights, storms, throughput, traffic, weather
 from .config import (
     CAPACITY_DIR, HORIZONS, METAR_LATENCY_MIN, PROCESSED_DIR, PUBLIC_DIR, REPO_ROOT, TAF_VALIDITY_H,
     TAF_LATENCY_MIN, TAF_MAX_AGE_H, find_flight_csv, new_run_id, registry_source, resolve_airports, utcnow,
@@ -84,7 +84,7 @@ def load_aar_attempts(path: Path | None = None) -> list[dict]:
 
 
 def run_all(airports_codes, start, end, *, cache_only=False, refresh=False, flights_csv=None, aar_files=None,
-            aar_time_basis=None, with_storms=True, bts_months=None, log=print) -> dict:
+            aar_time_basis=None, with_storms=True, bts_months=None, with_throughput=True, log=print) -> dict:
     t0 = utcnow()
     run_id = new_run_id(t0)
     airports = resolve_airports(airports_codes)
@@ -217,6 +217,31 @@ def run_all(airports_codes, start, end, *, cache_only=False, refresh=False, flig
         missing.append("genuine facility AAR labels (FAA ASPM export)")
     log(f"capacity: AAR {aar_status}")
 
+    # ---- observed-arrivals forecast (plan section 7 stretch; NOT AAR)
+    thr_cap = {"status": "unavailable", "label_kind": throughput.LABEL_KIND, "not_aar": throughput.NOT_AAR}
+    if not with_throughput:
+        thr_cap["reason"] = "disabled with --no-throughput"
+    elif "traffic_hourly" not in outputs:
+        thr_cap["reason"] = "traffic_hourly unavailable (no BTS months)"
+    else:
+        thr_report = {"schema_version": SCHEMA_VERSION, "run_id": run_id, "generated_at_utc": utcnow(),
+                      "producer": PRODUCER, "limitations": [throughput.NOT_AAR], "missing_inputs": []}
+        try:
+            sh = storms.storm_hours(storm_df) if storm_df is not None and len(storm_df) else None
+            thr_fc, rep = throughput.fit_evaluate(feats, tr, airports, run_id, storm_hours=sh)
+            thr_report.update(rep)
+        except throughput.ThroughputError as exc:
+            thr_fc = throughput.empty_forecast()
+            thr_report.update({"status": "unavailable", "metrics": []})
+            thr_report["missing_inputs"].append(str(exc))
+        write_parquet(CAPACITY_DIR / "throughput_forecast.parquet", thr_fc)
+        write_json(CAPACITY_DIR / "throughput_evaluation.json", thr_report)
+        outputs["throughput_forecast"] = CAPACITY_DIR / "throughput_forecast.parquet"
+        outputs["throughput_evaluation"] = CAPACITY_DIR / "throughput_evaluation.json"
+        thr_cap.update({"status": thr_report["status"], "team_agreement": thr_report.get("team_agreement"),
+                        "reason": "; ".join(thr_report["missing_inputs"]) or None})
+        log(f"throughput: {thr_report['status']} ({len(thr_fc)} held-out rows)")
+
     # ---- access report
     access = read_json(CAPACITY_DIR / "data_access.json") or {}
     probes = probe_access() if not cache_only else access.get("probes", [])
@@ -301,6 +326,7 @@ def run_all(airports_codes, start, end, *, cache_only=False, refresh=False, flig
             "arrival_demand": {"status": "unavailable", "reason": "Only sampled schedules exist; no complete as-of-cutoff demand for a named population."},
             "initial_backlog": {"status": "unavailable", "reason": "No observed queue state at cutoff and no validated reconstruction."},
             "eligible_flights": {"status": "unavailable", "reason": "No as-of flight state (airborne/ground) data."},
+            "arrival_throughput_forecast": thr_cap,
             "traffic_hourly": {**traffic_summary, "coverage": "reporting_carriers", "population": traffic.POPULATION,
                                "use": "retrospective traffic context; never queue demand, never AAR"},
             "storm_annotation": {"status": "available" if storm_df is not None and len(storm_df) else "unavailable",

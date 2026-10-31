@@ -45,7 +45,9 @@ FEATURE_SEMANTICS = {
     "thunderstorm_flag": "1 if any prevailing group forecasts TS (including VCTS).",
     "crosswind_upper_kt": "Upper bound of crosswind: unknown-direction groups count their full speed.",
     "crosswind_gust_kt": "Max crosswind computed with gust speed.",
+    "frozen_precip_flag": "1 if any prevailing group forecasts frozen/freezing precipitation (SN/PL/FZ/IC/GS/SG).",
     "cond_thunderstorm_flag": "1 if a TEMPO/PROB group overlapping the target hour forecasts TS.",
+    "cond_frozen_precip_flag": "1 if a TEMPO/PROB group overlapping the target hour forecasts frozen/freezing precipitation.",
     "cond_min_visibility_sm": "Min visibility in overlapping TEMPO/PROB groups (null if none).",
     "cond_min_ceiling_ft_agl": "Min ceiling in overlapping TEMPO/PROB groups that report sky cover.",
     "cond_max_gust_kt": "Max gust/speed in overlapping TEMPO/PROB groups.",
@@ -114,12 +116,14 @@ def build_features(weather: pd.DataFrame, ap: Airport, start: str, end: str, hor
         ceiling_ft_agl=("ceiling_ft_agl", "min"),
         precip_flag=("precip_flag", "max"),
         thunderstorm_flag=("thunderstorm_flag", "max"),
+        frozen_precip_flag=("frozen_precip_flag", "max"),
         taf_groups_used=("condition", "size"),
         taf_group_valid_from_utc=("valid_from_utc", "min"),
         taf_group_valid_to_utc=("valid_to_utc", "max"),
     )
     ca = conditional.groupby("_row").agg(
         cond_thunderstorm_flag=("thunderstorm_flag", "max"),
+        cond_frozen_precip_flag=("frozen_precip_flag", "max"),
         cond_min_visibility_sm=("visibility_sm", "min"),
         cond_min_ceiling_ft_agl=("ceiling_ft_agl", "min"),
         cond_max_gust_kt=("wind_gust_kt", "max"),
@@ -130,12 +134,13 @@ def build_features(weather: pd.DataFrame, ap: Airport, start: str, end: str, hor
     # ---- METAR persistence as of cutoff
     obs = _with_components(w[w["kind"] == "observation"], ap.runway_heading_deg).sort_values("available_at_utc")
     obs = obs[["available_at_utc", "issued_at_utc", "bulletin_id", "wind_speed_kt", "wind_gust_kt", "xw", "tw",
-               "visibility_sm", "ceiling_ft_agl", "temperature_c", "precip_flag", "thunderstorm_flag"]].rename(columns={
+               "visibility_sm", "ceiling_ft_agl", "temperature_c", "precip_flag", "thunderstorm_flag",
+               "frozen_precip_flag"]].rename(columns={
         "available_at_utc": "metar_available_at_utc", "issued_at_utc": "metar_observed_at_utc",
         "bulletin_id": "metar_bulletin_id", "wind_speed_kt": "obs_wind_speed_kt", "wind_gust_kt": "obs_wind_gust_kt",
         "xw": "obs_crosswind_kt", "tw": "obs_tailwind_kt", "visibility_sm": "obs_visibility_sm",
         "ceiling_ft_agl": "obs_ceiling_ft_agl", "precip_flag": "obs_precip_flag",
-        "thunderstorm_flag": "obs_thunderstorm_flag"})
+        "thunderstorm_flag": "obs_thunderstorm_flag", "frozen_precip_flag": "obs_frozen_precip_flag"})
     snap = pd.merge_asof(snap.sort_values("asof_utc"), obs, left_on="asof_utc", right_on="metar_available_at_utc",
                          direction="backward")
     obs_cols = [c for c in obs.columns]
@@ -145,7 +150,8 @@ def build_features(weather: pd.DataFrame, ap: Airport, start: str, end: str, hor
 
     snap = snap.merge(pa, left_on="_row", right_index=True, how="left").merge(ca, left_on="_row", right_index=True, how="left")
     snap["cond_groups"] = snap["cond_groups"].fillna(0).astype("int64")
-    snap.loc[snap["taf_bulletin_id"].notna() & (snap["cond_groups"] == 0), "cond_thunderstorm_flag"] = 0
+    no_cond = snap["taf_bulletin_id"].notna() & (snap["cond_groups"] == 0)
+    snap.loc[no_cond, ["cond_thunderstorm_flag", "cond_frozen_precip_flag"]] = 0
     snap["temperature_c"] = snap.pop("temperature_c")
 
     has_taf = snap["taf_groups_used"].fillna(0) > 0
@@ -155,15 +161,17 @@ def build_features(weather: pd.DataFrame, ap: Airport, start: str, end: str, hor
     snap["status"] = np.select([has_taf & has_obs, has_taf | has_obs], ["available", "partial"], "unavailable")
     snap["source_id"] = np.select([has_taf & has_obs, has_taf, has_obs], ["iem_taf+iem_metar", "iem_taf", "iem_metar"], None)
     snap["taf_age_h"] = (snap["asof_utc"] - snap["taf_issued_at_utc"]).dt.total_seconds() / 3600
-    for c in ["precip_flag", "thunderstorm_flag", "cond_thunderstorm_flag", "obs_precip_flag", "obs_thunderstorm_flag"]:
+    for c in ["precip_flag", "thunderstorm_flag", "frozen_precip_flag", "cond_thunderstorm_flag",
+              "cond_frozen_precip_flag", "obs_precip_flag", "obs_thunderstorm_flag", "obs_frozen_precip_flag"]:
         snap[c] = snap[c].astype("Int8")
     snap["taf_groups_used"] = snap["taf_groups_used"].fillna(0).astype("int64")
 
     cols = (["airport", "airport_iata", "asof_utc", "target_hour_utc", "horizon_hours"] + FEATURE_COLUMNS +
-            ["crosswind_upper_kt", "crosswind_gust_kt", "cond_thunderstorm_flag", "cond_min_visibility_sm",
+            ["crosswind_upper_kt", "crosswind_gust_kt", "frozen_precip_flag", "cond_thunderstorm_flag",
+             "cond_frozen_precip_flag", "cond_min_visibility_sm",
              "cond_min_ceiling_ft_agl", "cond_max_gust_kt", "cond_max_probability", "cond_groups",
              "obs_wind_speed_kt", "obs_wind_gust_kt", "obs_crosswind_kt", "obs_tailwind_kt", "obs_visibility_sm",
-             "obs_ceiling_ft_agl", "obs_precip_flag", "obs_thunderstorm_flag", "obs_age_min",
+             "obs_ceiling_ft_agl", "obs_precip_flag", "obs_thunderstorm_flag", "obs_frozen_precip_flag", "obs_age_min",
              "available_at_utc", "status", "source_id", "taf_bulletin_id", "taf_issued_at_utc",
              "taf_available_at_utc", "taf_age_h", "taf_groups_used", "taf_group_valid_from_utc",
              "taf_group_valid_to_utc", "metar_bulletin_id", "metar_observed_at_utc", "metar_available_at_utc"])
