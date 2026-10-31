@@ -1,88 +1,183 @@
 {
+  "schema_version": "1.0",
   "member": 2,
-  "schema_version": "2.0",
-  "updated_at_utc": "2026-10-31T06:40:28.777406+00:00",
-  "state": "ready_for_review",
-  "completed": [
-    "Revised comprehensive plan and v2 shared contract",
-    "Prepared externally supervised Member 1 and Member 3 handoffs",
-    "Implemented and trained local schedule-risk model",
-    "Implemented optional verified-weather consumer and matched evaluation",
-    "Published normalized history and held-out failure evidence",
-    "Implemented gated arrival queue and review advisory",
-    "Verified CLI and 85 passing tests",
-    "Merged Member 1 run and added contract artifact_hashes to its manifest writer (user-authorized)",
-    "Refreshed with verified canonical flights and weather features; weather-enhanced model selected",
-    "Plan 2.1: JSON published with LF bytes so hashes verify on any checkout",
-    "Plan 2.8: frozen parallel-plan additions recorded in handover/shared-contract.md",
-    "Plan 2.2-2.5: storm_cohorts, impact (equal alert share vs historical rate), alert_rates and three explained failure_cases published",
-    "Plan 2.6: third-airport registry tests (KORD fixture) pass without modelling changes",
-    "Plan 2.7: validation-only Platt calibration experiment; not adopted (0.07% gain < 1% rule)",
-    "Merged Member 1 zeph (capacity run m1-20261031T054026Z-670c8c) and retrained; model inputs unchanged, so metrics are identical",
-    "Merged Member 1 republish m1-20261031T060631Z-6c6e38 and retrained (run 9dbee2fd); outputs unchanged",
-    "Merged Member 1 run m1-20261031T062924Z-d9dfcd (deterministic weather decoding) and retrained (run 0949771a); 3 probabilities changed, no alerts changed"
-  ],
-  "artifacts": [
+  "role": "Independent delivery tooling and evidence",
+  "baseline_commit": "737b46852c2d4b98e7c01e68ed7e3888f6542c5c",
+  "result_commit": null,
+  "result_commit_source": "Final archive receipt source.commit identifies the documentation-frozen readiness result.",
+  "branch": "codex/challenge5-readiness-reviewed",
+  "state": "automated_combined_verified_manual_acceptance_pending",
+  "delivery_status": "verified",
+  "updated_at_utc": "2026-10-31T07:39:25.863833+00:00",
+  "checks": [
     {
-      "path": "artifacts/risk/manifest.json",
-      "run_id": "0949771a54bb4e49b4e215528eb5d46b",
-      "status": "partial",
-      "coverage": "KATL/KDFW, leads 3/6/12, test 2025-01-01..2025-07-31; 10,599/10,604 rows weather-enhanced"
-    },
-    {
-      "path": "artifacts/risk/decision_manifest.json",
-      "run_id": "a7b89e44c69449d1a7ecfbf0cb8ff3b5",
-      "status": "unavailable",
-      "coverage": null
-    },
-    {
-      "path": "handover/member-2-results.md",
-      "run_id": null,
-      "status": "available",
-      "coverage": null
-    }
-  ],
-  "commands_tested": [
-    "python -m src.flight_risk train",
-    "python -m src.flight_risk decide --airport KATL --asof 2025-07-15T12:00:00Z --window-hours 6",
-    "python -m src.flight_risk verify",
-    "python -m pytest tests -q --basetemp=tmp/pt-all-6"
-  ],
-  "test_results": [
-    {
-      "command": "python -m pytest tests -q --basetemp=tmp/pt-all-6",
-      "result": "passed",
-      "evidence": "291 passed; exit 0"
-    },
-    {
-      "command": "python -m src.flight_risk verify",
-      "result": "passed",
-      "evidence": "10,604 predictions / 3,537 flights / KATL,KDFW / leads 3,6,12; model partial, decisions unavailable; exit 0"
-    }
-  ],
-  "blockers": [
-    {
-      "requirement": "Supported arrival queues and AAR forecasting",
-      "reason": "Genuine capacity, complete arrival demand and cutoff backlog absent",
-      "evidence": [
-        "demand: verified input table unavailable",
-        "capacity: verified input table unavailable",
-        "initial_backlog: verified input table unavailable"
+      "name": "risk_verify",
+      "command": [
+        "-m",
+        "src.flight_risk",
+        "verify"
       ],
-      "next_action": "Acquire real matched inputs or retain explicit unmet capability",
-      "owner": "Member 1"
+      "exit_code": 0,
+      "elapsed_seconds": 3.34,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\risk_verify.log",
+      "log_sha256": "9de83d24e4d4b385b14018ebc56f605deb56ee465060b822e7c38b418c54a6c5"
     },
     {
-      "requirement": "End-to-end dashboard and reproducible dependency install",
-      "reason": "Existing UI uses v1 windows/readers; old requirements differ from verified runtime",
-      "evidence": "handover/agent-3-dashboard-integration.md",
-      "next_action": "Migrate UI, reconcile dependencies, verify and demonstrate",
-      "owner": "Member 3"
+      "name": "full_suite",
+      "command": [
+        "-m",
+        "pytest",
+        "tests",
+        "-q",
+        "--tb=short",
+        "--basetemp",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\pytest",
+        "--junitxml",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\pytest.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 68.61,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\full_suite.log",
+      "log_sha256": "79bb38eb9e209da2d23ea641a4820a1e0dbae4c38d6fea9209c24da643441d13",
+      "test_counts": {
+        "tests": 395,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 395
+      }
+    },
+    {
+      "name": "app_smoke",
+      "command": [
+        "-m",
+        "tools.delivery.smoke_app",
+        "--report",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\app.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 19.06,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\app_smoke.log",
+      "log_sha256": "7e4ce6ddaeb8e68fb4441916c57378a5100b546975bb15bf709d085504762f50",
+      "app_result": {
+        "status": "passed",
+        "checks": [
+          {
+            "case": "initial",
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 3,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 3,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 6,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 6,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 12,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 12,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 3,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 3,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 6,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 6,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 12,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 12,
+            "reveal": true,
+            "exceptions": []
+          }
+        ]
+      }
     }
+  ],
+  "runtime_fingerprint": "8303c9cb6eb5126446e8af66dd225863ce5cd70bdfae14161bf0784450989c15",
+  "frozen_input_hashes_unchanged": true,
+  "used_other_member_new_outputs": true,
+  "known_inherited_failures": [],
+  "new_failures": [],
+  "limitations": [
+    "Runtime verification is not judge/supervisor acceptance or a claim of model accuracy.",
+    "Browser radar/basemap availability and the three-minute presentation require manual review.",
+    "No clean environment install, public data refresh, retraining or operational benefit simulation performed.",
+    "Baseline mode does not require the optional capacity estimate; it cannot certify the combined release."
   ],
   "next_steps": [
-    "Plan 2.9 at Gate 3: rerun decide only if AAR forecasts and complete demand are on main (Member 1 recorded AAR as unmet at Gate 2)",
-    "Member 3 renders Member 2 outputs from run 0949771a54bb4e49b4e215528eb5d46b"
+    "Review exact Member 1 contribution and readiness branch; main remains untouched",
+    "Perform actual browser matrix including remote tiles and capacity proxy labels",
+    "Time the three-minute rehearsal and record submission/supervisor acceptance"
   ],
-  "contract_changes_requested": []
+  "supervisor_acceptance": null,
+  "historical_model_work": {
+    "risk_run_id": "0949771a54bb4e49b4e215528eb5d46b",
+    "result_details": "handover/member-2-results.md historical sections",
+    "note": "Earlier modelling/retraining/test results are historical; no model work was performed in this sprint."
+  },
+  "readiness_followup": {
+    "checkpoint": "88c708a",
+    "tested_code_commit": "ddc7b24a520b0a4776440240dfccaa72fb14f953",
+    "member_1_exact_commit": "5805f89b8ae908b330e1e981536f52ae1725c2ee",
+    "review_commits": [
+      "6929ff7",
+      "be2d176",
+      "c0171bd"
+    ],
+    "scope": "combined_runtime",
+    "automated_blockers": [],
+    "app_cases": 13,
+    "final_package_receipt": "output/delivery/challenge-5-implementation.receipt.json",
+    "prior_status_note": "Earlier sprint fields/artifacts are historical where superseded by this follow-up. Final receipt records documentation-frozen source commit and archive hash.",
+    "preservation": "All 97 baseline hashes checked: five Member 1 source files changed exactly as published; the remaining 92 frozen files unchanged. Member 1-owned files match exact commit; frozen risk/data/dependencies unchanged."
+  }
 }

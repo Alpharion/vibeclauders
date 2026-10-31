@@ -1,5 +1,9 @@
 # Team handoff and supervisor guide
 
+> Readiness update (31 October 2026): Member 1 published the chart fix and reporting-carrier capacity proxy at `5805f89b8ae908b330e1e981536f52ae1725c2ee`, run `m1-capest-20261031T072310Z-a27968`, ready for review. Publication is not supervisor acceptance. The current integration branch combines reviewed commits for verification; main merge remains a separate supervisor action. See [readiness review handoff](readiness-review-handoff.md).
+
+> Current work uses the two-member [30-minute handoff](sprint-30min/README.md), [judging demo](JUDGING-DEMO.md) and [submission checklist](SUBMISSION-CHECKLIST.md). Member 1 owns capacity estimation and the frontend; Member 2 owns delivery/readiness. No organiser AAR labels are expected. The original three-member allocation below is historical, not a new assignment or a reason to wait for labels.
+
 ## Responsibility split
 
 The original chat is **Member 2**, responsible for flight-risk modelling, arrival queue analysis and evidence-supported recommendations. Two separate agents receive the following handoffs and are monitored by their respective human team members:

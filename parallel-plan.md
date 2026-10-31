@@ -1,5 +1,9 @@
 # Challenge 5 remaining work: three parallel workstreams
 
+> Readiness update (31 October 2026): Member 1 published chart fix and reporting-carrier capacity proxy at `5805f89b8ae908b330e1e981536f52ae1725c2ee`, run `m1-capest-20261031T072310Z-a27968`, ready for review. Organiser AAR labels remain unavailable. The proxy does not establish facility-AAR accuracy, complete queue inputs or operational savings. Use the combined verification report and manual submission checklist for acceptance; historical label-acquisition gates and merge instructions below do not authorize a main merge.
+
+> Historical work allocation and baseline. The current two-member scope is in `handover/sprint-30min/README.md`; current judging and release steps are in `handover/JUDGING-DEMO.md` and `handover/SUBMISSION-CHECKLIST.md`. Organiser AAR acquisition is not a prerequisite for the separately labelled capacity estimator. Preserve the historical evidence below rather than interpreting its old gates as current blockers.
+
 Baseline: `origin/main` at `783639a` plus the uncommitted dashboard on branch `a`, checked on 31 October 2026. This plan covers remaining work only and replaces the schedule in `implementation-plan.md`. The rules in `implementation-plan.md` and `handover/shared-contract.md` still apply.
 
 Times are hours from the team's restart (T+0). Change them if the submission deadline requires it.
