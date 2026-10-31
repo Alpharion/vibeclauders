@@ -880,7 +880,7 @@ def evaluation_tab(bundle: Bundle, snapshot: Snapshot | None, reveal: bool) -> N
     with right, card("integrity"):
         integrity_section(bundle, snapshot, reveal)
     throughput = bundle.docs.get("throughput_evaluation")
-    if throughput and st.session_state.get("preview-held"):
+    if throughput and (not outputs.agreement_pending(bundle) or st.session_state.get("preview-held")):
         with card("throughput"):
             throughput_evaluation(throughput)
     with card("impact"):
@@ -999,7 +999,8 @@ def calibration(document: dict, snapshot: Snapshot) -> None:
 
 
 def throughput_evaluation(document: dict) -> None:
-    card_title("Observed arrivals forecast · NOT AAR", "Held pending team agreement · arrivals/hour of reporting carriers", glyph="landing")
+    approved = (document.get("team_agreement") or {}).get("status") == "agreed"
+    card_title("Observed arrivals forecast · NOT AAR", ("Team agreement recorded" if approved else "Held pending team agreement") + " · arrivals/hour of reporting carriers", glyph="landing")
     overall = document.get("overall") or {}
     st.caption(str(document.get("not_aar", "")))
     columns = ["airport", "horizon_hours", "n", "rmse_weather", "rmse_schedule_only", "rmse_baseline", "interval_coverage"]

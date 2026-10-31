@@ -117,7 +117,7 @@
     "forecast.parquet": "676f034938806a57788c1d1e4849eea772c83dea63d9d39c30f878ec86287e14",
     "evaluation.json": "bc2a5a51fdbb6f595cf8e0e902a18b37d744319b7c5f76990937ab8c425575ff",
     "throughput_forecast.parquet": "5b515b3a63bdd5dda48ee7f214e38f571d4e5c004e073fb5949ff28b51911a8d",
-    "throughput_evaluation.json": "fee38eef60d35127b08a29344e4d0c899d38b429a3213ddd28172faab3e4f30b",
+    "throughput_evaluation.json": "c04bd58f37881840a37fc59fe666fb4e1ffe9670c9cfce9d4a56b577977a90bc",
     "data_access.json": "803d9d9cf861a6b7d4b234e624d2dac09ecc1fdea21002bc283134461900ab90",
     "../../data/processed/provenance.json": "106d5e98e81d5469dda1940d18198491844788eef8e84206192cc2cc2cb1bd50"
   },
@@ -328,9 +328,10 @@
       "label_kind": "observed_reporting_carrier_arrivals",
       "not_aar": "Forecast of observed reporting-carrier arrivals per hour (throughput). NOT the facility Airport Arrival Rate (AAR): counts are limited by demand, by BTS coverage and by upstream flow programmes, so they do not measure runway capacity. Never report this as AAR or AAR RMSE.",
       "team_agreement": {
-        "status": "pending",
-        "required_by": "parallel-plan section 7 (all three members at Gate 2)",
-        "note": "Built at Member 1's request; Member 3 should not present it until agreement is recorded."
+        "status": "agreed",
+        "recorded_date": "2026-10-31",
+        "authority": "User confirmed: the team agrees, implement the plan",
+        "scope": "Present the currently published reporting-carrier arrivals forecast and evaluation; not facility AAR or a departure-volume forecast."
       },
       "reason": null
     },
