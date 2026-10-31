@@ -164,10 +164,50 @@ def publish_decision(root: Path, table=None, document=None) -> None:
     )
 
 
-def publish_capacity(root: Path) -> None:
+def traffic() -> pd.DataFrame:
+    hours = pd.date_range(ASOF, periods=6, freq="h")
+    return pd.DataFrame(
+        {
+            "airport": "KATL", "hour_utc": hours, "direction": "arrival", "scheduled_count": 40,
+            "actual_count": 37, "coverage": "reporting_carriers", "population": "BTS reporting carriers",
+            "source_id": "synthetic", "run_id": "synthetic-capacity",
+        }
+    )
+
+
+def evaluation_additions() -> dict:
+    return {
+        "storm_cohorts": [
+            {"cohort": "thunderstorm", "airport": "KATL", "horizon_hours": 6, "metric": "recall",
+             "value": 0.5, "baseline_value": 0.3, "n": 40, "severe_n": 10}
+        ],
+        "failure_cases": [
+            {"kind": "false_alarm", "flight_id": "f2", "airport": "KATL", "horizon_hours": 6,
+             "asof_utc": "2025-07-15T12:00:00Z", "probability": 0.3, "threshold": 0.15, "observed": 4,
+             "evidence": {"thunderstorm_flag": 1}, "explanation": "Forecast storm did not arrive",
+             "remedy": "Later forecast amendment"}
+        ],
+        "impact": {
+            "basis": "same alert share", "status_quo": "historical airport/hour rate",
+            "comparisons": [
+                {"airport": "KATL", "horizon_hours": 6, "alert_share": 0.2, "model_recall": 0.5,
+                 "baseline_recall": 0.3, "model_precision": 0.3, "baseline_precision": 0.2, "n": 900}
+            ],
+            "limitations": ["Sample cohort"],
+        },
+    }
+
+
+def publish_capacity(root: Path, forecast_table=None, traffic_table=None) -> None:
+    tables = {
+        "data/processed/flights.parquet": flights(),
+        "artifacts/capacity/forecast.parquet": forecast() if forecast_table is None else forecast_table,
+    }
+    if traffic_table is not None:
+        tables["artifacts/capacity/traffic_hourly.parquet"] = traffic_table
     publish(
         root,
-        {"data/processed/flights.parquet": flights(), "artifacts/capacity/forecast.parquet": forecast()},
+        tables,
         {"artifacts/capacity/evaluation.json": envelope("synthetic-capacity", model="c", split={}, metrics=[])},
         "artifacts/capacity/manifest.json", "synthetic-capacity",
     )

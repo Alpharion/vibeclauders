@@ -1,4 +1,4 @@
-# Observed working environment; not a fresh-install lockfile.
+# Exact versions behind the published model; use these to reuse model.joblib.
 # Python 3.14.6; see BUNDLE_README.md for compatibility notes.
 streamlit==1.58.0
 pandas==3.0.3
