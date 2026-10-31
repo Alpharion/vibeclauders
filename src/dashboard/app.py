@@ -133,8 +133,12 @@ def header(bundle: Bundle, snapshot: Snapshot | None) -> None:
 
 def forecast_tab(bundle: Bundle, snapshot: Snapshot, reveal: bool) -> None:
     st.subheader("Weather at the target hour")
-    st.caption(f"Runway-relative wind uses the fixed heading {snapshot.airport.heading:03d}°.")
     row, reason = views.weather_feature_row(bundle, snapshot)
+    if snapshot.airport.heading is None:
+        row = None
+        reason = f"{snapshot.airport.icao} has no configured runway heading, so runway-relative wind is refused."
+    else:
+        st.caption(f"Runway-relative wind uses the fixed heading {snapshot.airport.heading:03d}°.")
     if row is None:
         unavailable("Cutoff-safe weather", reason)
     else:

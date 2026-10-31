@@ -8,7 +8,7 @@ AIRPORTS = {
 
 def airport_icao(value):
     value = str(value).upper()
-    return {"ATL": "KATL", "DFW": "KDFW"}.get(value, value)
+    return next((icao for icao, info in AIRPORTS.items() if info["iata"] == value), value)
 
 def flight_key(date, carrier, number, origin, dest, scheduled_hhmm):
     """Stable key from original local flight-date and schedule, never actuals."""

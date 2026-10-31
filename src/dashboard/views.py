@@ -24,14 +24,14 @@ NO_CEILING_FT = 30000
 class Airport:
     icao: str
     iata: str
-    heading: int
+    heading: int | None
 
 
 def resolve_airport(code: str) -> Airport | None:
     """Find a registry airport by ICAO or IATA; None means unsupported, not a default."""
     icao = airport_icao(code)
     info = AIRPORTS.get(icao)
-    return Airport(icao, info["iata"], info["heading"]) if info else None
+    return Airport(icao, info["iata"], info.get("heading")) if info else None
 
 
 @dataclass(frozen=True)

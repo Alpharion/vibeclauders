@@ -13,8 +13,7 @@ from src.shared import AIRPORTS
 
 REFERENCE_PATH = Path(__file__).resolve().parents[2] / "data" / "reference" / "airports.json"
 
-SERIES = ["#3987e5", "#d95926"]
-AIRPORT_COLORS = dict(zip(AIRPORTS, SERIES))
+SERIES = ["#3987e5", "#d95926", "#199e70"]
 INK = "#f0efec"
 INK_SECONDARY = "#c3c2b7"
 GRID = "#3a3a37"
@@ -183,7 +182,8 @@ def aar_lines(rows: pd.DataFrame, icao: str, horizon: int) -> go.Figure:
 
 def trend_lines(rollup: pd.DataFrame, column: str, title: str, y_title: str, percent=False) -> go.Figure:
     figure = go.Figure()
-    for icao, color in AIRPORT_COLORS.items():
+    for index, icao in enumerate(AIRPORTS):
+        color = SERIES[index % len(SERIES)]
         rows = rollup[rollup["airport"] == icao]
         if rows.empty:
             continue
