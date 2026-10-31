@@ -45,8 +45,6 @@ def render(bundle, snapshot, window):
         st.caption(f"{snapshot.airport.iata} connections Â· Target {snapshot.target_hour_utc:%d %b %H:%M} UTC")
         replay.map_section(bundle, snapshot, window)
         st.caption("Map uses observed historical radar and schematic sampled connections. It does not show a computed forecast-convection boundary or approved reroute.")
-    from src.dashboard.flight_watchlist import render as render_flights
-    render_flights(bundle, snapshot)
     with st.expander("Illustrative hold / reroute scenario â€” not selected-airport evidence", expanded=False):
         st.markdown("### Impact comparison Â· JFK â†’ ATL Â· hypothetical")
         st.caption("ILLUSTRATIVE SCENARIO â€” NOT LIVE. Fixed reference-design examples; independent of selected airport and model outputs. No operational benefit is established.")

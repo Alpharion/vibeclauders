@@ -11,9 +11,9 @@ from html import escape
 import streamlit as st
 
 TOKENS = {
-    "bg-app": "#14181B", "bg-card": "#1B2023", "bg-inset": "#20272B", "border": "#364149",
-    "text-primary": "#EDF1F4", "text-secondary": "#ADBAC5", "text-on-accent": "#10171B",
-    "cyan": "#00D4F5", "amber": "#FFCD38", "red": "#FF4B4B", "green": "#69DF82", "violet": "#8BBBD6",
+    "bg-app": "#0B1424", "bg-card": "#142238", "bg-inset": "#1B2D46", "border": "#2B405D",
+    "text-primary": "#E8F0FA", "text-secondary": "#A7B9D0", "text-on-accent": "#0B1424",
+    "cyan": "#4DA3FF", "amber": "#FFCD38", "red": "#FF4B4B", "green": "#69DF82", "violet": "#8BBBD6",
     "cat-vfr": "#69DF82", "cat-mvfr": "#40BAF5", "cat-ifr": "#FF4B4B", "cat-lifr": "#C78ADA",
     "space-xs": "4px", "space-sm": "8px", "space-md": "12px", "space-lg": "16px", "space-xl": "24px",
     "radius-sm": "4px", "radius-md": "6px",
@@ -159,6 +159,19 @@ CSS = _ROOT + """
 .flight-risk-score strong{font-size:26px;color:var(--risk);font-variant-numeric:tabular-nums}
 .flight-risk-score span{font-size:12px;color:#ADBAC5}
 .flight-risk-status{font-size:12px;color:var(--risk);margin-bottom:8px}
+.st-key-app-header,.st-key-toolbar{background:#0E1B2E}
+.st-key-card-flight-watchlist{background:#101F34!important;border:1px solid #2B405D!important;border-top:2px solid #4DA3FF!important}
+.flight-risk-card{background:#142238;color:#E8F0FA;border-color:#2B405D}
+.flight-risk-card.cyan{background:linear-gradient(110deg,#172F4C,#142238)}
+.flight-risk-card.amber{background:linear-gradient(110deg,#302D27,#142238)}
+.flight-risk-card.red{background:linear-gradient(110deg,#342637,#142238)}
+.st-key-main{max-width:1700px;margin:0 auto;width:100%}
+@media(min-width:1100px){
+ .st-key-main:has(.st-key-card-flight-watchlist){padding-bottom:350px}
+ .st-key-card-flight-watchlist{position:fixed!important;bottom:12px;left:28px;right:28px;width:auto!important;z-index:90;max-height:300px;overflow:auto;box-shadow:0 -12px 32px #050D1A99;padding:16px 20px}
+ .st-key-card-flight-watchlist .flight-risk-grid{display:flex;overflow-x:auto;gap:16px}
+ .st-key-card-flight-watchlist .flight-risk-card{flex:0 0 250px}
+}
 """
 
 # Undocumented Streamlit structure. Each rule is cosmetic, so a rename only loosens the layout.

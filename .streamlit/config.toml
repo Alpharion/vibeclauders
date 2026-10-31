@@ -1,18 +1,18 @@
 [theme]
 base = "dark"
-primaryColor = "#00D4F5"
-backgroundColor = "#14181B"
-secondaryBackgroundColor = "#20272B"
-textColor = "#EDF1F4"
-borderColor = "#364149"
-linkColor = "#00D4F5"
+primaryColor = "#4DA3FF"
+backgroundColor = "#0B1424"
+secondaryBackgroundColor = "#142238"
+textColor = "#E8F0FA"
+borderColor = "#2B405D"
+linkColor = "#4DA3FF"
 baseRadius = "6px"
 buttonRadius = "6px"
 baseFontSize = 14
 font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap, sans-serif"
 showWidgetBorder = true
-dataframeHeaderBackgroundColor = "#20272B"
-dataframeBorderColor = "#364149"
+dataframeHeaderBackgroundColor = "#1B2D46"
+dataframeBorderColor = "#2B405D"
 chartCategoricalColors = ["#00D4F5", "#8BBBD6", "#69DF82"]
 
 [server]

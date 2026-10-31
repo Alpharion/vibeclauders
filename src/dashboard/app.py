@@ -207,6 +207,8 @@ def replay_mode() -> None:
         with st.container(key="main"):
             preview = bool(st.session_state.get("preview-held"))
             replay.render(bundle, snapshot, window, reveal, preview)
+            from src.dashboard.flight_watchlist import render as render_flights
+            render_flights(bundle, snapshot)
             html(f'<div class="footnote">{FOOTER}</div>')
 
 

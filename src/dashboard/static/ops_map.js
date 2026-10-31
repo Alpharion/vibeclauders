@@ -72,6 +72,19 @@ function drawNetwork(state, data, setTriggerValue) {
     const path = L.polyline(line.path, {color: line.color, weight: line.weight, dashArray: line.dash, opacity: 0.9});
     path.bindTooltip(line.label, {sticky: true});
     (line.flagged ? flagged : connections).addLayer(path);
+    // Geometry is ordered origin -> destination. A projected tangent keeps the
+    // direction indicator aligned with the curved route at every map scale.
+    if (line.path.length > 1 && /^#[0-9a-f]{6}$/i.test(line.color)) {
+      const index = Math.min(line.path.length - 2, Math.floor(line.path.length * 0.6));
+      const a = state.map.project(line.path[index], 6);
+      const b = state.map.project(line.path[index + 1], 6);
+      const angle = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+      const icon = L.divIcon({className: 'route-direction', iconSize: [20, 20], iconAnchor: [10, 10],
+        html: `<svg width="20" height="20" viewBox="0 0 20 20" style="transform:rotate(${angle}deg)"><path d="M3 4 L17 10 L3 16 L7 10 Z" fill="${line.color}" stroke="#0B1424" stroke-width="1.3"/></svg>`});
+      const arrow = L.marker(line.path[index], {icon, keyboard: false});
+      arrow.bindTooltip(`${line.label} · origin to destination`);
+      (line.flagged ? flagged : connections).addLayer(arrow);
+    }
   });
   data.markers.forEach(marker => {
     const group = marker.hub ? hubs : connections;
