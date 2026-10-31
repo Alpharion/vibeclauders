@@ -145,6 +145,25 @@ def planning_movements(
     }
 
 
+def route_counts(
+    flights: pd.DataFrame, airport: Airport, asof_utc: pd.Timestamp, window_hours: int
+) -> pd.DataFrame:
+    """Airport pairs behind the planning-window movements, counted per direction."""
+    end = asof_utc + pd.Timedelta(hours=window_hours)
+    outbound = flights[
+        (flights["origin"] == airport.iata)
+        & (flights["scheduled_dep_utc"] >= asof_utc)
+        & (flights["scheduled_dep_utc"] < end)
+    ].assign(direction="Departure")
+    inbound = flights[
+        (flights["dest"] == airport.iata)
+        & (flights["scheduled_arr_utc"] >= asof_utc)
+        & (flights["scheduled_arr_utc"] < end)
+    ].assign(direction="Arrival")
+    rows = pd.concat([inbound, outbound])
+    return rows.groupby(["origin", "dest", "direction"], as_index=False).size().rename(columns={"size": "flights"})
+
+
 def coverage_label(rows: pd.DataFrame) -> str:
     """Decided per cohort: one non-complete row makes the whole cohort a sample."""
     if rows.empty or "coverage" not in rows:

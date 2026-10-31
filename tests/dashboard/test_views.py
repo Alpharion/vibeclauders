@@ -190,3 +190,10 @@ def test_history_recomputes_from_denominators():
 
 def test_failure_cases_found_in_nested_reports():
     assert views.find_failure_cases({"a": {"failure_example": 1}}) == [1]
+
+
+def test_route_counts_match_planning_movements():
+    routes = views.route_counts(c.flights(), KATL, c.ASOF, 6)
+    movements = views.planning_movements(c.flights(), KATL, c.ASOF, 6)
+    assert routes["flights"].sum() == movements["movements"]
+    assert set(routes["direction"]) == {"Arrival", "Departure"}

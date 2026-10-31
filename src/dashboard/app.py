@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from src.dashboard import plots, views
+from src.dashboard import live, plots, views
 from src.dashboard.data import (
     SCORED_HORIZONS, WEATHER_FEATURES, Bundle, fingerprint, is_schedule_only, load_bundle,
 )
@@ -186,6 +186,18 @@ def traffic_tab(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
     st.plotly_chart(plots.traffic_bars(movements["hourly"], movements["coverage"]), key="traffic")
     st.dataframe(movements["hourly"], hide_index=True)
 
+    routes = views.route_counts(flights, snapshot.airport, snapshot.asof_utc, window)
+    if routes.empty:
+        return
+    figure, unmapped = plots.route_map(routes, snapshot.airport.iata)
+    st.subheader("Connections in the planning window")
+    if figure is None:
+        st.info("Map unavailable: no coordinates for the selected airport.")
+        return
+    st.plotly_chart(figure, key="routes")
+    note = "Schematic great-circle connections, not flown or planned routes or live traffic."
+    st.caption(f"{note} {unmapped} movements lack coordinates." if unmapped else note)
+
 
 def decision_tab(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
     recommendations = bundle.docs.get("recommendations")
@@ -336,13 +348,56 @@ def evidence_tab(bundle: Bundle) -> None:
                 st.code(json.dumps(bundle.docs[name], indent=2))
 
 
+def live_tab(icao: str) -> None:
+    st.caption(
+        "Current public METAR/TAF from the NOAA Aviation Weather Center. Separate from replay: "
+        "it changes no historical panel, and no current flight data is connected."
+    )
+    if st.button("Fetch current weather", type="primary", key="live-fetch"):
+        with st.spinner("Retrieving current weather…"):
+            st.session_state["live_bundle"] = live.fetch_live_weather()
+    bundle = st.session_state.get("live_bundle")
+    if bundle is None:
+        st.info("Nothing is fetched until you ask, so replay and offline demos need no network.")
+        return
+    st.caption(f"Retrieved {fmt_time(bundle['retrieved_at_utc'])}")
+    for error in bundle["errors"]:
+        st.warning(f"**Live source failed.** {error}", icon="⛔")
+    message = live.for_airport(bundle["metar"], icao)
+    if message is None:
+        st.info("No current observation returned for this airport.")
+    else:
+        ceiling = live.ceiling_ft(message)
+        columns = st.columns(5)
+        columns[0].metric("Reported category", message.get("fltCat") or "Unknown")
+        columns[1].metric("Temperature (°C)", message.get("temp", "Unknown"))
+        columns[2].metric("Visibility (SM)", str(message.get("visib", "Unknown")))
+        columns[3].metric("Wind", f"{message.get('wdir', '?')}° / {message.get('wspd', '?')} kt")
+        columns[4].metric("Ceiling (ft)", "None reported" if ceiling is None else f"{ceiling:,}")
+        age = live.observation_age_minutes(message, pd.Timestamp.now(tz="UTC"))
+        if age is not None and age > live.STALE_OBSERVATION_MINUTES:
+            st.warning(f"**Stale observation.** The latest report is {age:.0f} minutes old.", icon="⚠️")
+        st.code(message.get("rawOb", "No raw message"), language=None)
+    forecast = live.for_airport(bundle["taf"], icao)
+    table = live.forecast_table(forecast)
+    if table.empty:
+        st.info("No current forecast returned for this airport.")
+    else:
+        st.subheader("Terminal forecast")
+        st.dataframe(table, hide_index=True)
+        st.caption(f"Issued {fmt_time(forecast.get('issueTime'))}. Conditional groups do not replace prevailing conditions.")
+        st.code(forecast.get("rawTAF", "No raw message"), language=None)
+
+
 def main() -> None:
     st.set_page_config(page_title="Flow replay", page_icon="🛬", layout="wide")
     root = data_root()
     bundle = cached_bundle(str(root), fingerprint(root))
     snapshot, window, reveal = sidebar(bundle)
     header(bundle, snapshot)
-    tabs = st.tabs(["Forecast & risk", "Traffic", "Decision support", "Trends", "Evaluation", "Evidence"])
+    tabs = st.tabs(
+        ["Forecast & risk", "Traffic", "Decision support", "Trends", "Evaluation", "Evidence", "Live weather"]
+    )
     with tabs[0]:
         forecast_tab(bundle, snapshot, reveal) if snapshot else unavailable("Replay", "No snapshot is published.")
     with tabs[1]:
@@ -355,3 +410,5 @@ def main() -> None:
         evaluation_tab(bundle, reveal)
     with tabs[5]:
         evidence_tab(bundle)
+    with tabs[6]:
+        live_tab(st.session_state["airport"])

@@ -1,10 +1,17 @@
 """Plotly figures. Airport colours follow registry order, so a filter never repaints them."""
 from __future__ import annotations
 
+import json
+from functools import lru_cache
+from pathlib import Path
+
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
 from src.shared import AIRPORTS
+
+REFERENCE_PATH = Path(__file__).resolve().parents[2] / "data" / "reference" / "airports.json"
 
 SERIES = ["#3987e5", "#d95926"]
 AIRPORT_COLORS = dict(zip(AIRPORTS, SERIES))
@@ -91,6 +98,74 @@ def backlog_bars(rows: pd.DataFrame) -> go.Figure:
         )
     )
     return _layout(figure, "Simulated end-of-hour arrival backlog", "Aircraft")
+
+
+@lru_cache(maxsize=1)
+def airport_points() -> dict[str, tuple[float, float]]:
+    """IATA to (latitude, longitude). Airports without coordinates are simply absent."""
+    records = json.loads(REFERENCE_PATH.read_text(encoding="utf-8"))["airports"]
+    points = {
+        r["iata"]: (r["latitude"], r["longitude"])
+        for r in records
+        if r.get("iata") and r.get("latitude") is not None and r.get("longitude") is not None
+    }
+    for info in AIRPORTS.values():
+        points.setdefault(info["iata"], (info["lat"], info["lon"]))
+    return points
+
+
+def great_circle(start: tuple[float, float], end: tuple[float, float]) -> tuple[np.ndarray, np.ndarray]:
+    """Display connection between two points, not a flown or proposed route."""
+
+    def unit(point):
+        lat, lon = np.radians(point)
+        return np.array([np.cos(lat) * np.cos(lon), np.cos(lat) * np.sin(lon), np.sin(lat)])
+
+    a, b = unit(start), unit(end)
+    angle = np.arccos(np.clip(a @ b, -1, 1))
+    if angle < 1e-8:
+        return np.array([start[0], end[0]]), np.array([start[1], end[1]])
+    t = np.linspace(0, 1, 28)[:, None]
+    xyz = (np.sin((1 - t) * angle) * a + np.sin(t * angle) * b) / np.sin(angle)
+    lat = np.degrees(np.arctan2(xyz[:, 2], np.hypot(xyz[:, 0], xyz[:, 1])))
+    return lat, np.degrees(np.arctan2(xyz[:, 1], xyz[:, 0]))
+
+
+def route_map(routes: pd.DataFrame, selected_iata: str, points=None) -> tuple[go.Figure | None, int]:
+    """Return the map and the number of movements lacking coordinates."""
+    points = airport_points() if points is None else points
+    if selected_iata not in points:
+        return None, int(routes["flights"].sum())
+    figure, unmapped, seen, codes = go.Figure(), 0, set(), {selected_iata}
+    for route in routes.itertuples():
+        if route.origin not in points or route.dest not in points:
+            unmapped += route.flights
+            continue
+        codes.update((route.origin, route.dest))
+        lat, lon = great_circle(points[route.origin], points[route.dest])
+        color = SERIES[0] if route.direction == "Arrival" else SERIES[1]
+        label = f"{route.origin} → {route.dest}: {route.flights} scheduled {route.direction.lower()}(s)"
+        figure.add_scattergeo(
+            lat=lat, lon=lon, mode="lines", line={"color": color, "width": 2}, name=route.direction,
+            legendgroup=route.direction, showlegend=route.direction not in seen,
+            text=[label] * len(lat), hovertemplate="%{text}<extra></extra>",
+        )
+        seen.add(route.direction)
+    ordered = sorted(codes)
+    figure.add_scattergeo(
+        lat=[points[c][0] for c in ordered], lon=[points[c][1] for c in ordered], text=ordered,
+        mode="markers+text", textposition="top center", textfont={"color": INK, "size": 11},
+        marker={"size": [13 if c == selected_iata else 8 for c in ordered], "color": INK, "line": {"color": SURFACE, "width": 2}},
+        showlegend=False, hovertemplate="%{text}<extra></extra>",
+    )
+    figure.update_geos(
+        scope="north america", showland=True, landcolor="#22303D", showlakes=False, bgcolor=SURFACE,
+        showcountries=True, countrycolor=GRID, showsubunits=True, subunitcolor=GRID,
+        lataxis_range=[18, 53], lonaxis_range=[-129, -59],
+    )
+    _layout(figure, "Scheduled connections (schematic)", "", 470)
+    figure.update_layout(hovermode="closest")
+    return figure, unmapped
 
 
 def trend_lines(rollup: pd.DataFrame, column: str, title: str, y_title: str, percent=False) -> go.Figure:
