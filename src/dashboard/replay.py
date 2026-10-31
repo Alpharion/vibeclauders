@@ -651,6 +651,11 @@ def compare_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool, f
         st.caption("Reconstructed reporting-carrier schedules and published arrival forecast. Reveal outcomes to compare with observed counts; no departure-volume forecast is published.")
     with st.container(border=True):
         st.markdown("### ATC follow-up recommendations")
+        operational_actions, missing_reason = outputs.proposed_actions(bundle, snapshot)
+        if not operational_actions:
+            st.warning("PLACEHOLDER FOLLOW-UP — operational recommendation inputs incomplete")
+            st.write("Contact the responsible ATC/flow-management coordinator to confirm restrictions, available arrival capacity and backlog; reconcile airline readiness before considering a flow-management action.")
+            st.caption("Validation needed: " + str(missing_reason) + " No rate, route or departure-time change is proposed by this placeholder.")
         st.write("Review the flagged departures with airline operations, confirm inbound-aircraft status and current ATC restrictions, and assess the weather conditions below before deciding whether flow-management coordination is needed.")
         st.caption("Decision support for human follow-up only. These are rule-based review prompts, not issued ATC clearances, validated metering rates or approved flight rescheduling.")
         from src.dashboard.weather_actions import render_weather_actions
@@ -751,7 +756,9 @@ def scenario_table(bundle: Bundle, snapshot: Snapshot, results: list, reveal: bo
         rows, classes = [], {}
         for index, result in enumerate(results):
             action = actions.get(result.condition)
-            proposed = escape(str(action["action"])) if action is not None else escape(reason)
+            proposed = escape(str(action["action"])) if action is not None else escape(
+                "PLACEHOLDER — confirm current weather, runway configuration and ATC restrictions with operations; review the affected flights before considering flow changes. Not a validated operational action. Missing evidence: " + str(reason)
+            )
             actual = escape(result.actual) if reveal else "Hidden"
             outcome = escape(result.result) if reveal else "Hidden"
             rows.append(

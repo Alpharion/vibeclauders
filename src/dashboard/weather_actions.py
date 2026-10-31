@@ -43,6 +43,10 @@ def render_weather_actions(row, snapshot, bundle=None):
     st.caption(f"{snapshot.airport.iata} · +{snapshot.horizon_hours}h · cutoff {snapshot.asof_utc:%Y-%m-%d %H:%M} UTC. Rule-based review prompts from published TAF features, not model-generated operational instructions.")
     items, problem = recommendations(row, snapshot.asof_utc)
     if problem:
+        st.warning("PLACEHOLDER — not validated against current conditions")
+        st.write("Suggested ATC follow-up: obtain the latest METAR/TAF and confirm runway configuration, active restrictions and airline readiness. Review potential arrival-flow constraints only after these inputs are confirmed.")
+        st.caption("Needed to validate: weather available at this cutoff, current runway configuration and operational restrictions. This placeholder is not a clearance or a recommendation to reduce capacity.")
+    if problem:
         st.info(problem)
     elif items:
         for item in items:
