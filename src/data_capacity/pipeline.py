@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from . import PRODUCER, SCHEMA_VERSION, bts, capacity, features, flights, storms, weather
+from . import PRODUCER, SCHEMA_VERSION, bts, capacity, features, flights, storms, traffic, weather
 from .config import (
     CAPACITY_DIR, HORIZONS, METAR_LATENCY_MIN, PROCESSED_DIR, PUBLIC_DIR, REPO_ROOT, TAF_VALIDITY_H,
     TAF_LATENCY_MIN, TAF_MAX_AGE_H, find_flight_csv, new_run_id, registry_source, resolve_airports, utcnow,
@@ -63,6 +63,26 @@ def probe_access(timeout=(10, 30)) -> list[dict]:
     return out
 
 
+ATTEMPT_FIELDS = ("at_utc", "channel", "requested_by", "request", "response", "status")
+
+
+def load_aar_attempts(path: Path | None = None) -> list[dict]:
+    """Attempts to obtain genuine AAR, logged by the team in
+    data/public/aspm/attempts.json (plan task 1.2). Malformed entries fail loudly."""
+    path = path or capacity.ASPM_DIR / "attempts.json"
+    doc = read_json(path)
+    if doc is None:
+        return []
+    attempts = doc.get("attempts", [])
+    for i, a in enumerate(attempts):
+        missing = [f for f in ATTEMPT_FIELDS if f not in a]
+        if missing:
+            raise ValueError(f"{_rel(path)} attempt {i}: missing {missing}")
+        if pd.Timestamp(a["at_utc"]).tzinfo is None:
+            raise ValueError(f"{_rel(path)} attempt {i}: at_utc must carry a timezone")
+    return sorted(attempts, key=lambda a: pd.Timestamp(a["at_utc"]))
+
+
 def run_all(airports_codes, start, end, *, cache_only=False, refresh=False, flights_csv=None, aar_files=None,
             aar_time_basis=None, with_storms=True, bts_months=None, log=print) -> dict:
     t0 = utcnow()
@@ -85,18 +105,34 @@ def run_all(airports_codes, start, end, *, cache_only=False, refresh=False, flig
                     "notes": "Supplied file; its embedded daily weather columns are undated w.r.t. availability and are NOT used."})
     log(f"flights: {len(fl)} rows")
 
-    # ---- optional BTS automatic ingestion (reporting-carrier population)
+    # ---- BTS automatic ingestion (reporting-carrier population) -> hourly traffic
     bts_recs = []
-    for ym in bts_months or []:
-        y, m = map(int, ym.split("-"))
-        r = bts.acquire_month(y, m, airports, cache_only=cache_only, refresh=refresh)
-        bts_recs.append(r)
-        log(f"bts {ym}: {r['status']} {r.get('filtered_rows')}")
+    if bts_months is None:
+        bts_months = [f"{y}-{m:02d}" for y, m in bts.months(start, end)]
+    bts_recs = bts.acquire_months(bts_months, airports, cache_only=cache_only, refresh=refresh, log=log)
     for r in bts_recs:
         sources.append({"source_id": bts.SOURCE_ID, "name": "BTS On-Time Reporting (PREZIP)", "url": r["url"],
                         "retrieved_at_utc": r.get("retrieved_at_utc"), "requested_coverage": r["month"],
                         "coverage": "reporting_carriers" if r["status"] != "failed" else None, "status": r["status"],
                         "hash": r.get("sha256"), "notes": r.get("error") or f"filtered rows {r.get('filtered_rows')} -> {_rel(r.get('filtered_path', ''))}"})
+    bts_ok = [r for r in bts_recs if r["status"] != "failed"]
+    bts_failed = [r["month"] for r in bts_recs if r["status"] == "failed"]
+    traffic_summary = {"status": "unavailable", "months": [], "failed_months": bts_failed,
+                       "reason": "no BTS months requested" if not bts_recs else "all requested BTS months failed"}
+    if bts_ok:
+        raw_bts = bts.load_filtered([r["filtered_path"] for r in bts_ok])
+        tr, traffic_summary = traffic.build_traffic(raw_bts, airports, [r["month"] for r in bts_ok], run_id, bts.SOURCE_ID)
+        del raw_bts
+        errs = traffic.validate_traffic(tr)
+        if errs:
+            raise RuntimeError("traffic_hourly failed validation: " + "; ".join(errs))
+        traffic_summary["failed_months"] = bts_failed
+        if bts_failed:
+            traffic_summary["status"] = "partial"
+            limitations.append(f"BTS months failed (hours absent, not zero): {', '.join(bts_failed)}")
+        write_parquet(CAPACITY_DIR / "traffic_hourly.parquet", tr)
+        outputs["traffic_hourly"] = CAPACITY_DIR / "traffic_hourly.parquet"
+        log(f"traffic_hourly: {len(tr)} rows from {len(bts_ok)} months ({len(bts_failed)} failed)")
 
     # ---- weather
     wx_recs = weather.acquire(airports, wx_start, wx_end, cache_only=cache_only, refresh=refresh)
@@ -201,10 +237,12 @@ def run_all(airports_codes, start, end, *, cache_only=False, refresh=False, flig
                     "site's account requirement and was declined by the agent's permission policy.",
                     f"No files matching {_rel(capacity.ASPM_DIR)}/*.csv at run time."],
                 "requested_extract": ASPM_REQUEST,
+                "attempts": load_aar_attempts(),
                 "overlap_feasibility": "IEM TAF/METAR cover 2022-12-30..2025-08-01 for both airports, so any ASPM extract "
                                        "for 2023-01..2025-07 would overlap fully with cutoff-safe features."},
         "probes": probes,
-        "acquisition": {"weather": wx_audit["chunks"], "bts": bts_recs, "storms": storm_recs},
+        "acquisition": {"weather": wx_audit["chunks"], "bts": bts_recs, "bts_failed_months": bts_failed,
+                        "storms": storm_recs},
         "limitations": limitations, "missing_inputs": missing,
     }
     write_json(CAPACITY_DIR / "data_access.json", data_access)
@@ -262,6 +300,8 @@ def run_all(airports_codes, start, end, *, cache_only=False, refresh=False, flig
             "arrival_demand": {"status": "unavailable", "reason": "Only sampled schedules exist; no complete as-of-cutoff demand for a named population."},
             "initial_backlog": {"status": "unavailable", "reason": "No observed queue state at cutoff and no validated reconstruction."},
             "eligible_flights": {"status": "unavailable", "reason": "No as-of flight state (airborne/ground) data."},
+            "traffic_hourly": {**traffic_summary, "coverage": "reporting_carriers", "population": traffic.POPULATION,
+                               "use": "retrospective traffic context; never queue demand, never AAR"},
             "storm_annotation": {"status": "available" if storm_df is not None and len(storm_df) else "unavailable",
                                  "use": "retrospective evaluation cohorts only"},
         },

@@ -98,3 +98,36 @@ def test_published_forecast_schema_and_honest_status():
         assert fc.empty and ev["metrics"] == [] and ev["missing_inputs"]
     else:
         assert (fc.label_kind == "facility_aar").all()
+
+
+def test_aar_attempt_log_loads_and_rejects_malformed(tmp_path):
+    import json
+
+    from src.data_capacity.pipeline import load_aar_attempts
+
+    good = {"attempts": [{"at_utc": "2026-10-31T06:00:00Z", "channel": "email", "requested_by": "supervisor",
+                          "request": "ASPM extract", "response": "pending", "status": "pending"},
+                         {"at_utc": "2026-10-31T04:00:00Z", "channel": "web", "requested_by": "agent",
+                          "request": "access check", "response": "login required", "status": "refused_no_credentials"}]}
+    p = tmp_path / "attempts.json"
+    p.write_text(json.dumps(good))
+    assert [a["channel"] for a in load_aar_attempts(p)] == ["web", "email"]  # chronological
+    assert load_aar_attempts(tmp_path / "absent.json") == []
+    p.write_text(json.dumps({"attempts": [{"at_utc": "2026-10-31T06:00:00", "channel": "x"}]}))
+    with pytest.raises(ValueError):
+        load_aar_attempts(p)
+
+
+def test_repository_attempt_log_is_valid():
+    from src.data_capacity.pipeline import load_aar_attempts
+
+    assert all(a["status"] for a in load_aar_attempts())
+
+
+def test_aar_observed_is_the_held_out_label_only():
+    f, lab = synthetic(seed=3)
+    fc, _ = capacity.fit_evaluate(f, lab, AIRPORTS, "r")
+    j = fc.merge(lab, on=["airport", "target_hour_utc"])
+    assert len(j) == len(fc) and np.allclose(j.aar_observed, j.aar)
+    assert set(fc.split) == {"test"}
+    assert "aar_observed" in capacity.empty_forecast().columns

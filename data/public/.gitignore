@@ -4,3 +4,4 @@
 !aspm/
 aspm/*
 !aspm/README.md
+!aspm/attempts.json

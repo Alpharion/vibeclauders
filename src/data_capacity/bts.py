@@ -14,7 +14,7 @@ from io import BytesIO
 import pandas as pd
 
 from .config import PUBLIC_DIR, Airport
-from .io import DownloadError, fetch_cached, write_parquet
+from .io import DownloadError, fetch_cached, read_json, sha256_file, write_json, write_parquet
 
 PREZIP = "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_{y}_{m}.zip"
 RENAME = {
@@ -58,16 +58,46 @@ def acquire_month(y: int, m: int, airports: list[Airport], *, cache_only=False, 
     rec = {**rec, "source_id": SOURCE_ID, "month": f"{y}-{m:02d}"}
     if rec["status"] == "failed":
         return rec
+    iatas = {a.iata for a in airports}
+    out = PUBLIC_DIR / "bts" / "filtered" / f"ontime_{'_'.join(sorted(iatas))}_{y}_{m:02d}.parquet"
+    side = out.with_name(out.name + ".meta.json")
+    zip_hash = rec.get("sha256") or sha256_file(zpath)
+    prev = read_json(side)
+    # reuse the filtered extract only if it was cut from this exact archive
+    if out.exists() and prev and prev.get("zip_sha256") == zip_hash and prev.get("sha256") == sha256_file(out):
+        return {**rec, "filtered_path": out, "filtered_rows": prev["rows"]}
     z = zipfile.ZipFile(zpath)
     name = [n for n in z.namelist() if n.lower().endswith(".csv")][0]
     df = pd.read_csv(z.open(name), usecols=list(RENAME), low_memory=False,
                      dtype={"CancellationCode": "string", "Tail_Number": "string"}).rename(columns=RENAME)
-    iatas = {a.iata for a in airports}
     df = df[df["ORIGIN"].isin(iatas) | df["DEST"].isin(iatas)]
-    out = PUBLIC_DIR / "bts" / "filtered" / f"ontime_{'_'.join(sorted(iatas))}_{y}_{m:02d}.parquet"
     write_parquet(out, df)
+    write_json(side, {"zip_sha256": zip_hash, "sha256": sha256_file(out), "rows": int(len(df)),
+                      "airports": sorted(iatas)})
     return {**rec, "filtered_path": out, "filtered_rows": int(len(df))}
 
 
 def load_filtered(paths) -> pd.DataFrame:
     return pd.concat([pd.read_parquet(p) for p in paths], ignore_index=True)
+
+
+def acquire_months(months_ym: list[str], airports: list[Airport], *, cache_only=False, refresh=False,
+                   workers: int = 4, log=None) -> list[dict]:
+    """Acquire several months concurrently. BTS throttles each connection, so a
+    few parallel downloads finish far sooner than a sequential loop. Results
+    keep the requested month order; a failed month never aborts the others."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    def one(ym: str) -> dict:
+        y, m = map(int, ym.split("-"))
+        try:
+            r = acquire_month(y, m, airports, cache_only=cache_only, refresh=refresh)
+        except Exception as exc:  # corrupt cache, parse failure, ...
+            r = {"url": PREZIP.format(y=y, m=m), "path": None, "status": "failed", "source_id": SOURCE_ID,
+                 "month": ym, "error": f"{type(exc).__name__}: {exc}"}
+        if log:
+            log(f"bts {ym}: {r['status']} {r.get('filtered_rows') or r.get('error') or ''}")
+        return r
+
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        return list(pool.map(one, months_ym))
