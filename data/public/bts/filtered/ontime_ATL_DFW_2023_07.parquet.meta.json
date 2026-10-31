@@ -1,0 +1,9 @@
+{
+  "zip_sha256": "b1b73635dcb2add363bb001d95c3f951e0ce4fc32130cbc76b565a531ced2146",
+  "sha256": "1960938fa108b4aa951bf8b815c8c7ba77ed3f69219130c07f3c65fc1913ef5a",
+  "rows": 110699,
+  "airports": [
+    "ATL",
+    "DFW"
+  ]
+}
