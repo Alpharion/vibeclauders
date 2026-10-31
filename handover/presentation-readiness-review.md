@@ -1,5 +1,29 @@
 # Presentation readiness review: Challenge 5
 
+## Update, 31 October 2026 (after the latest merges)
+
+All presentation figures are now in **`handover/judging-figures.md`**, generated from the published artifacts with source hashes. The model artifacts did not change, so every accuracy and precision figure below is still correct.
+
+What changed since the original review:
+
+| Item | Status now |
+|---|---|
+| `main` (`13c708b`) | **Not presentable.** 410 passed, **31 failed**; app smoke exit 1. Member 3's Figma rebuild (`a3f3484`) crashes the replay screen: Streamlit v2 component `watchlist` is not registered. Some older dashboard tests also call APIs the rebuild removed. The three Member 1 branches merged on top (accuracy handoff, rejected calibration experiment, validation hardening) add no new failures. |
+| Latest integration branch `codex/member-1-accuracy-integration` (`4f6386a`) | **501 passed**, risk verify 0, release gate `verified`. Delivers **P0-2** (ranked departure review priorities plus an illustrative arrival scenario in Compare → Proposed actions) and impact framing. **Not merged:** it conflicts with `main` in `src/dashboard/app.py` (review-actions UI vs the Figma rebuild). |
+| P0-1 AAR story | Still open. The arrivals-forecast claim is still awaiting team agreement. |
+| P0-3 README | Still open: automation commands and an LLM statement. |
+| P1-6 accuracy extension | Done; both candidates **rejected** under the pre-set rule. The incumbent capacity estimate is kept. |
+
+New P0, ahead of everything else: **produce one presentable build.**
+
+1. Fix the `watchlist` component registration on `main` (Member 3), and update or retire the tests that call removed APIs, so `main` is green.
+2. Resolve the `src/dashboard/app.py` conflict by porting the Compare → Proposed actions panel into the Figma UI, then merge the integration branch.
+3. Rerun `python -m tools.delivery.verify_release` and rebuild the package on the result.
+
+Until then, the only verified runnable build for a demo is the integration branch (`4f6386a`), which uses the pre-Figma UI.
+
+---
+
 - Reviewer: Member 1 agent, 31 October 2026.
 - Reviewed build: `main` at `a075bf6`, which merges the readiness branch.
 - Reference: `Autonomous SG 2026_Airbus Track.pdf`, Challenge 5 and the judging rubric.
