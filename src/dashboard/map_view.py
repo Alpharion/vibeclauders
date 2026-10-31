@@ -8,7 +8,7 @@ from src.dashboard.theme import TOKENS
 
 RADAR_WMS = "https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0q-t.cgi"
 ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services"
-BASEMAP = f"{ESRI}/Elevation/World_Hillshade_Dark/MapServer/tile/{{z}}/{{y}}/{{x}}"
+BASEMAP = f"{ESRI}/Canvas/World_Dark_Gray_Base/MapServer/tile/{{z}}/{{y}}/{{x}}"
 LABELS = f"{ESRI}/Canvas/World_Dark_Gray_Reference/MapServer/tile/{{z}}/{{y}}/{{x}}"
 HEIGHT = 520
 
