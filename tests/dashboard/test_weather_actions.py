@@ -28,3 +28,21 @@ def test_missing_weather_is_not_a_trigger():
 def test_conditional_weather_still_triggers_when_prevailing_is_unknown():
     row = pd.Series(dict(available_at_utc=CUTOFF, visibility_sm=pd.NA, cond_min_visibility_sm=1))
     assert recommendations(row, CUTOFF)[0][0]["Forecast basis"] == "Conditional TAF group"
+
+
+def test_pairing_matches_exact_snapshot_and_inclusive_risk_threshold():
+    from types import SimpleNamespace
+    from src.dashboard.views import Snapshot
+    from src.dashboard.weather_actions import paired_flights
+    snapshot = Snapshot(SimpleNamespace(icao="KDFW"), CUTOFF, 3)
+    rows = pd.DataFrame([
+        dict(flight_id=name, airport=airport, asof_utc=cutoff,
+             horizon_hours=3, target_hour_utc=CUTOFF + pd.Timedelta(hours=3),
+             probability_severe_delay=p, threshold=.3, model_kind="schedule")
+        for name, airport, cutoff, p in [
+            ("match", "KDFW", CUTOFF, .3), ("low", "KDFW", CUTOFF, .29),
+            ("wrong-airport", "KATL", CUTOFF, .9),
+            ("wrong-cutoff", "KDFW", CUTOFF - pd.Timedelta(hours=1), .9)]
+    ])
+    bundle = SimpleNamespace(table=lambda name: rows if name == "predictions" else None)
+    assert paired_flights(bundle, snapshot).flight_id.tolist() == ["match"]
