@@ -1,6 +1,6 @@
 # Judging figures: Challenge 5
 
-Every number below is read programmatically from the published artifacts (SHA-256 prefixes under Sources); none is hand-typed. The published model artifacts are byte-identical on `main` (`13c708b`) and on the latest integration branch `codex/member-1-accuracy-integration` (`4f6386a`), so these figures apply to both.
+Every number below is read programmatically from the published artifacts (SHA-256 prefixes under Sources); none is hand-typed. The published model artifacts are byte-identical on `main` (`main`) and on the latest integration branch `codex/member-1-accuracy-integration` (`4f6386a`), so these figures apply to both.
 
 Generated 2026-10-31 by the Member 1 agent.
 
@@ -17,9 +17,9 @@ Integration-branch release gate: `verified`, scope `combined_runtime`, 501 tests
 
 | Publication | Run ID | Status |
 |---|---|---|
-| Data and capacity | `m1-20261031T065014Z-eacdd5` | partial (genuine AAR unavailable) |
+| Data and capacity | `m1-20261031T084129Z-f83c9b` | partial (genuine AAR unavailable) |
 | Delay-risk model | `0949771a54bb4e49b4e215528eb5d46b` | partial |
-| Capacity estimate (proxy) | `m1-capest-20261031T072310Z-a27968` | partial (model proxy, not AAR) |
+| Capacity estimate (proxy) | `m1-capest-20261031T084305Z-940bb8` | partial (model proxy, not AAR) |
 
 ## 3. Data coverage (multi-source integration, automatic processing)
 
@@ -158,9 +158,9 @@ Departure review priorities at the same snapshot: 2 flagged departures (61.2% an
 |---|---|
 | `artifacts/risk/evaluation.json` | `94a1622ef994054f` |
 | `artifacts/risk/manifest.json` | `94e967c743226fe2` |
-| `artifacts/capacity/manifest.json` | `e41f85fb26d73d4c` |
-| `artifacts/capacity_estimate/evaluation.json` | `915e455b5d533cb3` |
-| `artifacts/capacity_estimate/manifest.json` | `c0d6d26ba4f3f6c2` |
-| `artifacts/capacity/throughput_evaluation.json` | `37335dad10b8fb8e` |
+| `artifacts/capacity/manifest.json` | `9e15d370f639dc7f` |
+| `artifacts/capacity_estimate/evaluation.json` | `4f2bc4356322882b` |
+| `artifacts/capacity_estimate/manifest.json` | `e2078025cc5e974d` |
+| `artifacts/capacity/throughput_evaluation.json` | `fee38eef60d35127` |
 | `handover/member-1-calibration-evidence.json` | `39d551b65f085da9` |
 | `output/delivery/arrival-scenario.json` (integration branch) | `deadc7022245d3ec` |

@@ -251,10 +251,23 @@ def response_card(bundle: Bundle, snapshot: Snapshot) -> None:
         if not actions:
             html(badge("NOT AVAILABLE"))
             st.caption(reason)
-            return
-        html(badge("PROPOSED · NOT EXECUTED", "amber"))
-        for condition, row in actions.items():
-            st.caption(f"{condition}: {row['action']}")
+        else:
+            html(badge("PROPOSED · NOT EXECUTED", "amber"))
+            for condition, row in actions.items():
+                st.caption(f"{condition}: {row['action']}")
+        review_brief_download(bundle, snapshot)
+
+
+def review_brief_download(bundle: Bundle, snapshot: Snapshot) -> None:
+    """One-click controller review brief for the snapshot on screen (no outcomes, no instructions)."""
+    brief, text, reason = outputs.review_brief(bundle, snapshot)
+    if brief is None:
+        st.caption(reason)
+        return
+    st.caption(f"{brief['flagged_flights']} of {brief['sampled_flights_scored']} sampled departures flagged for review.")
+    stem = f"review-brief-{snapshot.airport.icao}-{snapshot.asof_utc:%Y%m%dT%H%MZ}-{snapshot.horizon_hours}h"
+    st.download_button("Download review brief", text, file_name=f"{stem}.md", mime="text/markdown",
+                       key="review-brief-md", icon=":material/download:", width="stretch")
 
 
 # --- Weather ------------------------------------------------------------------

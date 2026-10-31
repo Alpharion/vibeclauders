@@ -362,3 +362,31 @@ def forecast_valid_labels(snapshot: Snapshot) -> list[dict]:
         suffix = " +1d" if target.date() != snapshot.asof_utc.date() else ""
         stops.append({"lead": lead, "label": f"{target:%H:%M}{suffix}", "selected": lead == snapshot.horizon_hours})
     return stops
+
+
+def review_brief(bundle: Bundle, snapshot: Snapshot) -> tuple[dict | None, str | None, str | None]:
+    """Controller review brief for the exact on-screen snapshot, built in memory from the
+    hash-verified predictions with the same summarizer as tools.delivery.controller_brief.
+    Returns (brief, markdown, reason); writes nothing to disk."""
+    from tools.delivery.controller_brief import markdown, summarize
+
+    predictions = bundle.table("predictions")
+    group = bundle.groups.get("risk")
+    if predictions is None or group is None or group.manifest is None:
+        return None, None, bundle.problem("predictions")
+    manifest = group.manifest
+    if snapshot.rows(predictions).empty:
+        # exact key only: never substitute another cutoff or lead (and the shared summarizer
+        # cannot reduce an empty pandas string column)
+        return None, None, "No published predictions at this exact cutoff and lead, so no review brief."
+    try:
+        brief = summarize(predictions, snapshot.airport.icao, snapshot.asof_utc, snapshot.horizon_hours,
+                          manifest.get("run_id"))
+    except ValueError as error:
+        return None, None, f"Review brief withheld: {error}"
+    brief["evidence"] = {
+        "predictions": "artifacts/risk/predictions.parquet",
+        "predictions_sha256": (manifest.get("artifact_hashes") or {}).get("predictions.parquet"),
+        "verified_by": "dashboard loader (manifest hash check)",
+    }
+    return brief, markdown(brief), None

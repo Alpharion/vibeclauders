@@ -22,7 +22,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from .config import Airport
+from .config import Airport, load_registry
 from .identity import FLIGHT_KEY_IMPL, flight_key
 
 SOURCE_ID = "challenge_csv_bts_sample"
@@ -154,10 +154,14 @@ def build_flights(raw: pd.DataFrame, airports: list[Airport], start: str, end: s
     actual_dep = df["scheduled_dep_utc"] + pd.to_timedelta(dep_delay, unit="min")
     actual_arr = df["scheduled_arr_utc"] + pd.to_timedelta(arr_delay, unit="min")
 
+    iata_to_icao = {a.iata: a.icao for a in load_registry().values() if a.iata}
     out = pd.DataFrame({
         "flight_id": df["flight_id"].astype("string"),
         "origin": df["ORIGIN"].astype("string"),
         "dest": df["DEST"].astype("string"),
+        # ICAO for registry airports only; other airports stay null rather than guessed
+        "origin_icao": df["ORIGIN"].map(iata_to_icao).astype("string"),
+        "dest_icao": df["DEST"].map(iata_to_icao).astype("string"),
         "carrier": df["OP_UNIQUE_CARRIER"].astype("string"),
         "flight_number": df["flight_number"],
         "tail_number": df["TAIL_NUM"],

@@ -1,10 +1,10 @@
 {
   "schema_version": "2.0",
-  "run_id": "m1-20261031T065014Z-eacdd5",
-  "generated_at_utc": "2026-10-31T06:52:35+00:00",
+  "run_id": "m1-20261031T084129Z-f83c9b",
+  "generated_at_utc": "2026-10-31T08:43:04+00:00",
   "producer": "member-1/data_capacity",
   "status": "partial",
-  "started_at_utc": "2026-10-31T06:50:14+00:00",
+  "started_at_utc": "2026-10-31T08:41:29+00:00",
   "command": "python -m src.data_capacity run --cache-only",
   "parameters": {
     "airports": [
@@ -34,28 +34,28 @@
       "name": "flights",
       "path": "data/processed/flights.parquet",
       "rows": 25299,
-      "sha256": "6e446d7c1948333d122bb1fb64b6dd5546537c343e3defbfcf4b07c83ee9b4de",
+      "sha256": "5534d21ce766845dbab4e51372618a433cb895ad3fdcf1478e5a74515af46176",
       "schema_version": "2.0"
     },
     {
       "name": "traffic_hourly",
       "path": "artifacts/capacity/traffic_hourly.parquet",
       "rows": 90524,
-      "sha256": "bd14ee2bfc7aab93276306c248562e78b2723549ad9e2fe0911afb0c5cbedcde",
+      "sha256": "a68b1d1827ddb64ed39607dd5477858bad45219c9827f08bb561d3324cbaeea1",
       "schema_version": "2.0"
     },
     {
       "name": "weather",
       "path": "artifacts/capacity/weather.parquet",
       "rows": 147002,
-      "sha256": "d04818e712ea2b25ec86448854cbe1b56c207fb3e854cfa00371ac6c726cc25e",
+      "sha256": "efc8bfab02a4bdba245b9052e2a6e94b5a9e39bc7fbf414649529739df34935d",
       "schema_version": "2.0"
     },
     {
       "name": "weather_features",
       "path": "artifacts/capacity/weather_features.parquet",
       "rows": 135786,
-      "sha256": "6c4374d1c4ed5816b7b6feba100852ddef250947c301e6a12fd9ffd7faf7fd81",
+      "sha256": "ba8aa8cf6a2377e2b7c2690a58796d6d1d61de213862a7050b7fa8a6fb8bbba7",
       "schema_version": "2.0"
     },
     {
@@ -76,50 +76,50 @@
       "name": "evaluation",
       "path": "artifacts/capacity/evaluation.json",
       "rows": null,
-      "sha256": "0cc61cdecf967bdc6516d4c7449eb776d3923e6f08cf8bd21b74fc5fc3581ab8",
+      "sha256": "bc2a5a51fdbb6f595cf8e0e902a18b37d744319b7c5f76990937ab8c425575ff",
       "schema_version": "2.0"
     },
     {
       "name": "throughput_forecast",
       "path": "artifacts/capacity/throughput_forecast.parquet",
       "rows": 30465,
-      "sha256": "93cec3323a219c338984e4f5a6041babcee8ae8af4f050d841fbb9c877794388",
+      "sha256": "5b515b3a63bdd5dda48ee7f214e38f571d4e5c004e073fb5949ff28b51911a8d",
       "schema_version": "2.0"
     },
     {
       "name": "throughput_evaluation",
       "path": "artifacts/capacity/throughput_evaluation.json",
       "rows": null,
-      "sha256": "37335dad10b8fb8e4bbf40536e8c448bcb84fb6e9776bcfb1610beef333c499c",
+      "sha256": "fee38eef60d35127b08a29344e4d0c899d38b429a3213ddd28172faab3e4f30b",
       "schema_version": "2.0"
     },
     {
       "name": "data_access",
       "path": "artifacts/capacity/data_access.json",
       "rows": null,
-      "sha256": "4ee5b04aee6af0edd08ae4f56093ed3a6d64821b9fbaf563ebf75a6063672fe4",
+      "sha256": "803d9d9cf861a6b7d4b234e624d2dac09ecc1fdea21002bc283134461900ab90",
       "schema_version": "2.0"
     },
     {
       "name": "provenance",
       "path": "data/processed/provenance.json",
       "rows": null,
-      "sha256": "1f226def65367ab1d86a1a21130469d1f297012a2b33a02efbac040563e79e64",
+      "sha256": "106d5e98e81d5469dda1940d18198491844788eef8e84206192cc2cc2cb1bd50",
       "schema_version": "2.0"
     }
   ],
   "artifact_hashes": {
-    "../../data/processed/flights.parquet": "6e446d7c1948333d122bb1fb64b6dd5546537c343e3defbfcf4b07c83ee9b4de",
-    "traffic_hourly.parquet": "bd14ee2bfc7aab93276306c248562e78b2723549ad9e2fe0911afb0c5cbedcde",
-    "weather.parquet": "d04818e712ea2b25ec86448854cbe1b56c207fb3e854cfa00371ac6c726cc25e",
-    "weather_features.parquet": "6c4374d1c4ed5816b7b6feba100852ddef250947c301e6a12fd9ffd7faf7fd81",
+    "../../data/processed/flights.parquet": "5534d21ce766845dbab4e51372618a433cb895ad3fdcf1478e5a74515af46176",
+    "traffic_hourly.parquet": "a68b1d1827ddb64ed39607dd5477858bad45219c9827f08bb561d3324cbaeea1",
+    "weather.parquet": "efc8bfab02a4bdba245b9052e2a6e94b5a9e39bc7fbf414649529739df34935d",
+    "weather_features.parquet": "ba8aa8cf6a2377e2b7c2690a58796d6d1d61de213862a7050b7fa8a6fb8bbba7",
     "../../data/processed/storm_events.parquet": "526cae770223b82dd52fd38aa421afac00938b39f2931d538127d71d73718d04",
     "forecast.parquet": "676f034938806a57788c1d1e4849eea772c83dea63d9d39c30f878ec86287e14",
-    "evaluation.json": "0cc61cdecf967bdc6516d4c7449eb776d3923e6f08cf8bd21b74fc5fc3581ab8",
-    "throughput_forecast.parquet": "93cec3323a219c338984e4f5a6041babcee8ae8af4f050d841fbb9c877794388",
-    "throughput_evaluation.json": "37335dad10b8fb8e4bbf40536e8c448bcb84fb6e9776bcfb1610beef333c499c",
-    "data_access.json": "4ee5b04aee6af0edd08ae4f56093ed3a6d64821b9fbaf563ebf75a6063672fe4",
-    "../../data/processed/provenance.json": "1f226def65367ab1d86a1a21130469d1f297012a2b33a02efbac040563e79e64"
+    "evaluation.json": "bc2a5a51fdbb6f595cf8e0e902a18b37d744319b7c5f76990937ab8c425575ff",
+    "throughput_forecast.parquet": "5b515b3a63bdd5dda48ee7f214e38f571d4e5c004e073fb5949ff28b51911a8d",
+    "throughput_evaluation.json": "fee38eef60d35127b08a29344e4d0c899d38b429a3213ddd28172faab3e4f30b",
+    "data_access.json": "803d9d9cf861a6b7d4b234e624d2dac09ecc1fdea21002bc283134461900ab90",
+    "../../data/processed/provenance.json": "106d5e98e81d5469dda1940d18198491844788eef8e84206192cc2cc2cb1bd50"
   },
   "split": {
     "basis": "airport-local date",
