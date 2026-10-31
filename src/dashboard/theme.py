@@ -148,6 +148,17 @@ CSS = _ROOT + """
 .st-key-card-flight-watchlist{border-left:3px solid var(--cyan)!important;background:linear-gradient(110deg,#183039,#1B2023)}
 .st-key-card-response,.st-key-card-scenarios{border-left:3px solid var(--amber)!important;background:linear-gradient(110deg,#302A1B,#1B2023)}
 .st-key-card-coverage,.st-key-card-integrity{border-left:3px solid #8BBBD6!important;background:linear-gradient(110deg,#222C34,#1B2023)}
+.flight-risk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;max-height:310px;overflow-y:auto;padding:2px 6px 4px 0}
+.flight-risk-card{--risk:#ADBAC5;background:#1B2023;border:1px solid #364149;border-left:4px solid var(--risk);border-radius:6px;padding:16px;color:#EDF1F4}
+.flight-risk-card.red{--risk:#FF4B4B;background:linear-gradient(115deg,#352226,#1B2023)}
+.flight-risk-card.amber{--risk:#FFCD38;background:linear-gradient(115deg,#322E20,#1B2023)}
+.flight-risk-card.cyan{--risk:#00D4F5;background:linear-gradient(115deg,#1B2B32,#1B2023)}
+.flight-risk-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px}
+.flight-risk-head span,.flight-risk-meta{color:#ADBAC5;font-size:12px}
+.flight-risk-score{display:flex;align-items:center;gap:12px;margin:14px 0 10px}
+.flight-risk-score strong{font-size:26px;color:var(--risk);font-variant-numeric:tabular-nums}
+.flight-risk-score span{font-size:12px;color:#ADBAC5}
+.flight-risk-status{font-size:12px;color:var(--risk);margin-bottom:8px}
 """
 
 # Undocumented Streamlit structure. Each rule is cosmetic, so a rename only loosens the layout.
