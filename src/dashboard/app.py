@@ -8,8 +8,9 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
-from src.dashboard import live, plots, theme, views
+from src.dashboard import live, map_view, plots, theme, views
 from src.dashboard.data import SCORED_HORIZONS, Bundle, fingerprint, is_schedule_only, load_bundle
 from src.dashboard.theme import card_title, grid, html, pill, tile
 from src.dashboard.views import Snapshot, resolve_airport
@@ -18,6 +19,7 @@ from src.shared import AIRPORTS
 REPO_ROOT = Path(__file__).resolve().parents[2]
 STATUS_LABEL = {"available": "Available", "partial": "Partial", "unavailable": "Unavailable"}
 HISTORICAL, LIVE = "Historical replay", "Live weather"
+MAP_LAYERS = ("Weather radar", "Connections", "Flagged flows")
 
 
 @st.cache_data(show_spinner="Validating published artifacts…", max_entries=2)
@@ -189,7 +191,7 @@ def reveal_strip(reveal: bool) -> None:
 # --- Overview -----------------------------------------------------------------
 
 
-def overview_tab(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
+def overview_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool) -> None:
     iata = snapshot.airport.iata
     theme.title(
         "ATC overview",
@@ -202,7 +204,7 @@ def overview_tab(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
         html(weather_banner(bundle, snapshot))
         route_section(bundle, snapshot, window)
     with side:
-        controller_snapshot(bundle, snapshot, window)
+        controller_snapshot(bundle, snapshot, window, reveal)
 
 
 def weather_banner(bundle: Bundle, snapshot: Snapshot) -> str:
@@ -226,25 +228,90 @@ def route_section(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
     if routes.empty:
         st.info(f"No sampled flights are scheduled in the {window}-hour window after this cutoff.")
         return
-    flagged = views.flagged_routes(views.risk_rows(bundle, snapshot), flights)
-    figure, unmapped = plots.route_map(routes, snapshot.airport.iata, flagged=flagged)
-    if figure is None:
+    rows = views.risk_rows(bundle, snapshot)
+    layers = st.pills("Layers", MAP_LAYERS, selection_mode="multi", default=list(MAP_LAYERS), key="map-layers", label_visibility="collapsed")
+    radar = views.radar_time(snapshot.asof_utc) if "Weather radar" in layers else None
+    flagged = views.flagged_routes(rows, flights) if "Flagged flows" in layers else set()
+    payload, unmapped = map_view.map_payload(
+        routes, views.network_nodes(flights, rows, snapshot.airport, snapshot.asof_utc, window),
+        snapshot.airport.iata, hub_categories(bundle, snapshot), flagged=flagged, radar=radar,
+        connections="Connections" in layers,
+    )
+    if payload is None:
         st.info("Map unavailable: no coordinates for the selected airport.")
         return
-    st.plotly_chart(figure, key="routes")
-    note = f"Schematic sampled connections for the {window}-hour window, not flown routes or live traffic. No radar layer."
+    components.html(map_view.map_page(payload), height=map_view.HEIGHT + 8)
+    radar_note = f"NEXRAD radar composite {radar:%H:%M} UTC, last before the cutoff." if radar is not None else "Radar layer off."
+    note = f"{radar_note} Hubs coloured by observed flight category. Sampled {window}-hour connections are schematic, not flown routes."
     st.caption(f"{note} {unmapped} movements lack coordinates." if unmapped else note)
 
 
-def controller_snapshot(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
+def hub_categories(bundle: Bundle, snapshot: Snapshot) -> dict[str, str]:
+    categories = {}
+    for icao, info in AIRPORTS.items():
+        outlook = views.airport_outlook(bundle, icao, snapshot.asof_utc)
+        row = next(iter(outlook.values()), None)
+        categories[info["iata"]] = (
+            "Unknown" if row is None else views.flight_category(row["obs_visibility_sm"], row["obs_ceiling_ft_agl"])
+        )
+    return categories
+
+
+def movement_card(bundle: Bundle, snapshot: Snapshot, reveal: bool) -> None:
+    traffic = bundle.table("traffic_hourly")
+    card_title("Scheduled movements", f"Reporting carriers · target hour {clock(snapshot.target_hour_utc)} UTC")
+    if traffic is None:
+        st.caption(bundle.problem("traffic_hourly"))
+        return
+    target = snapshot.target_hour_utc
+
+    def count(direction: str, column: str):
+        series = views.reporting_series(traffic, snapshot.airport, direction, snapshot.asof_utc, True, 3, 13)
+        value = series.loc[series["hour_utc"] == target, column]
+        return value.iloc[0] if len(value) else float("nan")
+
+    incoming, outgoing = count("arrival", "scheduled_count"), count("departure", "scheduled_count")
+    html(
+        f'<div class="split"><div><div class="cap">Incoming</div><div class="big">{known(incoming)} <small>/h</small></div></div>'
+        f'<div><div class="cap">Outgoing</div><div class="big">{known(outgoing)} <small>/h</small></div></div></div>'
+    )
+    if reveal:
+        st.caption(f"Actual {known(count('arrival', 'actual_count'))} in / {known(count('departure', 'actual_count'))} out.")
+    else:
+        st.caption("Reconstructed schedule, not queue demand. Actuals stay hidden until reveal.")
+
+
+def departures_card(bundle: Bundle, snapshot: Snapshot) -> None:
+    card_title("Departure risk", "Scored flights at this exact cutoff and lead")
+    rows = views.risk_rows(bundle, snapshot)
+    if rows is None or rows.empty:
+        st.caption("No held-out prediction at this key.")
+        return
+    st.metric("At or above threshold", f"{int(views.flagged(rows).sum())} of {len(rows)}")
+    lines = ""
+    for row in rows.head(5).itertuples():
+        name = f"{row.carrier}{row.flight_number}" if hasattr(row, "carrier") and pd.notna(row.carrier) else row.flight_id[:8]
+        where = f" → {row.dest}" if hasattr(row, "dest") and pd.notna(row.dest) else ""
+        lines += (
+            f'<div class="flight"><span>{escape(str(name))}<span class="dim">{escape(str(where))}</span></span>'
+            f"<b>{row.probability_severe_delay:.0%}</b></div>"
+        )
+    html(lines)
+
+
+def data_card(bundle: Bundle) -> None:
+    card_title("Data status")
+    runs = [f"{name} {group.manifest['run_id'][:8]}" for name, group in bundle.groups.items() if group.manifest]
+    open_items = sum(c.status == "unavailable" for c in bundle.capabilities)
+    html(f'<div class="card-note">Runs: {escape(" · ".join(runs))}<br>{open_items} capabilities unavailable. See Evaluation.</div>')
+
+
+def controller_snapshot(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool) -> None:
     html(f'<div class="card-title">{escape(snapshot.airport.iata)} · Controller snapshot</div>')
     with st.container(border=True):
-        card_title("Departure risk", "Flights scored at this exact cutoff and lead")
-        rows = views.risk_rows(bundle, snapshot)
-        if rows is None or rows.empty:
-            st.caption("No held-out prediction at this key.")
-        else:
-            st.metric("At or above threshold", f"{int(views.flagged(rows).sum())} of {len(rows)}")
+        movement_card(bundle, snapshot, reveal)
+    with st.container(border=True):
+        departures_card(bundle, snapshot)
     with st.container(border=True):
         card_title("Arrival capacity")
         row, reason = views.aar_row(bundle, snapshot)
@@ -266,9 +333,17 @@ def controller_snapshot(bundle: Bundle, snapshot: Snapshot, window: int) -> None
                 ["Visibility", f"{views.weather_display('visibility_sm', row)} SM"],
                 ["Gust", views.weather_display("wind_gust_kt", row)],
             ]))
+    weather = bundle.table("weather")
+    if weather is not None:
+        with st.container(border=True):
+            card_title("Weather base rates", "How often this occurred at this time of year. Not a forecast.")
+            history = views.observed_history(weather, snapshot.airport.icao, snapshot.asof_utc, snapshot.target_hour_utc)
+            html(theme.bars(views.condition_frequency(history)))
     with st.container(border=True):
         card_title("Proposed response")
         response_summary(bundle, snapshot, window)
+    with st.container(border=True):
+        data_card(bundle)
 
 
 def response_summary(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
@@ -297,13 +372,36 @@ def weather_tab(bundle: Bundle, snapshot: Snapshot) -> None:
         unavailable("Cutoff-safe weather", reason)
     else:
         weather_tiles(row, snapshot)
+    weather = bundle.table("weather")
+    if weather is not None:
+        frequency_section(weather, snapshot)
     if outlook:
         condition_table(outlook, snapshot)
-    weather = bundle.table("weather")
     if weather is not None:
         bulletins = views.bulletins_as_of(weather, snapshot)
         with st.expander(f"{len(bulletins)} bulletins known at cutoff and valid at target"):
             st.dataframe(bulletins, hide_index=True)
+
+
+def frequency_section(weather: pd.DataFrame, snapshot: Snapshot) -> None:
+    targets = {lead: snapshot.asof_utc + pd.Timedelta(hours=lead) for lead in SCORED_HORIZONS}
+    histories = {
+        lead: views.observed_history(weather, snapshot.airport.icao, snapshot.asof_utc, target)
+        for lead, target in targets.items()
+    }
+    frequency = {lead: views.condition_frequency(history) for lead, history in histories.items()}
+    columns = [f"+{lead}h · {clock(targets[lead])}" for lead in SCORED_HORIZONS]
+    values = {name: [frequency[lead][name] for lead in SCORED_HORIZONS] for name in views.CONDITIONS}
+    left, right = st.columns([1.2, 1])
+    with left, st.container(border=True):
+        card_title("Condition frequency by lead", "Share of METARs before the cutoff, same season and time of day. Base rates, not forecasts.")
+        html(theme.heatmap(columns, values, SCORED_HORIZONS.index(snapshot.horizon_hours)))
+        st.caption(f"Based on {min(len(h) for h in histories.values()):,}+ reports per lead.")
+    with right, st.container(border=True):
+        card_title("Flight-category frequency", "Same reports, grouped by flight category")
+        categories = {lead: views.category_frequency(history) for lead, history in histories.items()}
+        figure = plots.category_bars(categories, list(SCORED_HORIZONS), [clock(targets[lead]) for lead in SCORED_HORIZONS])
+        st.plotly_chart(figure, key="category-bars")
 
 
 def weather_tiles(row: pd.Series, snapshot: Snapshot) -> None:
@@ -365,7 +463,7 @@ def condition_table(outlook: dict[int, pd.Series], snapshot: Snapshot) -> None:
 
 
 def traffic_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool) -> None:
-    theme.title("Traffic volumes", f"{snapshot.airport.iata} · Scheduled sample movements and departure risk")
+    theme.title("Traffic volumes", f"{snapshot.airport.iata} · Scheduled movements and departure risk")
     flights = bundle.table("flights")
     if flights is None:
         unavailable("Flight traffic", bundle.problem("flights"))
@@ -373,27 +471,49 @@ def traffic_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool) -
         movements = views.planning_movements(flights, snapshot.airport, snapshot.asof_utc, window)
         scored = views.scored_flights(flights, snapshot)
         coverage = movements["coverage"]
-        tiles = [
-            tile("Incoming", movements["arrivals"], f"SCHEDULED · {window} h from cutoff · {coverage}"),
-            tile("Outgoing", movements["departures"], f"SCHEDULED · {window} h from cutoff · {coverage}"),
-            tile("Airport movements", movements["movements"], "Arrivals plus departures, not unique flights"),
-            tile("Target-hour departures", len(scored), f"SCHEDULED · {views.coverage_label(scored)}"),
-        ]
-        for column, markup in zip(st.columns(4), tiles):
-            html(markup, column)
-        with st.container(border=True):
-            card_title("Hourly movements", "A sample cannot establish whole-airport demand. No traffic forecast is published.")
+    traffic = bundle.table("traffic_hourly")
+    if traffic is not None:
+        traffic_tiles(traffic, snapshot, window)
+    reporting_traffic_section(bundle, snapshot, window, reveal)
+    if flights is not None:
+        with st.expander("Sampled flights behind the risk model"):
+            st.caption(
+                f"{movements['arrivals']} arrivals and {movements['departures']} departures over {window} h, "
+                f"{len(scored)} departures in the target hour ({coverage} coverage). Movements are not unique "
+                "flights, and a sample cannot establish whole-airport demand."
+            )
             st.plotly_chart(plots.traffic_bars(movements["hourly"], coverage), key="traffic")
             st.dataframe(movements["hourly"], hide_index=True)
-    with st.container(border=True):
-        reporting_traffic_section(bundle, snapshot, window, reveal)
     with st.container(border=True):
         risk_section(bundle, snapshot, reveal)
 
 
+def traffic_tiles(traffic: pd.DataFrame, snapshot: Snapshot, window: int) -> None:
+    def hours(direction: str, last: int) -> pd.DataFrame:
+        return views.reporting_series(traffic, snapshot.airport, direction, snapshot.asof_utc, False, 0, last)
+
+    target = snapshot.target_hour_utc
+    incoming, outgoing = hours("arrival", window), hours("departure", window)
+
+    def at_target(rows: pd.DataFrame):
+        rows = views.reporting_series(traffic, snapshot.airport, rows, snapshot.asof_utc, False, 0, snapshot.horizon_hours)
+        return rows.loc[rows["hour_utc"] == target, "scheduled_count"].iloc[0]
+
+    arrivals, departures = at_target("arrival"), at_target("departure")
+    note = f"SCHEDULED · target hour {clock(target)} UTC · reporting carriers"
+    window_total = incoming["scheduled_count"].iloc[:window].sum() + outgoing["scheduled_count"].iloc[:window].sum()
+    tiles = [
+        tile("Incoming", known(arrivals), note),
+        tile("Outgoing", known(departures), note),
+        tile("Target-hour movements", known(arrivals + departures), "Arrivals plus departures, not unique flights"),
+        tile(f"Movements in {window} h", known(window_total), "SCHEDULED · from the cutoff"),
+    ]
+    for column, markup in zip(st.columns(4), tiles):
+        html(markup, column)
+
+
 def reporting_traffic_section(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool) -> None:
     traffic = bundle.table("traffic_hourly")
-    card_title("Reporting-carrier traffic")
     if traffic is None:
         unavailable("Reporting-carrier traffic", bundle.problem("traffic_hourly"))
         return
@@ -401,7 +521,19 @@ def reporting_traffic_section(bundle: Bundle, snapshot: Snapshot, window: int, r
     if rows.empty:
         st.info("No reporting-carrier counts in this window.")
         return
-    st.dataframe(rows, hide_index=True)
+    left, right = st.columns(2)
+    for column, direction, name, color in (
+        (left, "arrival", "Incoming flights · hourly", plots.SERIES[0]),
+        (right, "departure", "Outgoing flights · hourly", plots.SERIES[1]),
+    ):
+        series = views.reporting_series(traffic, snapshot.airport, direction, snapshot.asof_utc, reveal)
+        with column, st.container(border=True):
+            st.plotly_chart(
+                plots.reporting_chart(series, name, color, snapshot.asof_utc, snapshot.target_hour_utc), key=f"reporting-{direction}"
+            )
+    with st.container(border=True):
+        card_title("Hourly movements", f"Reporting carriers · {window} hours from the cutoff")
+        st.dataframe(rows, hide_index=True)
     st.caption(
         f"Population: {', '.join(map(str, traffic['population'].unique()))}. Reconstructed "
         "retrospectively, not known at the cutoff, so these counts are not queue demand."
@@ -852,7 +984,7 @@ def main() -> None:
             unavailable("Replay", "No snapshot is published.")
     else:
         with tabs[0]:
-            overview_tab(bundle, snapshot, window)
+            overview_tab(bundle, snapshot, window, reveal)
             reveal_strip(reveal)
         with tabs[1]:
             weather_tab(bundle, snapshot)

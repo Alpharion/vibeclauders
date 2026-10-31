@@ -15,6 +15,7 @@ REFERENCE_PATH = Path(__file__).resolve().parents[2] / "data" / "reference" / "a
 
 SERIES = ["#22B8F0", "#A78BFA", "#4ADE9A"]
 FLAG = "#F2B95D"
+CATEGORY_COLORS = {"VFR": "#4ADE9A", "MVFR": "#38A9FF", "IFR": "#F2555F", "LIFR": "#B58CFF", "Unknown": "#8FA5B8"}
 INK = "#E7EEF6"
 INK_SECONDARY = "#AFC1D2"
 GRID = "#2B4257"
@@ -132,43 +133,47 @@ def great_circle(start: tuple[float, float], end: tuple[float, float]) -> tuple[
     return lat, np.degrees(np.arctan2(xyz[:, 1], xyz[:, 0]))
 
 
-def route_map(routes: pd.DataFrame, selected_iata: str, points=None, flagged=frozenset()) -> tuple[go.Figure | None, int]:
-    """Return the map and the number of movements lacking coordinates."""
-    points = airport_points() if points is None else points
-    if selected_iata not in points:
-        return None, int(routes["flights"].sum())
-    figure, unmapped, seen, codes = go.Figure(), 0, set(), {selected_iata}
-    for route in routes.itertuples():
-        if route.origin not in points or route.dest not in points:
-            unmapped += route.flights
+def category_bars(frequency: dict[str, dict[str, float] | None], leads: list[int], clocks: list[str]) -> go.Figure:
+    """One stacked bar per lead, so conditions read in time order from the top."""
+    labels = [f"+{lead}h · {clock}" for lead, clock in zip(leads, clocks)]
+    figure = go.Figure()
+    for category, color in CATEGORY_COLORS.items():
+        if category == "Unknown":
             continue
-        codes.update((route.origin, route.dest))
-        lat, lon = great_circle(points[route.origin], points[route.dest])
-        is_flagged = (route.origin, route.dest) in flagged
-        group = "Flagged departure" if is_flagged else route.direction
-        color = FLAG if is_flagged else (SERIES[0] if route.direction == "Arrival" else SERIES[1])
-        label = f"{route.origin} → {route.dest}: {route.flights} scheduled {route.direction.lower()}(s)"
-        figure.add_scattergeo(
-            lat=lat, lon=lon, mode="lines", name=group, legendgroup=group, showlegend=group not in seen,
-            line={"color": color, "width": 2, "dash": "dash" if is_flagged else "solid"},
-            text=[label] * len(lat), hovertemplate="%{text}<extra></extra>",
+        values = [(frequency[lead] or {}).get(category) for lead in leads]
+        figure.add_bar(
+            y=labels, x=values, name=category, orientation="h", marker={"color": color},
+            text=[f"{v:.0%}" if v and v >= 0.06 else "" for v in values], textposition="inside",
+            textfont={"color": "#07131D"}, hovertemplate=f"{category}: %{{x:.1%}}<extra></extra>",
         )
-        seen.add(group)
-    ordered = sorted(codes)
-    figure.add_scattergeo(
-        lat=[points[c][0] for c in ordered], lon=[points[c][1] for c in ordered], text=ordered,
-        mode="markers+text", textposition="top center", textfont={"color": INK, "size": 12},
-        marker={"size": [15 if c == selected_iata else 8 for c in ordered], "color": INK, "line": {"color": SERIES[0], "width": 2}},
-        showlegend=False, hovertemplate="%{text}<extra></extra>",
+    _layout(figure, "", "", 240)
+    figure.update_layout(barmode="stack", hovermode="closest", margin={"l": 92, "r": 12, "t": 34, "b": 30}, bargap=0.35)
+    figure.update_xaxes(tickformat=".0%", range=[0, 1])
+    figure.update_yaxes(title="", autorange="reversed", gridcolor=SURFACE)
+    return figure
+
+
+def reporting_chart(rows: pd.DataFrame, title: str, color: str, asof: pd.Timestamp, target: pd.Timestamp) -> go.Figure:
+    figure = go.Figure()
+    figure.add_bar(
+        x=rows["hour_utc"], y=rows["scheduled_count"], name="Scheduled", marker={"color": GRID, "cornerradius": 3},
+        text=rows["scheduled_count"], textposition="inside", textfont={"color": INK},
     )
-    figure.update_geos(
-        scope="north america", showland=True, landcolor="#16293A", showlakes=True, lakecolor="#0A1520",
-        bgcolor="rgba(0,0,0,0)", showcountries=True, countrycolor=GRID, showsubunits=True, subunitcolor=GRID,
-        showcoastlines=True, coastlinecolor=GRID, lataxis_range=[22, 50], lonaxis_range=[-125, -65],
+    if "actual_count" in rows:
+        figure.add_scatter(
+            x=rows["hour_utc"], y=rows["actual_count"], name="Actual", mode="lines+markers",
+            line={"color": color, "width": 2}, marker={"size": 8},
+        )
+    high = rows["scheduled_count"].max()
+    figure.add_vline(x=asof, line={"color": INK, "dash": "dot", "width": 1}, annotation_text="Cutoff", annotation_font_color=INK)
+    figure.add_bar(
+        x=[target], y=[rows.loc[rows["hour_utc"] == target, "scheduled_count"].max()], name="Target hour",
+        marker={"color": color, "cornerradius": 3}, hoverinfo="skip", width=2_700_000,
     )
-    _layout(figure, "", "", 470)
-    figure.update_layout(hovermode="closest", margin={"l": 0, "r": 0, "t": 8, "b": 0})
-    return figure, unmapped
+    _layout(figure, title, "Flights per hour", 330)
+    figure.update_layout(barmode="overlay", margin={"l": 56, "r": 14, "t": 74, "b": 40})
+    figure.update_yaxes(range=[0, (0 if pd.isna(high) else high) * 1.25 + 1])
+    return figure
 
 
 def ceiling_by_lead(leads: list[str], ceilings: list[float]) -> go.Figure:
@@ -180,6 +185,7 @@ def ceiling_by_lead(leads: list[str], ceilings: list[float]) -> go.Figure:
         )
     )
     _layout(figure, "", "Ceiling (ft AGL)", 250)
+    figure.update_yaxes(range=[0, max(ceilings) * 1.3])
     figure.update_layout(margin={"l": 56, "r": 20, "t": 22, "b": 34}, hovermode="closest")
     return figure
 

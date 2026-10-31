@@ -255,6 +255,79 @@ def flight_category(visibility_sm, ceiling_ft) -> str:
     return "VFR"
 
 
+FREQUENCY_MINIMUM_REPORTS = 30
+CONDITIONS = ("Thunderstorm", "IFR / LIFR", "Visibility < 3 SM", "Gusts ≥ 25 kt")
+CATEGORIES = ("VFR", "MVFR", "IFR", "LIFR")
+
+
+def observed_history(weather: pd.DataFrame, icao: str, asof_utc: pd.Timestamp, target: pd.Timestamp) -> pd.DataFrame:
+    """METARs known by the cutoff from similar conditions: within a month and an hour of the target."""
+    rows = weather[
+        (weather["airport"] == icao)
+        & (weather["kind"] == "observation")
+        & (weather["available_at_utc"] <= asof_utc)
+    ]
+    months = (rows["valid_from_utc"].dt.month - target.month) % 12
+    hours = (rows["valid_from_utc"].dt.hour - target.hour) % 24
+    return rows[months.isin((0, 1, 11)) & hours.isin((0, 1, 23))]
+
+
+def condition_frequency(history: pd.DataFrame) -> dict[str, float | None]:
+    """Share of past reports meeting each condition; None when too few to be meaningful."""
+    if len(history) < FREQUENCY_MINIMUM_REPORTS:
+        return dict.fromkeys(CONDITIONS)
+    low = (history["visibility_sm"] < 3) | (history["ceiling_ft_agl"] < 1000)
+    return {
+        "Thunderstorm": float((history["thunderstorm_flag"] == 1).mean()),
+        "IFR / LIFR": float(low.mean()),
+        "Visibility < 3 SM": float((history["visibility_sm"] < 3).mean()),
+        "Gusts ≥ 25 kt": float((history["wind_gust_kt"] >= 25).mean()),
+    }
+
+
+def category_frequency(history: pd.DataFrame) -> dict[str, float] | None:
+    if len(history) < FREQUENCY_MINIMUM_REPORTS:
+        return None
+    labels = [flight_category(v, c) for v, c in zip(history["visibility_sm"], history["ceiling_ft_agl"])]
+    shares = pd.Series(labels).value_counts(normalize=True)
+    return {category: float(shares.get(category, 0.0)) for category in CATEGORIES}
+
+
+def radar_time(asof_utc: pd.Timestamp) -> pd.Timestamp:
+    """Newest composite safely published by the cutoff, so replay never shows later weather."""
+    return (asof_utc - pd.Timedelta(minutes=10)).floor("5min")
+
+
+def reporting_series(
+    traffic: pd.DataFrame, airport: Airport, direction: str, asof_utc: pd.Timestamp, reveal: bool, before=3, after=8
+) -> pd.DataFrame:
+    """Hours around the cutoff; a missing hour stays a gap rather than becoming zero."""
+    hours = pd.date_range(asof_utc - pd.Timedelta(hours=before), periods=before + after + 1, freq="h")
+    rows = traffic[(traffic["airport"] == airport.icao) & (traffic["direction"] == direction)]
+    series = rows.set_index("hour_utc").reindex(hours).rename_axis("hour_utc").reset_index()
+    return series[["hour_utc", "scheduled_count"] + (["actual_count"] if reveal else [])]
+
+
+def network_nodes(
+    flights: pd.DataFrame, rows: pd.DataFrame | None, airport: Airport, asof_utc: pd.Timestamp, window_hours: int
+) -> pd.DataFrame:
+    """Per connected airport: movements in the window and any scored risk on that route."""
+    routes = route_counts(flights, airport, asof_utc, window_hours)
+    routes["code"] = routes["dest"].where(routes["origin"] == airport.iata, routes["origin"])
+    nodes = routes.pivot_table(index="code", columns="direction", values="flights", aggfunc="sum", fill_value=0)
+    nodes = nodes.reindex(columns=["Arrival", "Departure"], fill_value=0).reset_index()
+    nodes["max_probability"] = None
+    nodes["flagged"] = False
+    if rows is not None and not rows.empty:
+        scored = rows.merge(flights[["flight_id", "dest"]], how="left", on="flight_id", suffixes=("", "_flight"))
+        destination = scored["dest_flight"] if "dest_flight" in scored else scored["dest"]
+        scored = scored.assign(code=destination, is_flagged=flagged(scored))
+        summary = scored.groupby("code").agg(best=("probability_severe_delay", "max"), any_flag=("is_flagged", "any"))
+        nodes["max_probability"] = nodes["code"].map(summary["best"])
+        nodes["flagged"] = nodes["code"].map(summary["any_flag"]).fillna(False).astype(bool)
+    return nodes
+
+
 def airport_outlook(bundle: Bundle, icao: str, asof_utc: pd.Timestamp) -> dict[int, pd.Series]:
     """Exact-cutoff weather rows by scored lead; a usable row was available by the cutoff."""
     features = bundle.table("weather_features")

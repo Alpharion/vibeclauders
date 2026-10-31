@@ -285,3 +285,37 @@ def test_flagged_routes_use_scored_flights_only():
     rows = pd.DataFrame({"flight_id": ["a", "b"], "probability_severe_delay": [0.9, 0.1], "threshold": 0.5})
     assert views.flagged_routes(rows, flights) == {("ATL", "LAS")}
     assert views.flagged_routes(None, flights) == set()
+
+
+def observations(rows):
+    frame = pd.DataFrame(
+        rows, columns=["valid_from_utc", "visibility_sm", "ceiling_ft_agl", "wind_gust_kt", "thunderstorm_flag"]
+    )
+    frame["valid_from_utc"] = pd.to_datetime(frame["valid_from_utc"], utc=True)
+    return frame.assign(airport="KATL", kind="observation", available_at_utc=frame["valid_from_utc"] + pd.Timedelta(minutes=10))
+
+
+def test_history_never_uses_reports_after_the_cutoff():
+    target = pd.Timestamp("2025-06-15T18:00:00Z")
+    asof = pd.Timestamp("2025-06-15T12:00:00Z")
+    table = observations(
+        [["2024-06-15T18:00Z", 10, 30000, 8, 0], ["2025-06-15T18:00Z", 1, 400, 40, 1], ["2024-06-15T06:00Z", 10, 30000, 8, 0], ["2024-12-15T18:00Z", 10, 30000, 8, 0]]
+    )
+    rows = views.observed_history(table, "KATL", asof, target)
+    assert len(rows) == 1 and rows["thunderstorm_flag"].sum() == 0
+
+
+def test_frequency_needs_enough_reports():
+    table = observations([["2024-06-15T18:00Z", 2, 800, 30, 1]] * 29)
+    assert views.condition_frequency(table)["Thunderstorm"] is None
+    assert views.category_frequency(table) is None
+    table = observations([["2024-06-15T18:00Z", 2, 800, 30, 1]] * 15 + [["2024-06-15T18:00Z", 10, 30000, 8, 0]] * 15)
+    shares = views.condition_frequency(table)
+    assert shares == {"Thunderstorm": 0.5, "IFR / LIFR": 0.5, "Visibility < 3 SM": 0.5, "Gusts ≥ 25 kt": 0.5}
+    assert views.category_frequency(table) == {"VFR": 0.5, "MVFR": 0.0, "IFR": 0.5, "LIFR": 0.0}
+
+
+def test_reporting_series_keeps_gaps_and_hides_actuals():
+    series = views.reporting_series(c.traffic().drop(index=1), KATL, "arrival", c.ASOF, False, 0, 3)
+    assert "actual_count" not in series
+    assert pd.isna(series["scheduled_count"].iloc[1])

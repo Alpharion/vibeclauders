@@ -60,6 +60,20 @@ button[data-baseweb=tab]{font-size:15px;padding:10px 20px}
 .step span{display:block;font-weight:400;color:#AFC1D2;font-size:12px}
 .check{display:flex;justify-content:space-between;gap:12px;color:#DCE6F1;font-size:13px;padding:6px 0;border-bottom:1px solid #1E3244}
 .check b{font-weight:500;white-space:nowrap}.check b.pass{color:#4ADE9A}.check b.fail{color:#F2555F}.check b.none{color:#F2B95D}
+.heat{width:100%;border-collapse:separate;border-spacing:3px;font-size:13.5px;color:#fff}
+.heat th{color:#AFC1D2;font-weight:500;padding:6px 8px;text-align:center;border:0!important}
+.heat th:first-child,.heat td:first-child{text-align:left;color:#DCE6F1;background:none;font-weight:500}
+.heat td{padding:10px 8px;text-align:center;font-weight:600;border:0!important;border-radius:3px}
+.heat th.on{color:#7BDDFA}.heat td.on{outline:2px solid #22B8F0;outline-offset:-1px}
+.scale{height:9px;border-radius:5px;background:linear-gradient(90deg,#1B2B2A,#6E6A2A,#E8A33D,#E0603C,#D01F4F);margin-top:10px}
+.scale-labels{display:flex;justify-content:space-between;color:#8FA5B8;font-size:11px;margin-top:3px}
+.bar-row{display:flex;align-items:center;gap:10px;font-size:13px;color:#DCE6F1;padding:3px 0}
+.bar-row .name{width:122px}.bar-row .bar{flex:1;height:8px;background:#1E3244;border-radius:4px;overflow:hidden}
+.bar-row .fill{height:100%;background:#F2B95D}.bar-row .fill.high{background:#F2555F}.bar-row .pct{width:42px;text-align:right}
+.split{display:flex;gap:18px}.split>div{flex:1}.split .big{font-size:29px;font-weight:700;color:#fff;line-height:1.2}.split .big small{font-size:14px;color:#AFC1D2}
+.split .cap{color:#AFC1D2;font-size:12px}
+.flight{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:#DCE6F1;padding:5px 0;border-bottom:1px solid #1E3244}
+.flight b{color:#F2B95D}.flight span.dim{color:#8FA5B8}
 .footnote{color:#6F8598;font-size:11.5px;text-align:right;margin-top:10px}
 </style>
 """
@@ -86,6 +100,47 @@ def title(text: str, subtitle: str = "") -> None:
 
 def card_title(text: str, note: str = "") -> None:
     html(f'<div class="card-title">{escape(text)}</div>' + (f'<div class="card-note">{escape(note)}</div>' if note else ""))
+
+
+def heat_color(share: float) -> str:
+    """Scale is capped at 40%: these conditions are rare, so the full 100% range would look flat."""
+    stops = [(27, 43, 42), (110, 106, 42), (232, 163, 61), (224, 96, 60), (208, 31, 79)]
+    position = min(share / 0.4, 1) * (len(stops) - 1)
+    low = min(int(position), len(stops) - 2)
+    mix = position - low
+    rgb = [round(a + (b - a) * mix) for a, b in zip(stops[low], stops[low + 1])]
+    return f"rgb({rgb[0]},{rgb[1]},{rgb[2]})"
+
+
+def heatmap(columns: list[str], values: dict[str, list[float | None]], highlight: int | None) -> str:
+    def cls(index):
+        return ' class="on"' if index == highlight else ""
+
+    head = "<th></th>" + "".join(f"<th{cls(i)}>{escape(c)}</th>" for i, c in enumerate(columns))
+    rows = ""
+    for label, shares in values.items():
+        cells = "".join(
+            f'<td{cls(i)} style="background:{"#1E3244" if s is None else heat_color(s)}">{"n/a" if s is None else f"{s:.0%}"}</td>'
+            for i, s in enumerate(shares)
+        )
+        rows += f"<tr><td>{escape(label)}</td>{cells}</tr>"
+    return (
+        f'<table class="heat"><tr>{head}</tr>{rows}</table><div class="scale"></div>'
+        '<div class="scale-labels"><span>0%</span><span>10%</span><span>20%</span><span>30%</span><span>40%+</span></div>'
+    )
+
+
+def bars(values: dict[str, float | None]) -> str:
+    rows = ""
+    for label, share in values.items():
+        width = 0 if share is None else min(share / 0.4, 1) * 100
+        shown = "n/a" if share is None else f"{share:.0%}"
+        tone = " high" if share is not None and share >= 0.2 else ""
+        rows += (
+            f'<div class="bar-row"><span class="name">{escape(label)}</span><span class="bar">'
+            f'<div class="fill{tone}" style="width:{width:.0f}%"></div></span><span class="pct">{shown}</span></div>'
+        )
+    return rows
 
 
 def grid(headers: list[str], rows: list[list[str]], highlight: int | None = None) -> str:
