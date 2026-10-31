@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from src.dashboard.data import SCORED_HORIZONS, Bundle
+from src.dashboard.data import SCORED_HORIZONS, Bundle, is_schedule_only
 from src.shared import AIRPORTS, airport_icao
 
 # Allowlist: a new producer column stays hidden until someone decides it is safe.
@@ -15,20 +15,23 @@ UNREVEALED_FLIGHT_COLUMNS = [
     "scheduled_arr_utc", "coverage",
 ]
 OUTCOME_COLUMNS = ["dep_delay_min", "arr_delay_min", "cancelled", "diverted"]
+# Encodings documented in the capacity manifest's feature_semantics.
+VISIBILITY_OVER_6_SM = 6.01
+NO_CEILING_FT = 30000
 
 
 @dataclass(frozen=True)
 class Airport:
     icao: str
     iata: str
-    heading: int
+    heading: int | None
 
 
 def resolve_airport(code: str) -> Airport | None:
     """Find a registry airport by ICAO or IATA; None means unsupported, not a default."""
     icao = airport_icao(code)
     info = AIRPORTS.get(icao)
-    return Airport(icao, info["iata"], info["heading"]) if info else None
+    return Airport(icao, info["iata"], info.get("heading")) if info else None
 
 
 @dataclass(frozen=True)
@@ -111,6 +114,30 @@ def scored_flights(flights: pd.DataFrame, snapshot: Snapshot) -> pd.DataFrame:
     ]
 
 
+def model_label(model_kind: str) -> str:
+    return "Schedule-only" if is_schedule_only(model_kind) else str(model_kind).replace("_", " ").capitalize()
+
+
+def model_mix(predictions: pd.DataFrame) -> dict[str, int]:
+    return predictions["model_kind"].map(model_label).value_counts().to_dict()
+
+
+def flagged(rows: pd.DataFrame) -> pd.Series:
+    """Each row carries its own model's threshold, so compare row by row."""
+    return rows["probability_severe_delay"] >= rows["threshold"]
+
+
+def busiest_cutoffs(index: pd.DataFrame, airport: str, horizon: int, count: int = 5) -> pd.DataFrame:
+    rows = index[(index["airport"] == airport) & (index["horizon_hours"] == horizon) & (index["predictions"] > 0)]
+    return rows.sort_values(["predictions", "asof_utc"], ascending=[False, True]).head(count)
+
+
+def scored_counts(index: pd.DataFrame, airport: str, horizon: int) -> pd.Series:
+    """Flights scored per cutoff, zero where the exact key has no predictions."""
+    rows = index[(index["airport"] == airport) & (index["horizon_hours"] == horizon)]
+    return rows.set_index("asof_utc")["predictions"].astype(int)
+
+
 def planning_movements(
     flights: pd.DataFrame, airport: Airport, asof_utc: pd.Timestamp, window_hours: int
 ) -> dict:
@@ -188,6 +215,22 @@ def weather_feature_row(bundle: Bundle, snapshot: Snapshot) -> tuple[pd.Series |
     if row["available_at_utc"] > snapshot.asof_utc:
         return None, "Weather row became available after the cutoff, so replay excludes it."
     return row, None
+
+
+def weather_display(name: str, row: pd.Series) -> str:
+    """Render a feature for reading, decoding values that are markers rather than measurements."""
+    value = row[name]
+    if pd.isna(value):
+        return "Unknown"
+    if name in ("precip_flag", "thunderstorm_flag"):
+        return "Forecast" if value == 1 else "Not forecast"
+    if name == "visibility_sm" and value == VISIBILITY_OVER_6_SM:
+        return "Over 6"
+    if name == "ceiling_ft_agl" and value == NO_CEILING_FT:
+        return "No ceiling"
+    if name == "wind_gust_kt" and value == row["wind_speed_kt"]:
+        return "No gust"
+    return f"{value:,.0f}" if name == "ceiling_ft_agl" else f"{value:.1f}"
 
 
 def bulletins_as_of(weather: pd.DataFrame, snapshot: Snapshot) -> pd.DataFrame:
@@ -326,6 +369,64 @@ def history_rollup(metrics: pd.DataFrame, period: str = "W") -> pd.DataFrame:
     return pooled
 
 
+def aar_trend(forecast: pd.DataFrame | None, airport: Airport, horizon: int) -> pd.DataFrame:
+    """Held-out hours with a genuine observed AAR; empty until labels are published."""
+    if forecast is None or "aar_observed" not in forecast:
+        return pd.DataFrame()
+    rows = forecast[
+        (forecast["airport"] == airport.icao)
+        & (forecast["horizon_hours"] == horizon)
+        & (forecast["label_kind"] == "facility_aar")
+        & forecast["aar_observed"].notna()
+    ]
+    return rows.sort_values("target_hour_utc")
+
+
+def reporting_traffic(
+    traffic: pd.DataFrame, airport: Airport, asof_utc: pd.Timestamp, window_hours: int, reveal: bool
+) -> pd.DataFrame:
+    """Hourly counts in the window. Missing rows stay missing rather than becoming zero."""
+    hours = pd.date_range(asof_utc, periods=window_hours, freq="h")
+    rows = traffic[(traffic["airport"] == airport.icao) & traffic["hour_utc"].isin(hours)]
+    columns = ["hour_utc", "direction", "scheduled_count"] + (["actual_count"] if reveal else [])
+    return rows.sort_values(["hour_utc", "direction"])[columns]
+
+
+def storm_table(cohorts: list[dict]) -> pd.DataFrame:
+    """One row per cohort, airport and lead, with model and baseline side by side."""
+    rows = pd.DataFrame(cohorts)
+    key = ["cohort", "airport", "horizon_hours"]
+    wide = rows.pivot(index=key, columns="metric", values=["value", "baseline_value"])
+    wide.columns = [metric if kind == "value" else f"{metric} (baseline)" for kind, metric in wide.columns]
+    wide = wide[sorted(wide.columns)].astype(float)
+    context = [c for c in ("n", "severe_n", "reason") if c in rows]
+    return rows.groupby(key)[context].first().join(wide).reset_index()
+
+
+def calibration_note(document: dict | None) -> str | None:
+    experiment = (document or {}).get("calibration_experiment") or {}
+    if experiment.get("status") != "available":
+        return None
+    gain = experiment.get("validation_relative_gain")
+    outcome = "Adopted" if experiment.get("adopted") else "Not adopted, so probabilities are uncalibrated"
+    return (
+        f"Calibration tested on validation data only: {experiment.get('method')}. {outcome} "
+        f"({gain:.2%} validation Brier gain). Rule: {experiment.get('decision_rule')}."
+    )
+
+
+def failure_cards(*documents: dict | None) -> list:
+    """Distinct failure cases; a case can appear in both the old and new fields."""
+    cards, seen = [], set()
+    for document in documents:
+        for case in find_failure_cases(document):
+            key = (case.get("flight_id"), case.get("asof_utc")) if isinstance(case, dict) else repr(case)
+            if key not in seen:
+                seen.add(key)
+                cards.append(case)
+    return cards
+
+
 def find_failure_cases(document: dict | None) -> list:
     """Failure examples may sit anywhere in nested evaluation results."""
     found = []
@@ -334,7 +435,7 @@ def find_failure_cases(document: dict | None) -> list:
         if isinstance(node, dict):
             for key, value in node.items():
                 if "failure" in str(key).lower():
-                    found.append(value)
+                    found.extend(value if isinstance(value, list) else [value])
                 else:
                     walk(value)
         elif isinstance(node, list):

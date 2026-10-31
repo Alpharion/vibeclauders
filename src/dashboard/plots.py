@@ -13,8 +13,7 @@ from src.shared import AIRPORTS
 
 REFERENCE_PATH = Path(__file__).resolve().parents[2] / "data" / "reference" / "airports.json"
 
-SERIES = ["#3987e5", "#d95926"]
-AIRPORT_COLORS = dict(zip(AIRPORTS, SERIES))
+SERIES = ["#3987e5", "#d95926", "#199e70"]
 INK = "#f0efec"
 INK_SECONDARY = "#c3c2b7"
 GRID = "#3a3a37"
@@ -40,7 +39,7 @@ def _layout(figure: go.Figure, title: str, y_title: str, height: int = 320) -> g
     return figure
 
 
-def risk_bars(rows: pd.DataFrame, threshold: float) -> go.Figure:
+def risk_bars(rows: pd.DataFrame, threshold: float | None) -> go.Figure:
     ordered = rows.sort_values("probability_severe_delay")
     labels = ordered["flight_id"].str[:8]
     if "flight_number" in ordered:
@@ -55,10 +54,11 @@ def risk_bars(rows: pd.DataFrame, threshold: float) -> go.Figure:
             hovertemplate="%{y}: %{x:.1%}<extra></extra>",
         )
     )
-    figure.add_vline(
-        x=threshold, line={"color": INK, "dash": "dot", "width": 2},
-        annotation_text=f"Threshold {threshold:.3f}", annotation_font_color=INK,
-    )
+    if threshold is not None:  # Mixed models have one threshold each; the table flags them.
+        figure.add_vline(
+            x=threshold, line={"color": INK, "dash": "dot", "width": 2},
+            annotation_text=f"Threshold {threshold:.3f}", annotation_font_color=INK,
+        )
     _layout(figure, "Severe-delay probability, flights in target hour", "", 150 + 26 * len(rows))
     figure.update_layout(hovermode="closest")
     figure.update_xaxes(title="Probability of departure delay over 45 min", tickformat=".0%")
@@ -168,9 +168,22 @@ def route_map(routes: pd.DataFrame, selected_iata: str, points=None) -> tuple[go
     return figure, unmapped
 
 
+def aar_lines(rows: pd.DataFrame, icao: str, horizon: int) -> go.Figure:
+    figure = go.Figure()
+    for column, name, color in (
+        ("aar_observed", "Observed AAR", SERIES[0]), ("aar_pred", "Predicted AAR", SERIES[1])
+    ):
+        figure.add_scatter(
+            x=rows["target_hour_utc"], y=rows[column], name=name, mode="lines",
+            line={"color": color, "width": 2},
+        )
+    return _layout(figure, f"{icao}: held-out AAR at +{horizon} h", "Arrivals per hour")
+
+
 def trend_lines(rollup: pd.DataFrame, column: str, title: str, y_title: str, percent=False) -> go.Figure:
     figure = go.Figure()
-    for icao, color in AIRPORT_COLORS.items():
+    for index, icao in enumerate(AIRPORTS):
+        color = SERIES[index % len(SERIES)]
         rows = rollup[rollup["airport"] == icao]
         if rows.empty:
             continue
