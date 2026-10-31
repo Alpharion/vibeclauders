@@ -109,3 +109,7 @@ Compare's illustrative arrival scenario reconstructs schedule demand, estimates 
 | Time discipline | 5% | Three-minute script, recorded rehearsal and actual submission receipt | Human timing and submission remain to be recorded. |
 
 No judge score or supervisor sign-off is inferred. Current automated results belong in `output/delivery/verification.json`, matched to the final runtime fingerprint and archive receipt. The coordinator is rerunning the fresh-environment release gate after the explanation changes; this assessment does not preclaim its test count or outcome. Real browser/map checks, rehearsal duration, submission and human acceptance remain separate entries in `SUBMISSION-CHECKLIST.md`.
+
+## Completed reassessment checks
+
+Final stable-tree extracted release: **507 tests passed**, risk verifier passed, 13 app smoke cases passed with all five tabs visited for each of the 12 airport/lead/reveal combinations. Runtime fingerprint: `15bb9dd10321faad46cb4509e723843598c9d3a002bb9826dab6ad66a49f2bdd`. The earlier check was superseded after correcting the DST explanation; its tests passed but the runtime-change guard correctly blocked that snapshot. Final publication is unchanged and the model reproduction report matches all 30,477 forecasts and metrics. Public downloads and new production training were not repeated.

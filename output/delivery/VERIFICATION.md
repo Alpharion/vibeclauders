@@ -1,15 +1,15 @@
 # Current delivery verification
 
-UTC: 2026-10-31T08:09:58.360651+00:00
+UTC: 2026-10-31T08:17:56.975083+00:00
 Status: **verified**; scope: **combined_runtime**; manual acceptance: **pending**.
-Runtime fingerprint: `35e1dc89978133687d5d09bb1b3eff8b13572d09273ce5d7f815c682ca4779cc`.
+Runtime fingerprint: `15bb9dd10321faad46cb4509e723843598c9d3a002bb9826dab6ad66a49f2bdd`.
 
 Checks ran in a fresh package extraction.
 
 | Check | Exit | Result |
 |---|---:|---|
 | risk_verify | 0 | "See verification.json" |
-| full_suite | 0 | {"tests": 506, "failures": 0, "errors": 0, "skipped": 0, "passed": 506} |
+| full_suite | 0 | {"tests": 507, "failures": 0, "errors": 0, "skipped": 0, "passed": 507} |
 | app_smoke | 0 | "passed" |
 
 ## Release blockers

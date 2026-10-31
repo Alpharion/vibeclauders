@@ -2,27 +2,27 @@
   "schema_version": "1.0",
   "status": "verified",
   "scope": "combined_runtime",
-  "generated_at_utc": "2026-10-31T08:09:58.360651+00:00",
+  "generated_at_utc": "2026-10-31T08:17:56.975083+00:00",
   "source": {
-    "commit": "afccac0eeccbdc8b44842fd9d06d1b9010eb3791",
-    "dirty": false,
-    "status": "",
+    "commit": "7e90aae9e57a2a1943e7e5dd83b5e0e09b35ec82",
+    "dirty": true,
+    "status": "M output/delivery/VERIFICATION.md\n M output/delivery/verification.json",
     "branch": "codex/member-1-accuracy-integration"
   },
-  "runtime_fingerprint": "35e1dc89978133687d5d09bb1b3eff8b13572d09273ce5d7f815c682ca4779cc",
+  "runtime_fingerprint": "15bb9dd10321faad46cb4509e723843598c9d3a002bb9826dab6ad66a49f2bdd",
   "runtime_unchanged": true,
   "tested_archive": {
-    "archive": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-a6ebxubq\\tested.zip",
-    "sha256": "3b328384ad39801950bed638e0fa6052617955537dae5bface69c735a75aabdc",
-    "payload_files": 184,
-    "archive_bytes": 32477664,
+    "archive": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-31izlvem\\tested.zip",
+    "sha256": "aff08be577c765a2bddc9d96ee597dd06220a1e024ca64dc904cbe057ca02557",
+    "payload_files": 187,
+    "archive_bytes": 32491408,
     "source": {
-      "commit": "afccac0eeccbdc8b44842fd9d06d1b9010eb3791",
-      "dirty": false,
-      "status": "",
+      "commit": "fba999df3048e6ad41ac4f3e6daf4e259b847446",
+      "dirty": true,
+      "status": "M src/dashboard/readiness.py\n M tests/dashboard/test_readiness.py\n?? handover/challenge-criteria-assessment.md\n?? handover/model-reassessment-evidence.json\n?? src/dashboard/processing_evidence.py",
       "branch": "codex/member-1-accuracy-integration"
     },
-    "runtime_fingerprint": "35e1dc89978133687d5d09bb1b3eff8b13572d09273ce5d7f815c682ca4779cc",
+    "runtime_fingerprint": "15bb9dd10321faad46cb4509e723843598c9d3a002bb9826dab6ad66a49f2bdd",
     "verification_status": "unverified_or_stale_execution_evidence",
     "producer_runs": [
       "m1-20261031T065014Z-eacdd5",
@@ -40,8 +40,8 @@
         "verify"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 11.19,
-      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-a6ebxubq\\risk_verify.log",
+      "elapsed_seconds": 3.09,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-31izlvem\\risk_verify.log",
       "log_sha256": "9de83d24e4d4b385b14018ebc56f605deb56ee465060b822e7c38b418c54a6c5"
     },
     {
@@ -53,20 +53,20 @@
         "-q",
         "--tb=short",
         "--basetemp",
-        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-a6ebxubq\\pytest",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-31izlvem\\pytest",
         "--junitxml",
-        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-a6ebxubq\\pytest.xml"
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-31izlvem\\pytest.xml"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 81.7,
-      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-a6ebxubq\\full_suite.log",
-      "log_sha256": "ed072715666bfb1ad8b4d66a51acf450759aee1b38f557906c65861dcd945635",
+      "elapsed_seconds": 79.96,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-31izlvem\\full_suite.log",
+      "log_sha256": "92c9fe8b76b067c2b001a68c9cfc180f3016baeea1ee8a4dabab60ff608e5b16",
       "test_counts": {
-        "tests": 506,
+        "tests": 507,
         "failures": 0,
         "errors": 0,
         "skipped": 0,
-        "passed": 506
+        "passed": 507
       }
     },
     {
@@ -75,12 +75,12 @@
         "-m",
         "tools.delivery.smoke_app",
         "--report",
-        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-a6ebxubq\\app.json"
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-31izlvem\\app.json"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 91.06,
-      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-a6ebxubq\\app_smoke.log",
-      "log_sha256": "10cb180cf8ba60add03bee999a215702095b78d26cc5f762ef5ceea5a446764d",
+      "elapsed_seconds": 91.86,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-31izlvem\\app_smoke.log",
+      "log_sha256": "56ae7c7cd3d83a766264f73430e6f5a079b33fa5efb8f8a6a24ceb21c0d9eed4",
       "app_result": {
         "status": "passed",
         "checks": [
