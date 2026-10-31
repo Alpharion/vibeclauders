@@ -1,5 +1,7 @@
 # Challenge 5 delivery plan - contract v2
 
+> Historical architecture plan. For current ownership and deliverables, use `handover/sprint-30min/README.md`, `handover/JUDGING-DEMO.md` and `handover/SUBMISSION-CHECKLIST.md`. The user clarified that organiser AAR labels are unavailable: implement a separately labelled model capacity estimate with explicit assumptions/proxy evaluation. Earlier label-acquisition gates below do not block that work. No current completion claim follows from this plan.
+
 ## 1. Outcome and operating model
 
 Build a local decision-support prototype for an airport flow-management duty officer who must anticipate weather-related capacity reductions and severe departure delays. At an explicit historical cutoff, show the evidence available then, predicted hourly arrival acceptance rate (AAR), departure-delay probabilities, historical context, and recommendations requiring human review. No operational commands are sent.

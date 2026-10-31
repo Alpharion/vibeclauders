@@ -1,5 +1,7 @@
 # Team handoff and supervisor guide
 
+> Current work uses the two-member [30-minute handoff](sprint-30min/README.md), [judging demo](JUDGING-DEMO.md) and [submission checklist](SUBMISSION-CHECKLIST.md). Member 1 owns capacity estimation and the frontend; Member 2 owns delivery/readiness. No organiser AAR labels are expected. The original three-member allocation below is historical, not a new assignment or a reason to wait for labels.
+
 ## Responsibility split
 
 The original chat is **Member 2**, responsible for flight-risk modelling, arrival queue analysis and evidence-supported recommendations. Two separate agents receive the following handoffs and are monitored by their respective human team members:

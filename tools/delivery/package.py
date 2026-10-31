@@ -71,7 +71,8 @@ def collect(root: Path) -> tuple[dict[str, bytes], list[dict]]:
             if path.is_file() and not excluded(path.relative_to(root)):
                 add(path)
     add(root / "output/delivery/build-package.py")
-    for name in ("verification.json", "VERIFICATION.md", "frozen-baseline.json"):
+    for name in ("verification.json", "VERIFICATION.md", "frozen-baseline.json",
+                 "controller-brief.json", "CONTROLLER_BRIEF.md"):
         path = root / "output/delivery" / name
         if path.is_file():
             add(path)

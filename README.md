@@ -4,7 +4,7 @@ A local Streamlit decision-support prototype for an airport flow planner (Airbus
 
 ## Current delivery baseline
 
-Implementation baseline: `737b468` (31 October 2026); handoff documents: `c01500a`. This Member 2 branch changes delivery tooling and evidence only. It does not consume Member 1's new work.
+Implementation baseline: `737b468` (31 October 2026); original delivery contribution: `24d834b`. The readiness follow-up adds automated release verification, a separate controller review briefing and judging instructions. It does not consume Member 1's new work or modify the frontend, producers or published models.
 
 **Known frontend regression:** the new reporting-carrier chart uses an annotated Plotly line with a pandas Timestamp and can raise a TypeError. Member 1 owns the fix. A verified package of this baseline is **not a fully working demo release**. See `output/delivery/VERIFICATION.md` and `verification.json` for measured results and verification scope.
 
@@ -67,3 +67,23 @@ Choose a fresh writable `--basetemp` per test invocation on restricted Windows e
 ## Work ownership and release
 
 Use `handover/sprint-30min/README.md`, the two member prompts, `INTERFACE.md` and `ACCEPTANCE.md`. Older plans and handoffs are historical checkpoints where they conflict with that clarified sprint. Member 1 owns model estimation plus its existing-panel integration; Member 2 owns packaging/evidence. Supervisors merge in either order, rerun combined checks and rebuild the final package. No estimate or frontend fix is claimed complete by this branch.
+
+## Controller review and judging
+
+Generate a separate evidence-backed review brief without changing dashboard or queue outputs:
+
+```text
+python -m tools.delivery.controller_brief --airport KATL --asof 2025-07-12T20:00:00Z --lead 3
+```
+
+Read `output/delivery/CONTROLLER_BRIEF.md` and its JSON evidence. It ranks sampled departures crossing their own published risk thresholds and suggests human review of weather and airline/inbound-aircraft status. It reads no observed delay labels, requires exact snapshot matches, and does not issue metering, routing or rescheduling instructions. Empty coverage is unavailable; zero flags is not an airport all-clear.
+
+The [three-minute demo](handover/JUDGING-DEMO.md) includes a real false alarm, measured baseline comparison and explicit capacity-estimation limitations. The [submission checklist](handover/SUBMISSION-CHECKLIST.md) records release and manual review requirements without invented sign-off.
+
+## Repeatable combined verification
+
+```text
+python -m tools.delivery.verify_release
+```
+
+This tests a fresh package extraction and requires the capacity-estimate publication. It records actual results in `output/delivery/verification.json` and `VERIFICATION.md`; failed tests, app errors or changing runtime inputs return a nonzero exit and do not replace the last release ZIP. `--baseline` permits absence of the estimator but never waives failures. Successful automatic checks still require browser review and supervisor acceptance. A clean dependency install is not tested by this command.

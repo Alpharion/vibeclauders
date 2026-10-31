@@ -1,5 +1,7 @@
 # Challenge 5 remaining work: three parallel workstreams
 
+> Historical work allocation and baseline. The current two-member scope is in `handover/sprint-30min/README.md`; current judging and release steps are in `handover/JUDGING-DEMO.md` and `handover/SUBMISSION-CHECKLIST.md`. Organiser AAR acquisition is not a prerequisite for the separately labelled capacity estimator. Preserve the historical evidence below rather than interpreting its old gates as current blockers.
+
 Baseline: `origin/main` at `783639a` plus the uncommitted dashboard on branch `a`, checked on 31 October 2026. This plan covers remaining work only and replaces the schedule in `implementation-plan.md`. The rules in `implementation-plan.md` and `handover/shared-contract.md` still apply.
 
 Times are hours from the team's restart (T+0). Change them if the submission deadline requires it.

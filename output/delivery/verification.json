@@ -1,22 +1,28 @@
 {
   "schema_version": "1.0",
-  "status": "baseline_verified_with_known_frontend_failure",
-  "generated_at_utc": "2026-10-31T07:25:02.480791+00:00",
-  "baseline_implementation_commit": "737b46852c2d4b98e7c01e68ed7e3888f6542c5c",
-  "handoff_commit": "c01500a3bb247e7ab7882ae3d45e4b266d1b028e",
-  "runtime_fingerprint": "11cd243b0efb97228cdc58733266123f26acfbd86454ee0013b85e3702796bb6",
+  "status": "failed",
+  "scope": "combined_runtime",
+  "generated_at_utc": "2026-10-31T07:33:53.422653+00:00",
+  "source": {
+    "commit": "24d834bbb33e3e8ccc534a87df03dfd41f9d51be",
+    "dirty": true,
+    "status": "M README.md\n M tools/delivery/package.py\n M tools/delivery/smoke_app.py\n?? handover/JUDGING-DEMO.md\n?? handover/SUBMISSION-CHECKLIST.md\n?? output/delivery/CONTROLLER_BRIEF.md\n?? output/delivery/controller-brief.json\n?? tests/delivery/test_readiness.py\n?? tools/delivery/controller_brief.py\n?? tools/delivery/verify_release.py",
+    "branch": "codex/challenge5-readiness"
+  },
+  "runtime_fingerprint": "1e1f9ec7ef3ca70a8d0ffd8d407ada5248ecec10cb6144460c7729aa26031976",
+  "runtime_unchanged": true,
   "tested_archive": {
-    "archive": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-tested.zip",
-    "sha256": "4960726d4423c995a3e640d8f7604f9fbe1875ebfbed4d82c2cf4abb61989e9f",
-    "payload_files": 128,
-    "archive_bytes": 32050583,
+    "archive": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\tested.zip",
+    "sha256": "0f88374199fc6e38955467992a7e078c3002773a552a299936f10dedbbb9e6bf",
+    "payload_files": 137,
+    "archive_bytes": 32074421,
     "source": {
-      "commit": "c01500a3bb247e7ab7882ae3d45e4b266d1b028e",
+      "commit": "24d834bbb33e3e8ccc534a87df03dfd41f9d51be",
       "dirty": true,
-      "status": "M output/delivery/build-package.py\n?? output/delivery/frozen-baseline.json\n?? tests/delivery/test_package.py\n?? tools/delivery/__init__.py\n?? tools/delivery/package.py\n?? tools/delivery/smoke_app.py",
-      "branch": "codex/member-2-delivery-30min"
+      "status": "M README.md\n M tools/delivery/package.py\n M tools/delivery/smoke_app.py\n?? handover/JUDGING-DEMO.md\n?? handover/SUBMISSION-CHECKLIST.md\n?? output/delivery/CONTROLLER_BRIEF.md\n?? output/delivery/controller-brief.json\n?? tests/delivery/test_readiness.py\n?? tools/delivery/controller_brief.py\n?? tools/delivery/verify_release.py",
+      "branch": "codex/challenge5-readiness"
     },
-    "runtime_fingerprint": "11cd243b0efb97228cdc58733266123f26acfbd86454ee0013b85e3702796bb6",
+    "runtime_fingerprint": "1e1f9ec7ef3ca70a8d0ffd8d407ada5248ecec10cb6144460c7729aa26031976",
     "verification_status": "unverified_or_stale_execution_evidence",
     "producer_runs": [
       "m1-20261031T065014Z-eacdd5",
@@ -24,7 +30,325 @@
       "0949771a54bb4e49b4e215528eb5d46b"
     ]
   },
-  "execution_directory": "Fresh member2-extracted-tested/challenge-5-implementation extraction, outside the source checkout",
+  "checks": [
+    {
+      "name": "risk_verify",
+      "command": [
+        "-m",
+        "src.flight_risk",
+        "verify"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.8,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\risk_verify.log",
+      "log_sha256": "9de83d24e4d4b385b14018ebc56f605deb56ee465060b822e7c38b418c54a6c5"
+    },
+    {
+      "name": "full_suite",
+      "command": [
+        "-m",
+        "pytest",
+        "tests",
+        "-q",
+        "--tb=short",
+        "--basetemp",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\pytest",
+        "--junitxml",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\pytest.xml"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 53.03,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\full_suite.log",
+      "log_sha256": "6ab38d70488ad5fa491d9933d5f3f1ac287da11341fe92c2de87fb20b1e0008e",
+      "test_counts": {
+        "tests": 347,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 346
+      }
+    },
+    {
+      "name": "app_smoke",
+      "command": [
+        "-m",
+        "tools.delivery.smoke_app",
+        "--report",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\app.json"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 5.53,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\app_smoke.log",
+      "log_sha256": "50bf920dee991c3b85187241c38cc58cbc71663e162334c5eafdc4f7c04993b9",
+      "app_result": {
+        "status": "failed",
+        "checks": [
+          {
+            "case": "initial",
+            "exceptions": [
+              "Addition/subtraction of integers and integer-arrays with Timestamp is no longer supported.  Instead of adding/subtracting `n`, use `n * obj.freq`"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "blockers": [
+    "full_suite exited 1",
+    "app_smoke exited 1",
+    "Usable capacity_estimate publication with all four payloads is required"
+  ],
+  "publications": [
+    {
+      "manifest": "artifacts/capacity/manifest.json",
+      "run_id": "m1-20261031T065014Z-eacdd5",
+      "status": "partial",
+      "payloads": [
+        "artifacts/capacity/data_access.json",
+        "artifacts/capacity/evaluation.json",
+        "artifacts/capacity/forecast.parquet",
+        "artifacts/capacity/throughput_evaluation.json",
+        "artifacts/capacity/throughput_forecast.parquet",
+        "artifacts/capacity/traffic_hourly.parquet",
+        "artifacts/capacity/weather.parquet",
+        "artifacts/capacity/weather_features.parquet",
+        "data/processed/flights.parquet",
+        "data/processed/provenance.json",
+        "data/processed/storm_events.parquet"
+      ],
+      "capabilities": {
+        "canonical_flights": {
+          "status": "available",
+          "coverage": "sample"
+        },
+        "weather_decoded": {
+          "status": "available"
+        },
+        "weather_features": {
+          "status": "available",
+          "feature_semantics": {
+            "crosswind_kt": "Max |sustained crosswind| (kt) vs fixed runway heading across prevailing TAF groups overlapping the target hour; null if any overlapping group has unknown direction with wind.",
+            "tailwind_kt": "Max sustained tailwind magnitude (kt, >=0) vs runway heading; same aggregation/null rule.",
+            "wind_speed_kt": "Max prevailing forecast sustained wind (kt).",
+            "wind_gust_kt": "Max prevailing forecast gust (kt); equals sustained speed when no gust group is forecast.",
+            "visibility_sm": "Min prevailing forecast visibility (statute miles); TAF P6SM is encoded 6.01.",
+            "ceiling_ft_agl": "Min prevailing forecast ceiling (lowest BKN/OVC/VV, ft AGL); 30000 = no ceiling layer forecast.",
+            "temperature_c": "Latest METAR temperature available at cutoff (deg C) - observed, not forecast for target.",
+            "precip_flag": "1 if any prevailing group forecasts precipitation (RA/SN/DZ/PL/GR/GS/IC/UP/SG) at the station.",
+            "thunderstorm_flag": "1 if any prevailing group forecasts TS (including VCTS).",
+            "crosswind_upper_kt": "Upper bound of crosswind: unknown-direction groups count their full speed.",
+            "crosswind_gust_kt": "Max crosswind computed with gust speed.",
+            "frozen_precip_flag": "1 if any prevailing group forecasts frozen/freezing precipitation (SN/PL/FZ/IC/GS/SG).",
+            "cond_thunderstorm_flag": "1 if a TEMPO/PROB group overlapping the target hour forecasts TS.",
+            "cond_frozen_precip_flag": "1 if a TEMPO/PROB group overlapping the target hour forecasts frozen/freezing precipitation.",
+            "cond_min_visibility_sm": "Min visibility in overlapping TEMPO/PROB groups (null if none).",
+            "cond_min_ceiling_ft_agl": "Min ceiling in overlapping TEMPO/PROB groups that report sky cover.",
+            "cond_max_gust_kt": "Max gust/speed in overlapping TEMPO/PROB groups.",
+            "cond_max_probability": "Max PROB value (0-1) among overlapping PROB groups; null for TEMPO-only or none.",
+            "obs_*": "Latest METAR available at cutoff (persistence), age <= 2 h; obs_age_min gives its age."
+          }
+        },
+        "aar_forecast": {
+          "status": "unavailable",
+          "reason": "no genuine ASPM AAR export found in data/public/aspm/*.csv"
+        },
+        "arrival_demand": {
+          "status": "unavailable",
+          "reason": "Only sampled schedules exist; no complete as-of-cutoff demand for a named population."
+        },
+        "initial_backlog": {
+          "status": "unavailable",
+          "reason": "No observed queue state at cutoff and no validated reconstruction."
+        },
+        "eligible_flights": {
+          "status": "unavailable",
+          "reason": "No as-of flight state (airborne/ground) data."
+        },
+        "arrival_throughput_forecast": {
+          "status": "available",
+          "label_kind": "observed_reporting_carrier_arrivals",
+          "not_aar": "Forecast of observed reporting-carrier arrivals per hour (throughput). NOT the facility Airport Arrival Rate (AAR): counts are limited by demand, by BTS coverage and by upstream flow programmes, so they do not measure runway capacity. Never report this as AAR or AAR RMSE.",
+          "team_agreement": {
+            "status": "pending",
+            "required_by": "parallel-plan section 7 (all three members at Gate 2)",
+            "note": "Built at Member 1's request; Member 3 should not present it until agreement is recorded."
+          },
+          "reason": null
+        },
+        "traffic_hourly": {
+          "status": "available",
+          "months": [
+            "2023-01",
+            "2023-02",
+            "2023-03",
+            "2023-04",
+            "2023-05",
+            "2023-06",
+            "2023-07",
+            "2023-08",
+            "2023-09",
+            "2023-10",
+            "2023-11",
+            "2023-12",
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04",
+            "2024-05",
+            "2024-06",
+            "2024-07",
+            "2024-08",
+            "2024-09",
+            "2024-10",
+            "2024-11",
+            "2024-12",
+            "2025-01",
+            "2025-02",
+            "2025-03",
+            "2025-04",
+            "2025-05",
+            "2025-06",
+            "2025-07"
+          ],
+          "flight_audit": {
+            "input_rows": 3255141,
+            "flight_key_impl": "src.shared.flight_key",
+            "excluded_out_of_date_range": 0,
+            "excluded_no_selected_airport": 0,
+            "rows_touching_selected_airports": 3255141,
+            "excluded_invalid_schedule_fields": 2,
+            "excluded_nonexistent_local_time": 0,
+            "excluded_unresolved_arrival_date": 41,
+            "flagged_dst_ambiguous": 5,
+            "flagged_crs_2400": 0,
+            "collapsed_exact_duplicates": 0,
+            "excluded_conflicting_duplicate_keys": 0,
+            "published_rows": 3255098,
+            "unknown_cancellation_status": 0,
+            "missing_dep_delay_noncancelled": 0,
+            "coverage_by_airport": {
+              "ATL": {
+                "departures": 860406,
+                "arrivals": 860267,
+                "departures_by_year": {
+                  "2023": 336463,
+                  "2024": 341910,
+                  "2025": 182033
+                },
+                "arrivals_by_year": {
+                  "2023": 336450,
+                  "2024": 341801,
+                  "2025": 182016
+                }
+              },
+              "DFW": {
+                "departures": 783963,
+                "arrivals": 783907,
+                "departures_by_year": {
+                  "2023": 285243,
+                  "2024": 313582,
+                  "2025": 185138
+                },
+                "arrivals_by_year": {
+                  "2023": 285217,
+                  "2024": 313567,
+                  "2025": 185123
+                }
+              }
+            },
+            "coverage_note": "Sampled flights; not complete airport demand. Movements: a flight between two selected airports counts once per airport."
+          },
+          "by_airport": {
+            "KATL": {
+              "arrival": {
+                "hours": 22631,
+                "scheduled_total": 860227,
+                "actual_total": 848808,
+                "median_scheduled_per_hour": 45.0,
+                "max_scheduled_per_hour": 112
+              },
+              "departure": {
+                "hours": 22631,
+                "scheduled_total": 860406,
+                "actual_total": 851074,
+                "median_scheduled_per_hour": 45.0,
+                "max_scheduled_per_hour": 96
+              }
+            },
+            "KDFW": {
+              "arrival": {
+                "hours": 22631,
+                "scheduled_total": 783882,
+                "actual_total": 763764,
+                "median_scheduled_per_hour": 31.0,
+                "max_scheduled_per_hour": 98
+              },
+              "departure": {
+                "hours": 22631,
+                "scheduled_total": 783963,
+                "actual_total": 767406,
+                "median_scheduled_per_hour": 38.0,
+                "max_scheduled_per_hour": 100
+              }
+            }
+          },
+          "early_spill_masked_hours": 2,
+          "failed_months": [],
+          "coverage": "reporting_carriers",
+          "population": "BTS On-Time Reporting Carrier On-Time Performance: domestic scheduled flights of reporting carriers; excludes non-reporting airlines, cargo, general aviation, military and most international flights",
+          "use": "retrospective traffic context; never queue demand, never AAR"
+        },
+        "storm_annotation": {
+          "status": "available",
+          "use": "retrospective evaluation cohorts only"
+        }
+      }
+    },
+    {
+      "manifest": "artifacts/risk/decision_manifest.json",
+      "run_id": "a7b89e44c69449d1a7ecfbf0cb8ff3b5",
+      "status": "unavailable",
+      "payloads": [
+        "artifacts/risk/queue.parquet",
+        "artifacts/risk/recommendations.json"
+      ],
+      "capabilities": {}
+    },
+    {
+      "manifest": "artifacts/risk/manifest.json",
+      "run_id": "0949771a54bb4e49b4e215528eb5d46b",
+      "status": "partial",
+      "payloads": [
+        "artifacts/risk/evaluation.json",
+        "artifacts/risk/model.joblib",
+        "artifacts/risk/normalized_metrics.parquet",
+        "artifacts/risk/predictions.parquet"
+      ],
+      "capabilities": {
+        "schedule_risk": {
+          "status": "available",
+          "test_rows": 10604
+        },
+        "weather_risk": {
+          "status": "partial",
+          "weather_enhanced_prediction_rows": 10599,
+          "reason": "Weather model fitted, but held-out weather coverage is incomplete; no performance claim for missing snapshots"
+        },
+        "weather_model_evaluation": {
+          "status": "partial",
+          "matched_test_cohorts": 6
+        },
+        "normalized_observed_delays": {
+          "status": "available",
+          "requires_outcome_reveal": true
+        },
+        "storm_cohort_evaluation": {
+          "status": "available",
+          "use": "retrospective evaluation only"
+        }
+      }
+    }
+  ],
   "environment": {
     "python": "3.14.6",
     "packages": {
@@ -33,76 +357,14 @@
       "numpy": "2.4.6",
       "plotly": "6.7.0",
       "scikit-learn": "1.9.0",
-      "scipy": "1.18.0",
-      "pyarrow": "23.0.1",
-      "requests": "2.34.2",
-      "pytest": "9.0.3",
-      "joblib": "1.5.3"
+      "pytest": "9.0.3"
     }
   },
-  "checks": [
-    {
-      "name": "risk_verify",
-      "command": "python -m src.flight_risk verify",
-      "exit_code": 0,
-      "result": "10,604 predictions; 3,537 flights; KATL/KDFW; leads 3/6/12; model partial; decisions unavailable",
-      "local_log": "output/delivery/logs/risk_verify.log",
-      "log_sha256": "9de83d24e4d4b385b14018ebc56f605deb56ee465060b822e7c38b418c54a6c5"
-    },
-    {
-      "name": "risk_and_delivery_tests",
-      "command": "python -m pytest tests/flight_risk tests/delivery -q --basetemp=<fresh writable directory>",
-      "exit_code": 0,
-      "passed": 106,
-      "failed": 0,
-      "warning_count": 1,
-      "elapsed_seconds": 11.15,
-      "local_log": "output/delivery/logs/risk_and_delivery_tests.log",
-      "log_sha256": "0760c8b7983a4c03f4d7d334d1a45d9cbce5b574a643f7c3a633d284872da3fd"
-    },
-    {
-      "name": "full_suite",
-      "command": "python -m pytest tests -q --tb=short --basetemp=<fresh writable directory>",
-      "exit_code": 1,
-      "passed": 330,
-      "failed": 1,
-      "warning_count": 1,
-      "elapsed_seconds": 51.63,
-      "local_log": "output/delivery/logs/full_suite.log",
-      "log_sha256": "07d8077f7d2e26825a9291ee1d0373676b474401e76e7f3b85b5ffa15bfee67e"
-    },
-    {
-      "name": "real_artifact_app_smoke",
-      "command": "python -m tools.delivery.smoke_app",
-      "exit_code": 1,
-      "result": "Initial real-artifact app run reproduced inherited Plotly Timestamp exception; control matrix not reached",
-      "local_log": "output/delivery/logs/real_artifact_app_smoke.log",
-      "log_sha256": "5023eeb7fac082eceb3e4f5398a13d2752eb9724c04d970a4eb1353b26202d7c"
-    }
-  ],
-  "source_frozen_files_checked": 97,
-  "extracted_frozen_files_checked": 96,
-  "changed_source_frozen_files": [],
-  "changed_extracted_frozen_files": [],
-  "deliberately_excluded_frozen_files": [
-    "data/public/.gitignore"
-  ],
-  "known_inherited_failures": [
-    {
-      "test": "tests/dashboard/test_additions.py::test_actual_traffic_counts_need_reveal",
-      "file": "src/dashboard/plots.py:168",
-      "cause": "Plotly annotated add_vline performs unsupported pandas Timestamp addition",
-      "owner": "Member 1"
-    }
-  ],
-  "new_failures": [],
-  "other_member_new_outputs_used": false,
+  "manual_acceptance": "pending",
   "limitations": [
-    "This is delivery acceptance against the pinned baseline, not final demo acceptance.",
-    "App smoke stops on initial inherited chart exception; airport/lead/reveal matrix and browser tiles not verified.",
-    "Existing compatible environment used; no clean dependency installation or fresh public data acquisition.",
-    "Windows physical-core warning and sandbox temporary cleanup errors were separate from the reproducible chart failure.",
-    "Final documentation-complete package is rebuilt after this runtime test. Match runtime_fingerprint and check its own SHA256/manifest.",
-    "Verbose logs are local and excluded from package; summaries and their content hashes are recorded here."
+    "Runtime verification is not judge/supervisor acceptance or a claim of model accuracy.",
+    "Browser radar/basemap availability and the three-minute presentation require manual review.",
+    "No clean environment install, public data refresh, retraining or operational benefit simulation performed.",
+    "Baseline mode does not require the optional capacity estimate; it cannot certify the combined release."
   ]
 }

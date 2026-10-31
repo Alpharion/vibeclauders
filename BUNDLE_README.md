@@ -1,5 +1,7 @@
 # Building the portable replay package
 
+Run `python -m tools.delivery.verify_release` to test a combined snapshot before packaging. It requires Member 1's capacity-estimate publication and passing tests/app smoke. Failed checks return a nonzero exit and preserve the last release ZIP; a passing automated run still requires the human checks in `handover/SUBMISSION-CHECKLIST.md`. The judging script and companion controller brief are included in the package when present.
+
 Run `python output/delivery/build-package.py` from the repository root. The builder writes `output/delivery/challenge-5-implementation.zip` with matching `.sha256`, `.manifest.json` and `.receipt.json` files.
 
 The archive contains its own generated `BUNDLE_README.md` and `BUNDLE_MANIFEST.json`, reflecting the actual source commit/dirty state, present producer runs, payload hashes and matching execution evidence. The root-level `BUNDLE_MANIFEST.json` is a location guide, not an inventory for a previous package.
