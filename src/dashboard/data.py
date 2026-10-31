@@ -1,139 +1,460 @@
-"""Read-only artifact adapters and public current-weather retrieval."""
-from pathlib import Path
-from datetime import datetime, timezone
+"""Load published artifacts. A table is usable only after its manifest vouches for it."""
+from __future__ import annotations
+
+import hashlib
 import json
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from pathlib import Path
+
 import pandas as pd
-import requests
-import streamlit as st
-from src.shared import AIRPORTS, airport_icao, flight_key
 
-ROOT = Path(__file__).resolve().parents[2]
-PUBLIC_WEATHER = "https://aviationweather.gov/api/data"
+SCHEMA_VERSION = "2.0"
+SCORED_HORIZONS = (3, 6, 12)
+STATUSES = ("available", "partial", "unavailable")
+SNAPSHOT_KEY = ["airport", "asof_utc", "target_hour_utc", "horizon_hours"]
 
-def utc(series):
-    return pd.to_datetime(series, utc=True, errors="coerce")
 
-@st.cache_data(show_spinner=False)
-def airports():
-    path = ROOT / "data/reference/airports.json"
-    records = json.loads(path.read_text(encoding="utf-8"))["airports"] if path.exists() else []
-    lookup = {x["iata"]: x for x in records}
-    for icao, info in AIRPORTS.items():
-        lookup.setdefault(info["iata"], {"iata": info["iata"], "icao": icao, "name": info["name"], "latitude": info["lat"], "longitude": info["lon"], "timezone": info["timezone"]})
-    return lookup
+class ArtifactError(ValueError):
+    """An artifact exists but cannot be trusted."""
 
-def local_schedule(dates, values, zone):
-    """BTS HHMM schedules use local times, including 2400 for next midnight."""
-    values = pd.to_numeric(values, errors="coerce")
-    hours, minutes = values // 100, values % 100
-    valid = ((hours.between(0, 23) & minutes.between(0, 59)) | values.eq(2400))
-    naive = pd.to_datetime(dates, errors="coerce") + pd.to_timedelta(hours, unit="h") + pd.to_timedelta(minutes, unit="m")
-    return naive.where(valid).dt.tz_localize(zone, ambiguous="NaT", nonexistent="NaT").dt.tz_convert("UTC")
 
-@st.cache_data(show_spinner=False)
-def _sample_flights(path, stamp):
-    cols = ["FL_DATE", "OP_UNIQUE_CARRIER", "OP_CARRIER_FL_NUM", "ORIGIN", "DEST", "CRS_DEP_TIME", "CRS_ARR_TIME", "CRS_ELAPSED_TIME", "DEP_DELAY", "ARR_DELAY", "CANCELLED", "DIVERTED"]
-    raw = pd.read_csv(path, usecols=cols)
-    raw = raw[raw.ORIGIN.isin(["ATL", "DFW"]) | raw.DEST.isin(["ATL", "DFW"])].copy()
-    out = pd.DataFrame(index=raw.index)
-    out["flight_id"] = [flight_key(*row) for row in raw[["FL_DATE", "OP_UNIQUE_CARRIER", "OP_CARRIER_FL_NUM", "ORIGIN", "DEST", "CRS_DEP_TIME"]].itertuples(index=False, name=None)]
-    out["origin"], out["dest"] = raw.ORIGIN, raw.DEST
-    out["carrier"], out["flight_number"] = raw.OP_UNIQUE_CARRIER, raw.OP_CARRIER_FL_NUM.astype(str).str.removesuffix(".0")
-    lookup = airports()
-    out["scheduled_dep_utc"] = pd.Series(pd.NaT, index=out.index, dtype="datetime64[ns, UTC]")
-    for code, idx in raw.groupby("ORIGIN").groups.items():
-        zone = lookup.get(code, {}).get("timezone")
-        if zone and zone != "\\N":
-            out.loc[idx, "scheduled_dep_utc"] = local_schedule(raw.loc[idx, "FL_DATE"], raw.loc[idx, "CRS_DEP_TIME"], zone)
-    # Scheduled elapsed time resolves arrival-local midnight/day changes without using actuals.
-    out["scheduled_arr_utc"] = out.scheduled_dep_utc + pd.to_timedelta(raw.CRS_ELAPSED_TIME, unit="m")
-    for target, original in [("dep_delay_min", "DEP_DELAY"), ("arr_delay_min", "ARR_DELAY"), ("cancelled", "CANCELLED"), ("diverted", "DIVERTED")]:
-        out[target] = raw[original]
-    out["coverage"] = "sample"
-    out["source"] = "Challenge flight sample; reconstructed historical schedule"
-    return out.reset_index(drop=True)
+@dataclass(frozen=True)
+class TableSpec:
+    path: str
+    required: tuple[str, ...]
+    key: tuple[str, ...]
+    utc: tuple[str, ...] = ()
+    check: Callable[[pd.DataFrame], list[str]] | None = None
 
-@st.cache_data(show_spinner=False)
-def _read_table(path, stamp):
-    return pd.read_parquet(path)
 
-def artifact_table(relative, required=()):
-    path = ROOT / relative
-    if not path.exists():
-        return pd.DataFrame(), f"Not connected: {relative}"
+@dataclass
+class Capability:
+    name: str
+    status: str
+    reasons: list[str] = field(default_factory=list)
+    run_id: str | None = None
+
+
+@dataclass
+class Group:
+    """One producer publication: a manifest and the files it declares."""
+
+    manifest: dict | None = None
+    problems: dict[str, list[str]] = field(default_factory=dict)
+
+
+@dataclass
+class Bundle:
+    root: str
+    fingerprint: str
+    tables: dict[str, pd.DataFrame]
+    docs: dict[str, dict]
+    groups: dict[str, Group]
+    capabilities: list[Capability]
+
+    def table(self, name: str) -> pd.DataFrame | None:
+        return self.tables.get(name)
+
+    def problem(self, name: str) -> str:
+        for group in self.groups.values():
+            if name in group.problems:
+                return "; ".join(group.problems[name])
+        return f"{name} is not part of any loaded publication"
+
+    def capability(self, name: str) -> Capability:
+        return next(c for c in self.capabilities if c.name == name)
+
+
+def _check_snapshot(df: pd.DataFrame, horizons: tuple[int, ...] | None = None) -> list[str]:
+    problems = []
+    for column in ("asof_utc", "target_hour_utc"):
+        if not (df[column] == df[column].dt.floor("h")).all():
+            problems.append(f"{column} is off the hourly grid")
+    lead = pd.to_timedelta(df["horizon_hours"], unit="h")
+    if not (df["target_hour_utc"] == df["asof_utc"] + lead).all():
+        problems.append("target_hour_utc != asof_utc + horizon_hours")
+    if horizons and not df["horizon_hours"].isin(horizons).all():
+        problems.append(f"horizon_hours outside scored leads {horizons}")
+    return problems
+
+
+def _check_predictions(df: pd.DataFrame) -> list[str]:
+    problems = _check_snapshot(df, SCORED_HORIZONS)
+    for column in ("probability_severe_delay", "threshold"):
+        values = pd.to_numeric(df[column], errors="coerce")
+        if not values.between(0, 1).all():
+            problems.append(f"{column} has values outside [0, 1]")
+    return problems
+
+
+def _check_metrics(df: pd.DataFrame) -> list[str]:
+    problems = []
+    if (df["eligible_departures"] > df["scheduled_departures"]).any():
+        problems.append("eligible_departures exceeds scheduled_departures")
+    if (df["severe_departures"] > df["eligible_departures"]).any():
+        problems.append("severe_departures exceeds eligible_departures")
+    if (df["kind"] != "observed").any():
+        problems.append("normalized metrics must be kind='observed'")
+    return problems
+
+
+def _check_forecast(df: pd.DataFrame) -> list[str]:
+    problems = _check_snapshot(df)
+    if (pd.to_numeric(df["aar_pred"], errors="coerce").dropna() < 0).any():
+        problems.append("aar_pred is negative")
+    return problems
+
+
+PREDICTION_COLUMNS = (
+    "flight_id", *SNAPSHOT_KEY, "probability_severe_delay", "threshold", "model_kind",
+    "model_version", "run_id", "source_id", "coverage", "status",
+)
+METRIC_COLUMNS = (
+    "airport", "period_start_utc", "period_end_utc", "split", "scheduled_departures",
+    "cancelled_departures", "unknown_cancellation_departures", "missing_delay_labels",
+    "eligible_departures", "severe_departures", "severe_delay_rate",
+    "total_positive_delay_minutes", "delay_minutes_per_flight", "coverage", "source_id",
+    "kind", "requires_outcome_reveal",
+)
+QUEUE_COLUMNS = (
+    "airport", "asof_utc", "target_hour_utc", "direction", "demand_count", "start_backlog",
+    "served", "end_backlog", "capacity", "aar_pred", "status",
+)
+FORECAST_COLUMNS = (
+    *SNAPSHOT_KEY, "aar_pred", "aar_lower", "aar_upper", "status", "source", "source_id",
+    "label_kind", "features_available_at_utc", "model_train_end_utc",
+    "model_selection_end_utc", "run_id", "model_version", "coverage",
+)
+FLIGHT_COLUMNS = (
+    "flight_id", "origin", "dest", "carrier", "flight_number", "scheduled_dep_utc",
+    "scheduled_arr_utc", "dep_delay_min", "arr_delay_min", "cancelled", "diverted",
+    "coverage", "source_id",
+)
+WEATHER_COLUMNS = (
+    "airport", "issued_at_utc", "available_at_utc", "valid_from_utc", "valid_to_utc", "kind",
+    "condition", "probability", "bulletin_id", "source_id", "source", "wind_direction_deg",
+    "wind_speed_kt", "wind_gust_kt", "visibility_sm", "ceiling_ft_agl", "temperature_c",
+)
+WEATHER_FEATURES = (
+    "crosswind_kt", "tailwind_kt", "wind_speed_kt", "wind_gust_kt", "visibility_sm",
+    "ceiling_ft_agl", "temperature_c", "precip_flag", "thunderstorm_flag",
+)
+
+RISK_TABLES = {
+    "predictions": TableSpec(
+        "artifacts/risk/predictions.parquet", PREDICTION_COLUMNS,
+        ("flight_id", *SNAPSHOT_KEY), ("asof_utc", "target_hour_utc"), _check_predictions,
+    ),
+    "normalized_metrics": TableSpec(
+        "artifacts/risk/normalized_metrics.parquet", METRIC_COLUMNS,
+        ("airport", "period_start_utc"), ("period_start_utc", "period_end_utc"), _check_metrics,
+    ),
+}
+DECISION_TABLES = {
+    "queue": TableSpec(
+        "artifacts/risk/queue.parquet", QUEUE_COLUMNS,
+        ("airport", "asof_utc", "target_hour_utc", "direction"), ("asof_utc", "target_hour_utc"),
+    ),
+}
+CAPACITY_TABLES = {
+    "flights": TableSpec(
+        "data/processed/flights.parquet", FLIGHT_COLUMNS, ("flight_id",),
+        ("scheduled_dep_utc", "scheduled_arr_utc"),
+    ),
+    "weather": TableSpec(
+        "artifacts/capacity/weather.parquet", WEATHER_COLUMNS, (),
+        ("issued_at_utc", "available_at_utc", "valid_from_utc", "valid_to_utc"),
+    ),
+    "weather_features": TableSpec(
+        "artifacts/capacity/weather_features.parquet",
+        (*SNAPSHOT_KEY, "available_at_utc", "source_id", "status", *WEATHER_FEATURES),
+        tuple(SNAPSHOT_KEY), ("asof_utc", "target_hour_utc", "available_at_utc"), _check_snapshot,
+    ),
+    "forecast": TableSpec(
+        "artifacts/capacity/forecast.parquet", FORECAST_COLUMNS, tuple(SNAPSHOT_KEY),
+        (
+            "asof_utc", "target_hour_utc", "features_available_at_utc",
+            "model_train_end_utc", "model_selection_end_utc",
+        ),
+        _check_forecast,
+    ),
+    "eligible_flights": TableSpec(
+        "data/processed/eligible_flights.parquet", ("flight_id", "airport", "asof_utc"),
+        ("flight_id", "airport", "asof_utc"), ("asof_utc",),
+    ),
+}
+
+
+def read_json(path: Path) -> dict:
+    def reject(token: str):
+        raise ArtifactError(f"{token} is not valid contract JSON")
+
     try:
-        table = _read_table(str(path), path.stat().st_mtime_ns)
-        missing = set(required) - set(table.columns)
-        if missing:
-            return pd.DataFrame(), f"Invalid {relative}: missing {', '.join(sorted(missing))}"
-        for col in table.columns:
-            if col.endswith("_utc"):
-                table[col] = utc(table[col])
-        if "airport" in table:
-            table["airport"] = table.airport.map(airport_icao)
-        return table, None
-    except Exception as exc:
-        return pd.DataFrame(), f"Cannot load {relative}: {type(exc).__name__}: {exc}"
+        document = json.loads(path.read_text(encoding="utf-8"), parse_constant=reject)
+    except (json.JSONDecodeError, UnicodeDecodeError) as error:
+        raise ArtifactError(f"malformed JSON: {error}") from error
+    if not isinstance(document, dict):
+        raise ArtifactError("expected a JSON object")
+    return document
 
-def flights():
-    canonical = ROOT / "data/processed/flights.parquet"
-    if canonical.exists():
-        return artifact_table("data/processed/flights.parquet", ("flight_id", "origin", "dest", "scheduled_dep_utc", "scheduled_arr_utc", "coverage"))
-    path = ROOT / "data/weather/Flight_Data_With_Weather_Final.csv"
-    if not path.exists():
-        return pd.DataFrame(), "Flight data not connected."
-    return _sample_flights(str(path), path.stat().st_mtime_ns), None
 
-def report(relative):
-    path = ROOT / relative
+def envelope_problems(document: dict) -> list[str]:
+    problems = []
+    if document.get("schema_version") != SCHEMA_VERSION:
+        problems.append(f"schema_version {document.get('schema_version')!r}, need {SCHEMA_VERSION}")
+    if not document.get("run_id"):
+        problems.append("run_id missing")
+    if document.get("status") not in STATUSES:
+        problems.append(f"status {document.get('status')!r} is not a contract status")
+    stamp = pd.to_datetime(document.get("generated_at_utc"), errors="coerce", utc=False)
+    if pd.isna(stamp) or stamp.tzinfo is None:
+        problems.append("generated_at_utc is not a timezone-aware timestamp")
+    return problems
+
+
+def declared_hashes(manifest: dict) -> dict[str, dict]:
+    """Normalise a manifest's file declarations to {basename: {sha256, rows}}."""
+    declared: dict[str, dict] = {}
+
+    def add(path: str, value) -> None:
+        entry = value if isinstance(value, dict) else {"sha256": value}
+        declared[Path(str(path).replace("\\", "/")).name] = {
+            "sha256": entry.get("sha256") or entry.get("hash"),
+            "rows": entry.get("rows", entry.get("row_count")),
+        }
+
+    for section in ("artifact_hashes", "outputs", "artifacts", "files"):
+        content = manifest.get(section)
+        if isinstance(content, dict):
+            for path, value in content.items():
+                add(path, value)
+        elif isinstance(content, list):
+            for entry in content:
+                if isinstance(entry, dict) and entry.get("path"):
+                    add(entry["path"], entry)
+    return declared
+
+
+def _verify_file(path: Path, declared: dict[str, dict]) -> dict:
+    entry = declared.get(path.name)
+    if entry is None or not entry["sha256"]:
+        raise ArtifactError("no hash declared in its manifest")
+    actual = hashlib.sha256(path.read_bytes()).hexdigest()
+    if actual != str(entry["sha256"]).removeprefix("sha256:").lower():
+        raise ArtifactError("SHA256 differs from manifest (partial write or mixed generation)")
+    return entry
+
+
+def validate_table(df: pd.DataFrame, spec: TableSpec) -> list[str]:
+    missing = [c for c in spec.required if c not in df.columns]
+    if missing:
+        return [f"missing columns {missing}"]
+    problems = []
+    for column in spec.utc:
+        dtype = df[column].dtype
+        if not isinstance(dtype, pd.DatetimeTZDtype) or str(dtype.tz) != "UTC":
+            problems.append(f"{column} is not timezone-aware UTC")
+    if problems:
+        return problems
+    if spec.key:
+        key = list(spec.key)
+        if df[key].isna().any().any():
+            problems.append(f"null values in key {key}")
+        duplicates = int(df.duplicated(key).sum())
+        if duplicates:
+            problems.append(f"{duplicates} duplicate rows on key {key}")
+    if spec.check and not df.empty and not problems:
+        problems.extend(spec.check(df))
+    return problems
+
+
+def _load_group(root, manifest_path, specs, documents, tables, docs) -> Group:
+    group = Group()
+    names = [*specs, *documents]
+    path = root / manifest_path
     if not path.exists():
-        return {"status": "unavailable", "limitations": [f"Not connected: {relative}"]}
+        group.problems = {n: [f"{manifest_path} is not published"] for n in names}
+        return group
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-        if not isinstance(value, dict):
-            raise ValueError("expected JSON object")
-        return value
-    except Exception as exc:
-        return {"status": "unavailable", "limitations": [f"Invalid {relative}: {exc}"]}
+        manifest = read_json(path)
+        problems = envelope_problems(manifest)
+    except (ArtifactError, OSError) as error:
+        manifest, problems = None, [str(error)]
+    if problems:
+        message = f"{manifest_path} rejected: {'; '.join(problems)}"
+        group.problems = {n: [message] for n in names}
+        return group
+    group.manifest = manifest
+    declared = declared_hashes(manifest)
 
-def scope_predictions(table, airport, asof, horizon):
-    if table.empty or not {"airport", "asof_utc", "horizon_hours"}.issubset(table):
-        return table.iloc[:0]
-    return table[(table.airport == airport) & (table.asof_utc == asof) & (pd.to_numeric(table.horizon_hours, errors="coerce") == horizon)].copy()
-
-def movements(table, airport, start, end):
-    iata = AIRPORTS[airport]["iata"]
-    pieces = []
-    for direction, endpoint, timecol in [("Inbound", "dest", "scheduled_arr_utc"), ("Outbound", "origin", "scheduled_dep_utc")]:
-        part = table[(table[endpoint] == iata) & table[timecol].ge(start) & table[timecol].lt(end)].copy()
-        part["direction"] = direction
-        part["movement_utc"] = part[timecol]
-        pieces.append(part)
-    return pd.concat(pieces, ignore_index=True)
-
-def validate_risk(table):
-    if table.empty:
-        return table
-    result = table.copy()
-    result["probability_severe_delay"] = pd.to_numeric(result.probability_severe_delay, errors="coerce")
-    result["threshold"] = pd.to_numeric(result.threshold, errors="coerce")
-    valid = result.probability_severe_delay.between(0, 1) & result.threshold.between(0, 1)
-    return result[valid].drop_duplicates("flight_id", keep=False)
-
-@st.cache_data(ttl=300, show_spinner=False)
-def live_weather():
-    result = {"retrieved_at_utc": datetime.now(timezone.utc).isoformat(), "sources": [], "errors": []}
-    for product in ["metar", "taf"]:
-        url = f"{PUBLIC_WEATHER}/{product}?ids=KATL,KDFW&format=json"
+    for name, spec in specs.items():
+        file = root / spec.path
+        if not file.exists():
+            group.problems[name] = [f"{spec.path} is not published"]
+            continue
         try:
-            response = requests.get(url, timeout=12, headers={"User-Agent": "AirportPlanningPrototype/1.0"})
-            response.raise_for_status()
-            records = response.json()
-            if not isinstance(records, list):
-                raise ValueError("Expected list response")
-            result[product] = records
-            result["sources"].append(url)
-        except (requests.RequestException, ValueError) as exc:
-            result[product] = []
-            result["errors"].append(f"{product.upper()}: {type(exc).__name__}: {exc}")
-    return result
+            entry = _verify_file(file, declared)
+            df = pd.read_parquet(file)
+            problems = validate_table(df, spec)
+            if entry["rows"] is not None and int(entry["rows"]) != len(df):
+                problems.append(f"{len(df)} rows, manifest declares {entry['rows']}")
+            if "run_id" in df and not df.empty and set(df["run_id"]) != {manifest["run_id"]}:
+                problems.append("run_id differs from manifest")
+        except Exception as error:  # A damaged file must never stop the app.
+            problems = [f"{type(error).__name__}: {error}"]
+        if problems:
+            group.problems[name] = [f"{spec.path} rejected: {p}" for p in problems]
+        else:
+            tables[name] = df
+
+    for name, relative in documents.items():
+        file = root / relative
+        if not file.exists():
+            group.problems[name] = [f"{relative} is not published"]
+            continue
+        try:
+            _verify_file(file, declared)
+            document = read_json(file)
+            problems = envelope_problems(document)
+            if document.get("run_id") != manifest["run_id"]:
+                problems.append("run_id differs from manifest")
+        except (ArtifactError, OSError) as error:
+            problems = [str(error)]
+        if problems:
+            group.problems[name] = [f"{relative} rejected: {p}" for p in problems]
+        else:
+            docs[name] = document
+    return group
+
+
+def is_schedule_only(model_kind: str) -> bool:
+    kind = str(model_kind).lower()
+    return "schedule" in kind and "weather" not in kind
+
+
+def _capability(name, loaded, reasons, group) -> Capability:
+    run_id = group.manifest["run_id"] if group.manifest else None
+    if loaded:
+        return Capability(name, "available", [], run_id)
+    return Capability(name, "unavailable", list(reasons), run_id)
+
+
+def _capabilities(tables, docs, groups) -> list[Capability]:
+    risk, decision, capacity = groups["risk"], groups["decision"], groups["capacity"]
+    predictions = tables.get("predictions")
+    kinds = set(predictions["model_kind"]) if predictions is not None else set()
+    schedule_kinds = {k for k in kinds if is_schedule_only(k)}
+    weather_loaded = "weather_features" in tables
+
+    capabilities = [
+        _capability(
+            "Schedule risk", bool(schedule_kinds),
+            risk.problems.get("predictions", ["no schedule-only predictions published"]), risk,
+        ),
+        _capability(
+            "Weather risk", bool(kinds - schedule_kinds) and weather_loaded,
+            ["no weather-enhanced predictions with verified weather features published"], risk,
+        ),
+        _capability(
+            "Normalised history", "normalized_metrics" in tables,
+            risk.problems.get("normalized_metrics", []), risk,
+        ),
+        _capability(
+            "Weather features", weather_loaded,
+            capacity.problems.get("weather_features", []), capacity,
+        ),
+        _capability(
+            "AAR forecast", "forecast" in tables and "capacity_evaluation" in docs,
+            capacity.problems.get("forecast", [])
+            + capacity.problems.get("capacity_evaluation", []),
+            capacity,
+        ),
+        _capability(
+            "Flight traffic", "flights" in tables, capacity.problems.get("flights", []), capacity
+        ),
+    ]
+    recommendations = docs.get("recommendations") or {}
+    queue = tables.get("queue")
+    missing = [str(m) for m in recommendations.get("missing_inputs", [])]
+    gate = missing or decision.problems.get("recommendations", [])
+    capabilities.append(
+        _capability(
+            "Arrival queue", queue is not None and not queue.empty,
+            gate or decision.problems.get("queue", ["queue is empty"]), decision,
+        )
+    )
+    capabilities.append(
+        _capability(
+            "Review advisory", bool(recommendations.get("recommendations")),
+            gate or ["no deficit at the published snapshot, so no action is advised"], decision,
+        )
+    )
+    rescheduled = any(r.get("revised_times") for r in recommendations.get("recommendations", []))
+    capabilities.append(
+        _capability(
+            "Flight rescheduling", rescheduled and "eligible_flights" in tables,
+            ["no verified flight state/eligibility; revised times are withheld"], decision,
+        )
+    )
+    return capabilities
+
+
+def _watched_paths() -> list[str]:
+    paths = [
+        "artifacts/risk/manifest.json", "artifacts/risk/decision_manifest.json",
+        "artifacts/capacity/manifest.json", "artifacts/risk/evaluation.json",
+        "artifacts/risk/recommendations.json", "artifacts/capacity/evaluation.json",
+        "artifacts/capacity/data_access.json", "data/processed/provenance.json",
+    ]
+    for specs in (RISK_TABLES, DECISION_TABLES, CAPACITY_TABLES):
+        paths.extend(spec.path for spec in specs.values())
+    return paths
+
+
+def fingerprint(root: Path) -> str:
+    """Change detector for caching: any published file changing starts a new load."""
+    parts = []
+    for relative in _watched_paths():
+        path = root / relative
+        if path.exists():
+            stat = path.stat()
+            parts.append(f"{relative}:{stat.st_mtime_ns}:{stat.st_size}")
+    for relative in _watched_paths()[:3]:
+        path = root / relative
+        if path.exists():
+            parts.append(hashlib.sha256(path.read_bytes()).hexdigest())
+    return hashlib.sha256("\n".join(parts).encode()).hexdigest()
+
+
+def load_bundle(root: Path) -> Bundle:
+    root = Path(root)
+    tables: dict[str, pd.DataFrame] = {}
+    docs: dict[str, dict] = {}
+    groups = {
+        "risk": _load_group(
+            root, "artifacts/risk/manifest.json", RISK_TABLES,
+            {"risk_evaluation": "artifacts/risk/evaluation.json"}, tables, docs,
+        ),
+        "decision": _load_group(
+            root, "artifacts/risk/decision_manifest.json", DECISION_TABLES,
+            {"recommendations": "artifacts/risk/recommendations.json"}, tables, docs,
+        ),
+        "capacity": _load_group(
+            root, "artifacts/capacity/manifest.json", CAPACITY_TABLES,
+            {"capacity_evaluation": "artifacts/capacity/evaluation.json"}, tables, docs,
+        ),
+    }
+    for name, relative in (
+        ("provenance", "data/processed/provenance.json"),
+        ("data_access", "artifacts/capacity/data_access.json"),
+    ):
+        path = root / relative
+        if path.exists():
+            try:
+                docs[name] = read_json(path)
+            except (ArtifactError, OSError) as error:
+                groups["capacity"].problems[name] = [f"{relative} rejected: {error}"]
+    return Bundle(
+        str(root), fingerprint(root), tables, docs, groups, _capabilities(tables, docs, groups)
+    )

@@ -12,9 +12,11 @@ from uuid import uuid4
 import joblib
 import numpy as np
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
 
 from src.shared import AIRPORTS
-from .data import HORIZONS, expand_horizons, join_weather, load_flights
+from .data import HORIZONS, WEATHER_FEATURES, expand_horizons, join_weather, load_flights
+from .evaluation import _logit, calibration_experiment, retrospective_evaluation
 from .metrics import classification_metrics, normalized_delay_metrics, reliability_bins
 from .model import baseline_probabilities, choose_threshold, fit_candidates, fit_historical_baseline
 
@@ -63,10 +65,11 @@ def _metric_rows(test, probabilities, thresholds, baseline_probs, baseline_thres
     return rows, details
 
 
-def _sources(sample_path, canonical_path, weather_features_path):
+def _sources(sample_path, canonical_path, weather_features_path, storm_events_path=None):
     paths = [Path(canonical_path)] if canonical_path and Path(canonical_path).exists() else [Path(sample_path)]
-    if weather_features_path and Path(weather_features_path).exists():
-        paths.append(Path(weather_features_path))
+    for optional in [weather_features_path, storm_events_path]:
+        if optional and Path(optional).exists():
+            paths.append(Path(optional))
     records = []
     for path in paths:
         digest = sha256()
@@ -81,7 +84,7 @@ def _runtime():
     return {"python": platform.python_version(), "python_executable": sys.executable, "platform": platform.platform(), "libraries": {name: version(name) for name in ["numpy", "pandas", "scipy", "scikit-learn", "pyarrow", "joblib"]}}
 
 
-def build_artifacts(sample_path, canonical_path=None, weather_features_path=None, airport_registry=None):
+def build_artifacts(sample_path, canonical_path=None, weather_features_path=None, airport_registry=None, storm_events_path=None):
     registry = airport_registry or AIRPORTS
     flights = load_flights(sample_path, canonical_path, registry)
     train = flights.eligible[flights.eligible.split.eq("train")]
@@ -95,6 +98,7 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
     test = test_candidate[test_candidate.asof_utc.ge(selection_end)].copy().reset_index(drop=True)
     if test.empty:
         raise ValueError("No held-out test predictions after model-selection cutoff")
+    weather_table = None
     weather_model, weather_report, weather_matched = None, {"status": "unavailable", "reason": "No cutoff-safe engineered weather features supplied"}, []
     limitations = [
         "Flight source coverage is retained; sample predictions are not complete airport demand.",
@@ -109,7 +113,8 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
         weather_report["reason"] = f"Requested weather features path does not exist: {weather_features_path}"
     if weather_features_path is not None and Path(weather_features_path).exists():
         try:
-            joined, weather_audit = join_weather(expanded, pd.read_parquet(weather_features_path))
+            weather_table = pd.read_parquet(weather_features_path)
+            joined, weather_audit = join_weather(expanded, weather_table)
             weather_train = joined[joined.split.eq("train") & joined.weather_available]
             weather_validation = joined[joined.split.eq("validation") & joined.weather_available]
             weather_model_candidate = fit_candidates(weather_train, weather_validation, include_weather=True)
@@ -142,6 +147,17 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
             model_kind[mask] = "weather_enhanced"
     if (model_kind == "schedule_only").any():
         limitations.append("Schedule-only probabilities do not model approaching weather and repeat across horizons; horizon labels identify prediction cutoffs, not measured lead-time sensitivity.")
+    # Calibration is decided on validation only, for the model that scores most held-out rows.
+    primary, primary_validation, primary_kind = (weather_model, weather_validation, "weather_enhanced") if weather_model is not None else (schedule_model, validation, "schedule_only")
+    primary_rows = model_kind == primary_kind
+    calibration = calibration_experiment(primary.name, primary_validation.flight_date, primary_validation.severe_delay, primary.predict(primary_validation), test.severe_delay[primary_rows], probabilities[primary_rows])
+    calibrator = None
+    if calibration["adopted"]:
+        calibrator = LogisticRegression(C=1e6).fit(_logit(primary.predict(primary_validation)), primary_validation.severe_delay)
+        # Monotonic transform of probability and threshold leaves every alert unchanged.
+        probabilities[primary_rows] = calibrator.predict_proba(_logit(probabilities[primary_rows]))[:, 1]
+        thresholds[primary_rows] = calibrator.predict_proba(_logit([primary.threshold]))[0, 1]
+        limitations[3] = f"{primary_kind} probabilities are Platt-calibrated on 2024 validation data; other rows are uncalibrated. Brier score and held-out reliability bins quantify calibration."
     run_id = uuid4().hex
     generated = datetime.now(timezone.utc).isoformat()
     runtime = _runtime()
@@ -170,7 +186,10 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
     predictions["weather_available_at_utc"] = test.weather_available_at_utc if "weather_available_at_utc" in test else pd.Series(pd.NaT, index=predictions.index, dtype="datetime64[ns, UTC]")
     baseline_probs = baseline_probabilities(historical_baseline, test)
     metrics, detail = _metric_rows(test, probabilities, thresholds, baseline_probs, baseline_threshold)
-    sources = _sources(sample_path, canonical_path, weather_features_path)
+    sources = _sources(sample_path, canonical_path, weather_features_path, storm_events_path)
+    # Outcome/storm-based evaluation runs only after every prediction is fixed.
+    retrospective = retrospective_evaluation(test, probabilities, thresholds, model_kind, baseline_probs, baseline_threshold, WEATHER_FEATURES, storm_events_path, weather_table)
+    capabilities["storm_cohort_evaluation"] = {"status": retrospective["storm_annotation"]["status"], "use": "retrospective evaluation only"}
     evaluation = {
         "schema_version": SCHEMA_VERSION, "run_id": run_id, "generated_at_utc": generated, "producer": "member-2", "runtime": runtime,
         "status": "available" if (model_kind == "weather_enhanced").all() else "partial",
@@ -178,7 +197,8 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
         "selection_end_utc": selection_end.isoformat(),
         "selection_rule": "Model: maximum validation average precision, then minimum Brier; threshold: maximum validation F1, ties use higher threshold",
         "pr_auc_definition": "Average precision (non-interpolated PR summary)",
-        "calibration_method": "No post-hoc calibrator; held-out Brier and ten fixed reliability bins reported",
+        "calibration_method": ("Platt scaling adopted for " + calibration["model"] + " rows; " if calibration["adopted"] else "No post-hoc calibrator adopted (see calibration_experiment); ") + "held-out Brier and ten fixed reliability bins reported",
+        "calibration_experiment": calibration,
         "threshold": schedule_model.threshold, "candidate_validation": schedule_model.candidate_validation,
         "baseline": {"name": "training-only airport/local-hour smoothed severe-delay rate", "threshold": baseline_threshold, "smoothing_prior_count": 20},
         "weather_model": weather_report, "weather_matched_test": weather_matched,
@@ -186,6 +206,7 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
         "prediction_rows": int(len(predictions)), "unique_test_flights": int(predictions.flight_id.nunique()),
         "excluded_test_horizon_rows_before_selection_end": int(len(test_candidate) - len(test)),
         "limitations": limitations, "sources": sources, "missing_inputs": missing_inputs, "capabilities": capabilities,
+        **retrospective,
     }
     failed = test[(probabilities >= thresholds).astype(int) != test.severe_delay.to_numpy()].copy()
     evaluation["failure_case"] = None
@@ -205,7 +226,12 @@ def build_artifacts(sample_path, canonical_path=None, weather_features_path=None
         "artifacts": ["model.joblib", "predictions.parquet", "normalized_metrics.parquet", "evaluation.json"],
         "limitations": limitations, "missing_inputs": missing_inputs, "capabilities": capabilities,
     }
-    return PipelineArtifacts(predictions, normalized, evaluation, manifest, {"schedule_model": schedule_model, "weather_model": weather_model, "historical_baseline": historical_baseline, "baseline_threshold": baseline_threshold, "schema_version": SCHEMA_VERSION, "run_id": run_id, "selection_end_utc": selection_end.isoformat(), "producer": "member-2", "runtime": runtime})
+    return PipelineArtifacts(predictions, normalized, evaluation, manifest, {"schedule_model": schedule_model, "weather_model": weather_model, "historical_baseline": historical_baseline, "baseline_threshold": baseline_threshold, "calibrator": calibrator, "schema_version": SCHEMA_VERSION, "run_id": run_id, "selection_end_utc": selection_end.isoformat(), "producer": "member-2", "runtime": runtime})
+
+
+def json_bytes(report):
+    """Platform-independent JSON bytes: LF line endings, so published hashes hold on every checkout."""
+    return (json.dumps(report, indent=2, allow_nan=False) + "\n").encode("utf-8")
 
 
 def _atomic(path, writer):
@@ -214,16 +240,16 @@ def _atomic(path, writer):
     temporary.replace(path)
 
 
-def run_pipeline(sample_path, output_dir, canonical_path=None, weather_features_path=None, airport_registry=None):
-    artifacts = build_artifacts(sample_path, canonical_path, weather_features_path, airport_registry)
+def run_pipeline(sample_path, output_dir, canonical_path=None, weather_features_path=None, airport_registry=None, storm_events_path=None):
+    artifacts = build_artifacts(sample_path, canonical_path, weather_features_path, airport_registry, storm_events_path)
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
     _atomic(output / "predictions.parquet", lambda path: artifacts.predictions.to_parquet(path, index=False))
     _atomic(output / "normalized_metrics.parquet", lambda path: artifacts.normalized_metrics.to_parquet(path, index=False))
     _atomic(output / "model.joblib", lambda path: joblib.dump(artifacts.model_bundle, path))
-    _atomic(output / "evaluation.json", lambda path: path.write_text(json.dumps(artifacts.evaluation, indent=2, allow_nan=False), encoding="utf-8"))
+    _atomic(output / "evaluation.json", lambda path: path.write_bytes(json_bytes(artifacts.evaluation)))
     artifacts.manifest["artifact_hashes"] = {name: sha256((output / name).read_bytes()).hexdigest() for name in artifacts.manifest["artifacts"]}
     artifacts.manifest["artifact_records"] = [{"path": name, "sha256": artifacts.manifest["artifact_hashes"][name], "row_count": artifacts.manifest["artifact_row_counts"][name]} for name in artifacts.manifest["artifacts"]]
     # Manifest last lets readers detect a mixed generation while publishing.
-    _atomic(output / "manifest.json", lambda path: path.write_text(json.dumps(artifacts.manifest, indent=2, allow_nan=False), encoding="utf-8"))
+    _atomic(output / "manifest.json", lambda path: path.write_bytes(json_bytes(artifacts.manifest)))
     return {"output_dir": str(output.resolve()), "artifacts": {name: str((output / name).resolve()) for name in artifacts.manifest["artifacts"] + ["manifest.json"]}, "evaluation": artifacts.evaluation, "manifest": artifacts.manifest}

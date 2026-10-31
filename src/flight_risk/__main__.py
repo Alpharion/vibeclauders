@@ -12,7 +12,7 @@ from uuid import uuid4
 
 import pandas as pd
 
-from .pipeline import run_pipeline
+from .pipeline import json_bytes, run_pipeline
 from .recommendations import build_recommendations
 from .simulation import simulate_arrival_queue
 
@@ -68,14 +68,15 @@ def _optional_input(value, default):
 
 def _atomic_json(path, report):
     temp = path.with_name(path.name + ".tmp")
-    temp.write_text(json.dumps(report, indent=2, allow_nan=False), encoding="utf-8")
+    temp.write_bytes(json_bytes(report))
     temp.replace(path)
 
 
 def train(args):
     canonical = _optional_input(args.canonical, ROOT / "data/processed/flights.parquet")
     weather = _optional_input(args.weather_features, ROOT / "artifacts/capacity/weather_features.parquet")
-    external = [path for path in [canonical, weather] if path is not None]
+    storms = _optional_input(args.storm_events, ROOT / "data/processed/storm_events.parquet")
+    external = [path for path in [canonical, weather, storms] if path is not None]
     if external:
         upstream, snapshots = verified_bytes(args.input_manifest, external)
         # Train from immutable byte snapshots, even if Member 1 publishes again.
@@ -93,10 +94,11 @@ def train(args):
         _atomic_json(cache / "provenance.json", provenance)
         canonical = cached[canonical.resolve()] if canonical else None
         weather = cached[weather.resolve()] if weather else None
+        storms = cached[storms.resolve()] if storms else None
     registry = None
     if args.airport_registry:
         registry = json.loads(Path(args.airport_registry).read_text(encoding="utf-8-sig"))
-    result = run_pipeline(args.sample, args.output, canonical, weather, registry)
+    result = run_pipeline(args.sample, args.output, canonical, weather, registry, storms)
     evaluation = result["evaluation"]
     return {"status": evaluation["status"], "output_dir": result["output_dir"],
             "model": evaluation["model"], "prediction_rows": evaluation["prediction_rows"],
@@ -220,6 +222,7 @@ def parser():
     training.add_argument("--sample", default=str(ROOT / "data/weather/Flight_Data_With_Weather_Final.csv"))
     training.add_argument("--canonical")
     training.add_argument("--weather-features")
+    training.add_argument("--storm-events", help="NOAA storm events; retrospective evaluation cohorts only, never features")
     training.add_argument("--airport-registry", help="JSON mapping ICAO to iata/timezone/heading config")
     decision = commands.add_parser("decide", help="Publish a supported queue/advisory or explicit unavailable result")
     decision.add_argument("--airport", required=True)

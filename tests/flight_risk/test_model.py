@@ -68,6 +68,9 @@ def test_manifest_hashes_and_json_are_publishable(tiny_csv, tmp_path):
     manifest = json.loads((output / "manifest.json").read_text())
     for name, digest in manifest["artifact_hashes"].items():
         assert hashlib.sha256((output / name).read_bytes()).hexdigest() == digest
+    # Git stores these files with LF; CRLF bytes would fail verification on a fresh clone.
+    for name in ["evaluation.json", "manifest.json"]:
+        assert b"\r" not in (output / name).read_bytes(), name
     assert result["evaluation"]["run_id"] == manifest["run_id"]
     assert manifest["runtime"]["python"]
     assert manifest["runtime"]["libraries"]["scikit-learn"]

@@ -19,6 +19,7 @@ Preserve raw inputs and other members' outputs. Never fabricate artifacts to sat
 
 - Parquet tables, UTF-8 JSON. `_utc` columns timezone-aware UTC; JSON timestamps ISO8601 with timezone. Missing measurements null, never zero or NaN JSON.
 - Schema version `2.0`. Reports/manifests carry `schema_version`, `run_id`, `generated_at_utc`, `status` (`available`, `partial`, `unavailable`), `limitations:[]`, and `missing_inputs:[]` where applicable. Available refers to a named capability, not whole-challenge completion.
+- Hashed JSON is written as UTF-8 with LF line endings, independent of platform, so hashes verify on any checkout.
 - Write temporary files and atomically replace each output, then publish the manifest last with paths, row counts, SHA256, schema version and producer. Consumers verify hashes/run identity before switching; retain last valid state or show loading/unavailable during updates. Never mix generations silently.
 - Required manifest checksum field: `artifact_hashes`, mapping manifest-directory-relative paths to SHA256 hex strings. For the capacity manifest, examples are `weather_features.parquet` and `../../data/processed/flights.parquet`. Member 2 snapshots verified bytes before training and reads exact verified bytes for decisions; capacity row `run_id` must match its upstream manifest. Other producers/consumers must retain equivalent generation consistency.
 - Missing identity/time keys, invalid probabilities, duplicates or incompatible versions fail validation with reasons. Null required measurements mean the corresponding capability is unavailable, not zero.
@@ -80,6 +81,11 @@ Future flight-specific allocation extension only: unique flight ID, airport/cuto
 - `data/processed/provenance.json`: `sources:[{source_id,name,url,retrieved_at_utc,requested_coverage,coverage,status,hash,notes}]`, failures and assumptions.
 - `artifacts/capacity/manifest.json`: run identity, output paths/hashes, split, coverage and capability states; include processed flight/demand/backlog hashes when published.
 
+### Optional additions (parallel plan, frozen)
+
+- `aar_observed` in `forecast.parquet`: nullable float, arrivals/hour, held-out rows only. Consumers show it only after outcome reveal.
+- `artifacts/capacity/traffic_hourly.parquet`: key `(airport, hour_utc, direction)`; columns `scheduled_count`, `actual_count`, `coverage='reporting_carriers'`, `population`, `source_id`, `run_id`. Listed in the capacity manifest. It is reconstructed traffic and **never** queue demand.
+
 ## 5. Member 2 outputs
 
 ### `artifacts/risk/predictions.parquet`
@@ -97,6 +103,13 @@ Eligible denominator is noncancelled, known-delay flights. Delay minutes are cli
 ### `artifacts/risk/evaluation.json`
 
 Envelope plus `model`, `split`, `metrics:[{airport,horizon_hours,metric,value,baseline_value,n}]`, `sources`, capability limitations, exclusions, selection policy and calibration description. Nested candidate/reliability/cohort results allowed. All metrics measured; schedule/weather comparisons on matched cohorts, weather exclusions disclosed.
+
+Optional additions (parallel plan, frozen). Consumers show "unavailable" when a key is absent:
+
+- `storm_cohorts:[{cohort,airport,horizon_hours,metric,value,baseline_value,n,severe_n}]`: held-out metrics split by retrospective NOAA storm-event cohorts. Storm events are never model features. Cohorts too small or single-class carry null `value`.
+- `failure_cases:[{kind,flight_id,airport,horizon_hours,asof_utc,probability,threshold,observed,evidence,explanation,remedy}]`, `kind` in `missed`, `false_alarm`, `declined`. A declined case is one where the system withheld its weather-enhanced prediction (schedule-only fallback); `probability`/`observed` may be null when not applicable. All cases require outcome reveal. The existing single `failure_case` key is kept.
+- `impact:{basis,status_quo,comparisons:[{airport,horizon_hours,alert_share,model_recall,baseline_recall,model_precision,baseline_precision,n}],limitations}`: measured model vs status-quo baseline at the same alert share. No delay-minute, fuel or savings claim.
+- `alert_rates:[{airport,horizon_hours,alerts,scored,alert_rate,observed_severe,observed_severe_rate}]`: flagged / scored departures with explicit numerators and denominators. Confusion counts remain in `detail[].metrics.confusion`.
 
 ### `artifacts/risk/recommendations.json`
 
