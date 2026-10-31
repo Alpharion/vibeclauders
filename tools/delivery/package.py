@@ -180,10 +180,13 @@ def verify_archive(path: Path) -> dict:
         return manifest
 
 
-def build(root: Path, destination: Path | None = None, reference_pdf: Path | None = None) -> dict:
+def build(root: Path, destination: Path | None = None, reference_pdf: Path | None = None,
+          expected_fingerprint: str | None = None) -> dict:
     root = root.resolve()
     files, publications = collect(root)
     fingerprint = runtime_fingerprint(files)
+    if expected_fingerprint is not None and fingerprint != expected_fingerprint:
+        raise PackageError("Runtime no longer matches executed checks")
     evidence = json.loads(files.get("output/delivery/verification.json", b"{}"))
     matched = evidence.get("runtime_fingerprint") == fingerprint
     evidence_status = evidence.get("status") if matched else "unverified_or_stale_execution_evidence"
@@ -193,7 +196,8 @@ def build(root: Path, destination: Path | None = None, reference_pdf: Path | Non
         files["reference/" + reference_pdf.name] = reference_pdf.read_bytes()
     manifest = {"package": PREFIX, "schema_version": "1.0", "created_at_utc": datetime.now(timezone.utc).isoformat(),
                 "source": git_state(root), "builder_python": platform.python_version(), "runtime_fingerprint": fingerprint,
-                "verification_status": status, "execution_evidence_matches": matched, "publications": publications}
+                "verification_status": status, "verification_scope": evidence.get("scope") if matched else None,
+                "execution_evidence_matches": matched, "publications": publications}
     files["BUNDLE_README.md"] = readme(manifest)
     manifest["files"] = [{"path": name, "bytes": len(data), "sha256": digest(data)} for name, data in sorted(files.items())]
     files["BUNDLE_MANIFEST.json"] = json_bytes(manifest)
@@ -205,6 +209,8 @@ def build(root: Path, destination: Path | None = None, reference_pdf: Path | Non
             for name, data in sorted(files.items()):
                 archive.writestr(f"{PREFIX}/{name}", data)
         verify_archive(temp)
+        if expected_fingerprint is not None and runtime_fingerprint(collect(root)[0]) != expected_fingerprint:
+            raise PackageError("Runtime changed before release publication")
         temp.replace(destination)
     finally:
         if temp.exists():

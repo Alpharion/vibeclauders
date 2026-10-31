@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 from zipfile import ZipFile
 
 from tools.delivery.package import (PREFIX, build, collect, digest, git_state, json_bytes,
-                                    runtime_fingerprint, verify_archive)
+                                    runtime_fingerprint, verify_archive, PackageError)
 
 
 def release_blockers(checks, publications, changed, baseline=False):
@@ -120,11 +120,18 @@ def verify(root, baseline=False):
               "After successful checks and documentation freeze, rebuild; its receipt records the final commit and ZIP hash.", ""]
     (root / "output/delivery/VERIFICATION.md").write_text("\n".join(lines), encoding="utf-8")
     if not blockers:
-        final = build(root)
-        final_manifest = verify_archive(Path(final["archive"]))
-        if final_manifest["runtime_fingerprint"] != before:
-            raise ValueError("Final runtime no longer matches executed checks")
-        print(json.dumps({"final_archive": final}, indent=2), flush=True)
+        try:
+            final = build(root, expected_fingerprint=before)
+            verify_archive(Path(final["archive"]))
+            print(json.dumps({"final_archive": final}, indent=2), flush=True)
+        except (PackageError, OSError) as error:
+            blockers.append(f"Final release publication failed: {error}")
+            report["status"] = "failed"
+            report["runtime_unchanged"] = False
+            (root / "output/delivery/verification.json").write_bytes(json_bytes(report))
+            lines[3] = f"Status: **failed**; scope: **{report['scope']}**; manual acceptance: **pending**."
+            lines += ["", "Final publication blocker: " + str(error)]
+    (root / "output/delivery/VERIFICATION.md").write_text("\n".join(lines), encoding="utf-8")
     print(json.dumps({"status": report["status"], "scope": report["scope"], "blockers": blockers}, indent=2))
     return 1 if blockers else 0
 

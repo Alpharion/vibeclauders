@@ -112,3 +112,12 @@ def test_archive_verifier_rejects_tampering(tree, tmp_path):
             altered.writestr(name, data)
     with pytest.raises(PackageError, match="payload mismatch"):
         verify_archive(output)
+
+
+def test_judging_instructions_are_included(tree, tmp_path):
+    put(tree, "handover/JUDGING-DEMO.md", b"Three-minute demo")
+    put(tree, "handover/SUBMISSION-CHECKLIST.md", b"Manual acceptance pending")
+    result = build(tree, tmp_path / "demo.zip")
+    with ZipFile(result["archive"]) as archive:
+        assert archive.read(PREFIX + "/handover/JUDGING-DEMO.md") == b"Three-minute demo"
+        assert archive.read(PREFIX + "/handover/SUBMISSION-CHECKLIST.md") == b"Manual acceptance pending"
