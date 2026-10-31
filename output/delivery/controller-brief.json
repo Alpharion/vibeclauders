@@ -14,7 +14,7 @@
       "probability": 0.6120271448182713,
       "threshold": 0.14602464873871673,
       "model_kind": "weather_enhanced",
-      "reason": "Published probability exceeds its validation-selected alert threshold",
+      "reason": "Published probability meets or exceeds its validation-selected alert threshold",
       "recommended_review": "Review current weather and airline/inbound-aircraft status before deciding whether intervention is warranted"
     },
     {
@@ -22,7 +22,7 @@
       "probability": 0.36971235534052926,
       "threshold": 0.14602464873871673,
       "model_kind": "weather_enhanced",
-      "reason": "Published probability exceeds its validation-selected alert threshold",
+      "reason": "Published probability meets or exceeds its validation-selected alert threshold",
       "recommended_review": "Review current weather and airline/inbound-aircraft status before deciding whether intervention is warranted"
     }
   ],

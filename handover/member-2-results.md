@@ -1,6 +1,21 @@
+# Readiness follow-up: combined automated verification
+
+31 October 2026. Branch `codex/challenge5-readiness-reviewed` combines readiness checkpoint `88c708a`, exact Member 1 publication `5805f89b8ae908b330e1e981536f52ae1725c2ee` (cherry-pick `b14c4ae`) and three independently reviewed contributions: release hardening `6929ff7` (`0fe04a6`), briefing validation `be2d176` (`341a44b`), and judging/docs `c0171bd` (`ddc7b24`). No main merge or supervisor acceptance is claimed.
+
+- Fresh package extraction: **395 tests passed**, risk verification **exit 0**, real-artifact app smoke **exit 0** across 13 cases (initial + KATL/KDFW x 3/6/12h x reveal off/on). Gate scope is **combined_runtime**, status **verified**, no automated blockers. The physical-core detection warning is non-failing.
+- Runtime fingerprint: `8303c9cb6eb5126446e8af66dd225863ce5cd70bdfae14161bf0784450989c15`. Actual commands, durations, log hashes and package snapshot are in `output/delivery/verification.json`; local logs are under `output/delivery/logs/release-ee2lqzdl`.
+- All 97 baseline hashes checked: five Member 1 source files changed exactly as published, 92 unchanged. Member 1-owned files match its exact commit. Frozen risk, producer inputs, models and dependencies are unchanged. No new training or scientific accuracy claim.
+- Release builder now checks the executed fingerprint before promoting the final ZIP and preserves the previous archive on runtime mismatch. Tests cover missing estimate, failed app checks, source/extracted/late mutations and publication failures. Package manifest records verification scope.
+- Controller brief rejects missing identities/schema and unusable/hash-mismatched publications; exact-cutoff, run, clocks, threshold equality and outcome-invariance tests pass. Regenerated ATL 2025-07-12 20:00Z +3h brief has 2 sampled flights / 2 review priorities; it publishes no observed outcomes or operational actions.
+- A preliminary checkpoint run passed 374 tests and app smoke, but was correctly refused promotion because review commits changed the source while it ran. The stable hardened 395-test run supersedes that report.
+
+After documentation freeze, the final archive is rebuilt, hash/manifest verified and extracted; its adjacent `.receipt.json`, `.manifest.json` and `.sha256` are the definitive final source identity and hash. Generated archives and verbose logs are local/ignored. Source and summary evidence are committed and pushed on readiness branches.
+
+Manual browser tiles and proxy-label review, timed three-minute presentation, submission timestamp/receipt, and supervisor acceptance remain pending. The estimate is a reporting-carrier high-demand throughput proxy, not independently observed facility AAR; queue/metering/rescheduling remain unavailable. Existing environment used; no clean install or public-data refresh performed.
+
 # Member 2 verified results and handback
 
-## Current handback: independent 30-minute delivery sprint
+## Historical handback: independent 30-minute delivery sprint
 
 31 October 2026. **Delivery work ready for review; baseline application has a known frontend failure.** Implementation base `737b46852c2d4b98e7c01e68ed7e3888f6542c5c`, handoff base `c01500a3bb247e7ab7882ae3d45e4b266d1b028e`, branch `codex/member-2-delivery-30min`.
 

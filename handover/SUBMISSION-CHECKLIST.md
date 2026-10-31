@@ -41,10 +41,10 @@ Confirm `execution_evidence_matches` is true and verification status is `verifie
 
 | Field | Value |
 |---|---|
-| Combined commit | Pending |
+| Tested runtime commit | `ddc7b24`; final documentation-frozen commit in archive receipt |
 | Member 1 publication run | `m1-capest-20261031T072310Z-a27968` (published; verify inclusion) |
-| Automated gate result/report | Pending combined run |
-| Final ZIP SHA256 | Pending combined release |
+| Automated gate result/report | `verified`, `combined_runtime`; 395 passed, risk/app exits 0; `output/delivery/verification.json` |
+| Final ZIP SHA256 | Adjacent `challenge-5-implementation.sha256` and receipt after documentation freeze |
 | Browser review and reviewer | Pending |
 | Rehearsal duration | Pending |
 | Submission timestamp and receipt | Pending |

@@ -3,132 +3,181 @@
   "member": 2,
   "role": "Independent delivery tooling and evidence",
   "baseline_commit": "737b46852c2d4b98e7c01e68ed7e3888f6542c5c",
-  "handoff_commit": "c01500a3bb247e7ab7882ae3d45e4b266d1b028e",
   "result_commit": null,
-  "result_commit_source": "The generated final archive receipt source.commit identifies the committed result; it is reported in the final handback.",
-  "branch": "codex/member-2-delivery-30min",
-  "state": "ready_for_review",
-  "delivery_status": "baseline_verified_with_known_frontend_failure",
-  "started_at_utc": "2026-10-31T07:18:25+00:00",
-  "updated_at_utc": "2026-10-31T07:25:40.350605+00:00",
-  "elapsed_minutes": 7.26,
-  "p0_completed": [
-    "Complete byte-preserving manifest-backed package builder",
-    "Optional publication discovery tested independently",
-    "Fresh extraction risk and delivery verification",
-    "Full-suite/app baseline failure recorded",
-    "Current documentation and evidence; no producer/frontend changes"
-  ],
-  "owned_files_changed": [
-    "output/delivery/build-package.py",
-    "output/delivery/.gitignore",
-    "output/delivery/VERIFICATION.md",
-    "output/delivery/verification.json",
-    "output/delivery/frozen-baseline.json",
-    "tools/delivery/__init__.py",
-    "tools/delivery/package.py",
-    "tools/delivery/smoke_app.py",
-    "tests/delivery/test_package.py",
-    "README.md",
-    "BUNDLE_README.md",
-    "BUNDLE_MANIFEST.json",
-    "handover/member-2-results.md",
-    "handover/status-member-2.json"
-  ],
-  "artifacts": [
-    {
-      "path": "output/delivery/challenge-5-implementation.zip",
-      "kind": "generated final baseline package",
-      "sha256_source": "output/delivery/challenge-5-implementation.sha256",
-      "source_commit": "output/delivery/challenge-5-implementation.receipt.json"
-    },
-    {
-      "path": "artifacts/capacity/manifest.json",
-      "run_id": "m1-20261031T065014Z-eacdd5",
-      "state": "unchanged"
-    },
-    {
-      "path": "artifacts/risk/manifest.json",
-      "run_id": "0949771a54bb4e49b4e215528eb5d46b",
-      "state": "unchanged"
-    },
-    {
-      "path": "artifacts/risk/decision_manifest.json",
-      "run_id": "a7b89e44c69449d1a7ecfbf0cb8ff3b5",
-      "state": "unchanged; unavailable"
-    }
-  ],
+  "result_commit_source": "Final archive receipt source.commit identifies the documentation-frozen readiness result.",
+  "branch": "codex/challenge5-readiness-reviewed",
+  "state": "automated_combined_verified_manual_acceptance_pending",
+  "delivery_status": "verified",
+  "updated_at_utc": "2026-10-31T07:39:25.863833+00:00",
   "checks": [
     {
       "name": "risk_verify",
-      "command": "python -m src.flight_risk verify",
+      "command": [
+        "-m",
+        "src.flight_risk",
+        "verify"
+      ],
       "exit_code": 0,
-      "result": "10,604 predictions; 3,537 flights; KATL/KDFW; leads 3/6/12; model partial; decisions unavailable",
-      "local_log": "output/delivery/logs/risk_verify.log",
+      "elapsed_seconds": 3.34,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\risk_verify.log",
       "log_sha256": "9de83d24e4d4b385b14018ebc56f605deb56ee465060b822e7c38b418c54a6c5"
     },
     {
-      "name": "risk_and_delivery_tests",
-      "command": "python -m pytest tests/flight_risk tests/delivery -q --basetemp=<fresh writable directory>",
-      "exit_code": 0,
-      "passed": 106,
-      "failed": 0,
-      "warning_count": 1,
-      "elapsed_seconds": 11.15,
-      "local_log": "output/delivery/logs/risk_and_delivery_tests.log",
-      "log_sha256": "0760c8b7983a4c03f4d7d334d1a45d9cbce5b574a643f7c3a633d284872da3fd"
-    },
-    {
       "name": "full_suite",
-      "command": "python -m pytest tests -q --tb=short --basetemp=<fresh writable directory>",
-      "exit_code": 1,
-      "passed": 330,
-      "failed": 1,
-      "warning_count": 1,
-      "elapsed_seconds": 51.63,
-      "local_log": "output/delivery/logs/full_suite.log",
-      "log_sha256": "07d8077f7d2e26825a9291ee1d0373676b474401e76e7f3b85b5ffa15bfee67e"
+      "command": [
+        "-m",
+        "pytest",
+        "tests",
+        "-q",
+        "--tb=short",
+        "--basetemp",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\pytest",
+        "--junitxml",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\pytest.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 68.61,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\full_suite.log",
+      "log_sha256": "79bb38eb9e209da2d23ea641a4820a1e0dbae4c38d6fea9209c24da643441d13",
+      "test_counts": {
+        "tests": 395,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 395
+      }
     },
     {
-      "name": "real_artifact_app_smoke",
-      "command": "python -m tools.delivery.smoke_app",
-      "exit_code": 1,
-      "result": "Initial real-artifact app run reproduced inherited Plotly Timestamp exception; control matrix not reached",
-      "local_log": "output/delivery/logs/real_artifact_app_smoke.log",
-      "log_sha256": "5023eeb7fac082eceb3e4f5398a13d2752eb9724c04d970a4eb1353b26202d7c"
+      "name": "app_smoke",
+      "command": [
+        "-m",
+        "tools.delivery.smoke_app",
+        "--report",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\app.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 19.06,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\app_smoke.log",
+      "log_sha256": "7e4ce6ddaeb8e68fb4441916c57378a5100b546975bb15bf709d085504762f50",
+      "app_result": {
+        "status": "passed",
+        "checks": [
+          {
+            "case": "initial",
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 3,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 3,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 6,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 6,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 12,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 12,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 3,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 3,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 6,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 6,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 12,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 12,
+            "reveal": true,
+            "exceptions": []
+          }
+        ]
+      }
     }
   ],
-  "runtime_fingerprint": "11cd243b0efb97228cdc58733266123f26acfbd86454ee0013b85e3702796bb6",
+  "runtime_fingerprint": "8303c9cb6eb5126446e8af66dd225863ce5cd70bdfae14161bf0784450989c15",
   "frozen_input_hashes_unchanged": true,
-  "source_frozen_files_checked": 97,
-  "extracted_frozen_files_checked": 96,
-  "used_other_member_new_outputs": false,
-  "known_inherited_failures": [
-    {
-      "test": "tests/dashboard/test_additions.py::test_actual_traffic_counts_need_reveal",
-      "file": "src/dashboard/plots.py:168",
-      "cause": "Plotly annotated add_vline performs unsupported pandas Timestamp addition",
-      "owner": "Member 1"
-    }
-  ],
+  "used_other_member_new_outputs": true,
+  "known_inherited_failures": [],
   "new_failures": [],
   "limitations": [
-    "This is delivery acceptance against the pinned baseline, not final demo acceptance.",
-    "App smoke stops on initial inherited chart exception; airport/lead/reveal matrix and browser tiles not verified.",
-    "Existing compatible environment used; no clean dependency installation or fresh public data acquisition.",
-    "Windows physical-core warning and sandbox temporary cleanup errors were separate from the reproducible chart failure.",
-    "Final documentation-complete package is rebuilt after this runtime test. Match runtime_fingerprint and check its own SHA256/manifest.",
-    "Verbose logs are local and excluded from package; summaries and their content hashes are recorded here."
+    "Runtime verification is not judge/supervisor acceptance or a claim of model accuracy.",
+    "Browser radar/basemap availability and the three-minute presentation require manual review.",
+    "No clean environment install, public data refresh, retraining or operational benefit simulation performed.",
+    "Baseline mode does not require the optional capacity estimate; it cannot certify the combined release."
   ],
   "next_steps": [
-    "Supervisor reviews ownership and combines member commits in either order",
-    "Member 1 repairs inherited frontend failure and publishes labelled capacity estimate",
-    "Supervisor reruns combined suite and real-artifact app matrix, updates execution evidence and rebuilds/extracts final demo package"
+    "Review exact Member 1 contribution and readiness branch; main remains untouched",
+    "Perform actual browser matrix including remote tiles and capacity proxy labels",
+    "Time the three-minute rehearsal and record submission/supervisor acceptance"
   ],
   "supervisor_acceptance": null,
   "historical_model_work": {
     "risk_run_id": "0949771a54bb4e49b4e215528eb5d46b",
     "result_details": "handover/member-2-results.md historical sections",
     "note": "Earlier modelling/retraining/test results are historical; no model work was performed in this sprint."
+  },
+  "readiness_followup": {
+    "checkpoint": "88c708a",
+    "tested_code_commit": "ddc7b24a520b0a4776440240dfccaa72fb14f953",
+    "member_1_exact_commit": "5805f89b8ae908b330e1e981536f52ae1725c2ee",
+    "review_commits": [
+      "6929ff7",
+      "be2d176",
+      "c0171bd"
+    ],
+    "scope": "combined_runtime",
+    "automated_blockers": [],
+    "app_cases": 13,
+    "final_package_receipt": "output/delivery/challenge-5-implementation.receipt.json",
+    "prior_status_note": "Earlier sprint fields/artifacts are historical where superseded by this follow-up. Final receipt records documentation-frozen source commit and archive hash.",
+    "preservation": "All 97 baseline hashes checked: five Member 1 source files changed exactly as published; the remaining 92 frozen files unchanged. Member 1-owned files match exact commit; frozen risk/data/dependencies unchanged."
   }
 }

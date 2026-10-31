@@ -1,22 +1,20 @@
 # Current delivery verification
 
-UTC: 2026-10-31T07:33:53.422653+00:00
-Status: **failed**; scope: **combined_runtime**; manual acceptance: **pending**.
-Runtime fingerprint: `1e1f9ec7ef3ca70a8d0ffd8d407ada5248ecec10cb6144460c7729aa26031976`.
+UTC: 2026-10-31T07:39:25.863833+00:00
+Status: **verified**; scope: **combined_runtime**; manual acceptance: **pending**.
+Runtime fingerprint: `8303c9cb6eb5126446e8af66dd225863ce5cd70bdfae14161bf0784450989c15`.
 
 Checks ran in a fresh package extraction.
 
 | Check | Exit | Result |
 |---|---:|---|
 | risk_verify | 0 | "See verification.json" |
-| full_suite | 1 | {"tests": 347, "failures": 1, "errors": 0, "skipped": 0, "passed": 346} |
-| app_smoke | 1 | "failed" |
+| full_suite | 0 | {"tests": 395, "failures": 0, "errors": 0, "skipped": 0, "passed": 395} |
+| app_smoke | 0 | "passed" |
 
 ## Release blockers
 
-- full_suite exited 1
-- app_smoke exited 1
-- Usable capacity_estimate publication with all four payloads is required
+- No automated blocker; manual acceptance remains pending.
 
 ## Limits
 

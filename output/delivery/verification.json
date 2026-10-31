@@ -1,31 +1,32 @@
 {
   "schema_version": "1.0",
-  "status": "failed",
+  "status": "verified",
   "scope": "combined_runtime",
-  "generated_at_utc": "2026-10-31T07:33:53.422653+00:00",
+  "generated_at_utc": "2026-10-31T07:39:25.863833+00:00",
   "source": {
-    "commit": "24d834bbb33e3e8ccc534a87df03dfd41f9d51be",
+    "commit": "ddc7b24a520b0a4776440240dfccaa72fb14f953",
     "dirty": true,
-    "status": "M README.md\n M tools/delivery/package.py\n M tools/delivery/smoke_app.py\n?? handover/JUDGING-DEMO.md\n?? handover/SUBMISSION-CHECKLIST.md\n?? output/delivery/CONTROLLER_BRIEF.md\n?? output/delivery/controller-brief.json\n?? tests/delivery/test_readiness.py\n?? tools/delivery/controller_brief.py\n?? tools/delivery/verify_release.py",
-    "branch": "codex/challenge5-readiness"
+    "status": "M output/delivery/VERIFICATION.md\n M output/delivery/controller-brief.json\n M output/delivery/verification.json",
+    "branch": "codex/challenge5-readiness-reviewed"
   },
-  "runtime_fingerprint": "1e1f9ec7ef3ca70a8d0ffd8d407ada5248ecec10cb6144460c7729aa26031976",
+  "runtime_fingerprint": "8303c9cb6eb5126446e8af66dd225863ce5cd70bdfae14161bf0784450989c15",
   "runtime_unchanged": true,
   "tested_archive": {
-    "archive": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\tested.zip",
-    "sha256": "0f88374199fc6e38955467992a7e078c3002773a552a299936f10dedbbb9e6bf",
-    "payload_files": 137,
-    "archive_bytes": 32074421,
+    "archive": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\tested.zip",
+    "sha256": "17cef3d04aafa89f6ac700ad82049f84a72870eeb54d49031032737e494ad966",
+    "payload_files": 148,
+    "archive_bytes": 32372659,
     "source": {
-      "commit": "24d834bbb33e3e8ccc534a87df03dfd41f9d51be",
+      "commit": "ddc7b24a520b0a4776440240dfccaa72fb14f953",
       "dirty": true,
-      "status": "M README.md\n M tools/delivery/package.py\n M tools/delivery/smoke_app.py\n?? handover/JUDGING-DEMO.md\n?? handover/SUBMISSION-CHECKLIST.md\n?? output/delivery/CONTROLLER_BRIEF.md\n?? output/delivery/controller-brief.json\n?? tests/delivery/test_readiness.py\n?? tools/delivery/controller_brief.py\n?? tools/delivery/verify_release.py",
-      "branch": "codex/challenge5-readiness"
+      "status": "M output/delivery/controller-brief.json",
+      "branch": "codex/challenge5-readiness-reviewed"
     },
-    "runtime_fingerprint": "1e1f9ec7ef3ca70a8d0ffd8d407ada5248ecec10cb6144460c7729aa26031976",
+    "runtime_fingerprint": "8303c9cb6eb5126446e8af66dd225863ce5cd70bdfae14161bf0784450989c15",
     "verification_status": "unverified_or_stale_execution_evidence",
     "producer_runs": [
       "m1-20261031T065014Z-eacdd5",
+      "m1-capest-20261031T072310Z-a27968",
       "a7b89e44c69449d1a7ecfbf0cb8ff3b5",
       "0949771a54bb4e49b4e215528eb5d46b"
     ]
@@ -39,8 +40,8 @@
         "verify"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 2.8,
-      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\risk_verify.log",
+      "elapsed_seconds": 3.34,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\risk_verify.log",
       "log_sha256": "9de83d24e4d4b385b14018ebc56f605deb56ee465060b822e7c38b418c54a6c5"
     },
     {
@@ -52,20 +53,20 @@
         "-q",
         "--tb=short",
         "--basetemp",
-        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\pytest",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\pytest",
         "--junitxml",
-        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\pytest.xml"
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\pytest.xml"
       ],
-      "exit_code": 1,
-      "elapsed_seconds": 53.03,
-      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\full_suite.log",
-      "log_sha256": "6ab38d70488ad5fa491d9933d5f3f1ac287da11341fe92c2de87fb20b1e0008e",
+      "exit_code": 0,
+      "elapsed_seconds": 68.61,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\full_suite.log",
+      "log_sha256": "79bb38eb9e209da2d23ea641a4820a1e0dbae4c38d6fea9209c24da643441d13",
       "test_counts": {
-        "tests": 347,
-        "failures": 1,
+        "tests": 395,
+        "failures": 0,
         "errors": 0,
         "skipped": 0,
-        "passed": 346
+        "passed": 395
       }
     },
     {
@@ -74,30 +75,96 @@
         "-m",
         "tools.delivery.smoke_app",
         "--report",
-        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\app.json"
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\app.json"
       ],
-      "exit_code": 1,
-      "elapsed_seconds": 5.53,
-      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\member2-delivery\\output\\delivery\\logs\\release-c6of0itj\\app_smoke.log",
-      "log_sha256": "50bf920dee991c3b85187241c38cc58cbc71663e162334c5eafdc4f7c04993b9",
+      "exit_code": 0,
+      "elapsed_seconds": 19.06,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\app_smoke.log",
+      "log_sha256": "7e4ce6ddaeb8e68fb4441916c57378a5100b546975bb15bf709d085504762f50",
       "app_result": {
-        "status": "failed",
+        "status": "passed",
         "checks": [
           {
             "case": "initial",
-            "exceptions": [
-              "Addition/subtraction of integers and integer-arrays with Timestamp is no longer supported.  Instead of adding/subtracting `n`, use `n * obj.freq`"
-            ]
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 3,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 3,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 6,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 6,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 12,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KATL",
+            "lead": 12,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 3,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 3,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 6,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 6,
+            "reveal": true,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 12,
+            "reveal": false,
+            "exceptions": []
+          },
+          {
+            "airport": "KDFW",
+            "lead": 12,
+            "reveal": true,
+            "exceptions": []
           }
         ]
       }
     }
   ],
-  "blockers": [
-    "full_suite exited 1",
-    "app_smoke exited 1",
-    "Usable capacity_estimate publication with all four payloads is required"
-  ],
+  "blockers": [],
   "publications": [
     {
       "manifest": "artifacts/capacity/manifest.json",
@@ -301,6 +368,23 @@
         "storm_annotation": {
           "status": "available",
           "use": "retrospective evaluation cohorts only"
+        }
+      }
+    },
+    {
+      "manifest": "artifacts/capacity_estimate/manifest.json",
+      "run_id": "m1-capest-20261031T072310Z-a27968",
+      "status": "partial",
+      "payloads": [
+        "artifacts/capacity_estimate/assumptions.json",
+        "artifacts/capacity_estimate/evaluation.json",
+        "artifacts/capacity_estimate/forecast.parquet",
+        "artifacts/capacity_estimate/model.json"
+      ],
+      "capabilities": {
+        "capacity_estimate": {
+          "status": "partial",
+          "reason": "Model-estimated capacity proxy for reporting carriers, not facility AAR; no uncertainty bounds."
         }
       }
     },
