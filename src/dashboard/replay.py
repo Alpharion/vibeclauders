@@ -643,8 +643,10 @@ def compare_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool, f
         if reveal:
             html(f'<div class="card-note" style="white-space:nowrap">Reviewed as of {clock(as_of)} UTC</div>')
     basis = results[0].forecast_basis if results else "No saved forecast"
-    policy = f"Alert when probability ≥ {outputs.ALERT_THRESHOLD:.0%}" if basis == "Model probability" else "Alert when the prevailing published TAF states the condition"
+    policy = f"Alert when probability ≥ {outputs.ALERT_THRESHOLD:.0%}" if basis != "Published TAF" else "Alert when the prevailing published TAF states the condition"
     html(f'<div class="strip" style="font-size:12px">{theme.icon("info")}<span>{escape(policy)} · Forecast basis: {escape(basis)} · Forecast saved before event window</span></div>')
+    if basis == "Illustrative placeholder":
+        theme.notice(f"<b>{outputs.PLACEHOLDER_LABEL}.</b> Forecast probabilities and any mock traffic forecast here are placeholders, so alert counts and errors are not accuracy results. Actual observations are real.")
     if not results:
         unavailable("Event verification", reason or "No saved forecast at this key.")
     elif not reveal:
@@ -715,6 +717,12 @@ def traffic_versus(bundle: Bundle, snapshot: Snapshot, forecasts: MovementForeca
     target = snapshot.target_hour_utc
     actual_in, actual_out = views.actual_at(bundle.table("traffic_hourly"), snapshot.airport, target)
     incoming, outgoing = forecasts.at(target, "arrival"), forecasts.at(target, "departure")
+    scheduled_in, scheduled_out = views.scheduled_at(bundle.table("traffic_hourly"), snapshot.airport, target)
+    mocked = (not incoming and pd.notna(scheduled_in)) or (not outgoing and pd.notna(scheduled_out))
+    incoming = incoming or outputs.placeholder_movement(target, "arrival", scheduled_in)
+    outgoing = outgoing or outputs.placeholder_movement(target, "departure", scheduled_out)
+    if mocked:
+        html(badge("ILLUSTRATIVE TRAFFIC FORECAST · 90% OF SCHEDULE", "amber"))
 
     def value(number_):
         return None if pd.isna(number_) else number_
