@@ -51,12 +51,11 @@ def render(bundle, snapshot):
         theme.html(flight_cards(rows.head(6)))
         if len(rows) > 6:
             st.caption(f"Showing the 6 highest-risk flights of {len(rows)}. Full list below.")
-        st.caption("Display colours: cyan ≤20%, amber >20% and <50%, red ≥50%, grey unscored. These visual bands are not calibrated risk categories; REVIEW uses each model's published threshold, even on a cyan card.")
+        st.caption("Delay probability: cyan ≤20% · amber >20% · red ≥50% · grey unscored. REVIEW follows the flight’s alert threshold.")
         names = {"dest":"Destination", "scheduled_dep_utc":"Departure UTC", "probability_severe_delay":"Delay >45 min probability", "threshold":"Review threshold", "flight_id":"Flight ID"}
         columns = [c for c in ["Flight", "dest", "scheduled_dep_utc", "Review status", "probability_severe_delay", "threshold", "flight_id"] if c in rows]
-        with st.expander("Flight watchlist details"):
+        with st.expander("All flights and review status"):
             st.dataframe(rows[columns].rename(columns=names), hide_index=True, height=min(300, 40 + 35 * len(rows)), width="stretch", column_config={
                 "Delay >45 min probability": st.column_config.NumberColumn(format="percent"),
                 "Review threshold": st.column_config.NumberColumn(format="percent"),
             })
-        st.caption("Highest published risk first. High risk means probability meets that flight's model threshold; no actual delay outcomes are used here.")

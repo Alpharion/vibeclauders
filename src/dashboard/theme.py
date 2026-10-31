@@ -167,11 +167,24 @@ CSS = _ROOT + """
 .flight-risk-card.red{background:linear-gradient(110deg,#342637,#142238)}
 .st-key-main{max-width:1700px;margin:0 auto;width:100%}
 @media(min-width:1100px){
- .st-key-main:has(.st-key-card-flight-watchlist){padding-bottom:350px}
- .st-key-card-flight-watchlist{position:fixed!important;bottom:12px;left:28px;right:28px;width:auto!important;z-index:90;max-height:300px;overflow:auto;box-shadow:0 -12px 32px #050D1A99;padding:16px 20px}
+ .st-key-main:has(.st-key-card-flight-watchlist){height:calc(100dvh - 365px)!important;max-height:calc(100dvh - 365px)!important;min-height:0!important;overflow-y:auto;padding-bottom:20px}
+ .st-key-card-flight-watchlist{position:fixed!important;bottom:12px;left:28px;right:28px;width:auto!important;z-index:2147483000;height:230px;max-height:230px;overflow:auto;box-shadow:0 -12px 32px #050D1A99;padding:16px 20px}
  .st-key-card-flight-watchlist .flight-risk-grid{display:flex;overflow-x:auto;gap:16px}
  .st-key-card-flight-watchlist .flight-risk-card{flex:0 0 250px}
 }
+.concept-weather-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:12px 0 20px}
+.concept-metric{background:#1B2D46;border:1px solid #2B405D;border-radius:10px;padding:18px 14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.concept-metric svg{width:24px;height:24px;color:#4DA3FF}
+.concept-metric span{font-size:13px;color:#A7B9D0}.concept-metric strong{font-size:23px;color:#E8F0FA;line-height:1.2;overflow-wrap:anywhere}
+.concept-metric small{font-size:11px;color:#A7B9D0}
+.st-key-concept-weather-panel,.st-key-concept-map-panel{background:#142238;border:1px solid #2B405D!important;border-radius:12px!important;padding:20px!important}
+.st-key-concept-map-panel{position:relative;z-index:0;isolation:isolate;overflow:hidden}
+.st-key-concept-map-panel .st-key-card-map{padding:0;border:0!important;box-shadow:none;background:transparent}
+.st-key-card-flight-watchlist .flight-risk-grid{max-height:none;overflow-y:visible}
+.st-key-card-flight-watchlist .flight-risk-card{padding:10px 14px;border-radius:10px}
+.st-key-card-flight-watchlist .flight-risk-score{margin:8px 0}
+.st-key-card-flight-watchlist .flight-risk-score strong{font-size:24px}
+@media(max-width:700px){.concept-weather-metrics{gap:8px}.concept-metric{padding:12px 8px}.concept-metric strong{font-size:18px}}
 """
 
 # Undocumented Streamlit structure. Each rule is cosmetic, so a rename only loosens the layout.

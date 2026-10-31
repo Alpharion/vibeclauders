@@ -1,4 +1,4 @@
-"""The five historical replay views. Each reads the shared snapshot; outcomes need an explicit reveal."""
+"""The historical replay operator views. Each reads the shared snapshot; outcomes need an explicit reveal."""
 from __future__ import annotations
 
 import json
@@ -14,7 +14,7 @@ from src.dashboard.theme import badge, card, card_title, chip, html, tile
 from src.dashboard.views import Snapshot
 from src.shared import AIRPORTS
 
-TABS = ("Overview", "Weather", "Traffic", "Compare", "Evaluation")
+TABS = ("Overview", "Weather", "Traffic", "Compare")
 STATUS_LABEL = {"available": "Available", "partial": "Partial", "unavailable": "Unavailable"}
 CHART = {"config": plots.CONFIG}
 
@@ -58,15 +58,6 @@ def render(bundle: Bundle, snapshot: Snapshot | None, window: int, reveal: bool,
         if tabs[3].open:
             with tabs[3]:
                 compare_tab(bundle, snapshot, window, reveal, forecasts)
-    if tabs[4].open:
-        with tabs[4]:
-            evaluation_tab(bundle, snapshot, reveal)
-    from src.dashboard.illustrative import render_examples
-    for tab, name in zip(tabs, TABS):
-        if tab.open:
-            with tab:
-                with st.expander("Additional illustrative numerical examples", expanded=False):
-                    render_examples(name, bundle, snapshot)
 
 
 def set_reveal(value: bool) -> None:
@@ -153,7 +144,7 @@ def map_section(bundle: Bundle, snapshot: Snapshot, window: int) -> None:
     text, alert = weather_banner(bundle, snapshot)
     note = f"Sampled {window}-hour connections are schematic, not flown routes"
     payload.update(
-        title="Operational map", tag=None, age=None, height=430, viewKey=f"{snapshot.airport.icao}",
+        title="Airport connections", tag=None, age=None, height=330, viewKey=f"{snapshot.airport.icao}",
         banner={"text": text, "alert": alert}, flag=f"Observed radar {radar:%H:%M} UTC · no forecast layer published",
         layerButtons=[
             {"key": "weather", "label": "Weather", "disabled": False, "reason": ""},
@@ -294,8 +285,10 @@ def review_brief_download(bundle: Bundle, snapshot: Snapshot) -> None:
 def weather_tab(bundle: Bundle, snapshot: Snapshot) -> None:
     from src.dashboard.presentation import render as render_presentation
     render_presentation(bundle, snapshot, st.session_state.get("window", 6))
-    with st.expander("Detailed weather evidence, probabilities and ATC follow-up", expanded=False):
-        weather_detail(bundle, snapshot)
+    from src.dashboard.weather_actions import render_weather_actions
+    row, _ = views.weather_feature_row(bundle, snapshot)
+    with st.expander("Weather follow-up actions", expanded=False):
+        render_weather_actions(row, snapshot, bundle)
 
 
 def weather_detail(bundle: Bundle, snapshot: Snapshot) -> None:
@@ -490,20 +483,6 @@ def traffic_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool, f
     else:
         context = f"Arrival capacity context: {capacity['aar_pred']:.0f}/h · separate from scheduled demand"
     theme.notice(context, "quiet", "info")
-    flights = bundle.table("flights")
-    if flights is not None:
-        movements = views.planning_movements(flights, snapshot.airport, snapshot.asof_utc, window)
-        scored = views.scored_flights(flights, snapshot)
-        with st.expander("Sampled flights behind the risk model"):
-            st.caption(
-                f"{movements['arrivals']} arrivals and {movements['departures']} departures over {window} h, "
-                f"{len(scored)} departures in the target hour ({movements['coverage']} coverage). Movements are not unique "
-                "flights, and a sample cannot establish whole-airport demand."
-            )
-            st.plotly_chart(plots.traffic_bars(movements["hourly"], movements["coverage"]), key="traffic", **CHART)
-            st.dataframe(movements["hourly"], hide_index=True)
-    with st.expander("Departure severe-delay risk (supporting context)", expanded=False):
-        risk_section(bundle, snapshot, reveal)
     outcomes_bar(reveal, "traffic", "Post-cutoff counts are outcomes and stay hidden until revealed.")
 
 
@@ -688,8 +667,6 @@ def compare_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool, f
             outcome_section(bundle, snapshot)
         with st.expander("Historical trends"):
             trends_section(bundle, snapshot)
-    with st.expander("Published decision snapshot"):
-        decision_section(bundle, snapshot, window)
     evidence_bar(snapshot, results, reveal)
 
 
