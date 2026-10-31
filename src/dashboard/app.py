@@ -201,6 +201,7 @@ def replay_mode() -> None:
     bundle = cached_bundle(str(root), fingerprint(root))
     snapshot, window = controls(bundle)
     st.session_state.setdefault("reveal", False)
+    st.session_state.setdefault("tab", "Weather")
     reveal = st.session_state["reveal"]
     with st.container(key="app-body", horizontal=True, gap=None):
         with st.container(key="rail", width=268):

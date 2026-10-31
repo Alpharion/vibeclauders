@@ -293,6 +293,13 @@ def review_brief_download(bundle: Bundle, snapshot: Snapshot) -> None:
 
 
 def weather_tab(bundle: Bundle, snapshot: Snapshot) -> None:
+    from src.dashboard.presentation import render as render_presentation
+    render_presentation(bundle, snapshot, st.session_state.get("window", 6))
+    with st.expander("Detailed weather evidence, probabilities and ATC follow-up", expanded=False):
+        weather_detail(bundle, snapshot)
+
+
+def weather_detail(bundle: Bundle, snapshot: Snapshot) -> None:
     probabilities, reason = outputs.display_probabilities(bundle, snapshot.airport, snapshot.asof_utc)
     row, feature_reason = views.weather_feature_row(bundle, snapshot)
     outlook = views.airport_outlook(bundle, snapshot.airport.icao, snapshot.asof_utc)
