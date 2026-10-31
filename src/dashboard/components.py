@@ -1,12 +1,11 @@
 """Custom Components v2: interactions that native widgets cannot express.
 
 The map keeps layer toggles in the browser and sends airport and horizon changes to Python. The
-watchlist sends the clicked airport. Both are registered once, at import. All text reaches the
+watchlist sends the clicked airport. Both are registered in the active runtime on each render. All text reaches the
 browser through textContent, so no value is interpreted as markup.
 """
 from __future__ import annotations
 
-from functools import lru_cache
 from pathlib import Path
 
 import streamlit as st
@@ -83,7 +82,6 @@ export default function ({data, parentElement, setTriggerValue}) {
 """
 
 
-@lru_cache(maxsize=1)
 def _map_component():
     library = (STATIC / "leaflet.js").read_text(encoding="utf-8")
     script = (STATIC / "ops_map.js").read_text(encoding="utf-8")
@@ -93,7 +91,6 @@ def _map_component():
     )
 
 
-@lru_cache(maxsize=1)
 def _watchlist_component():
     return st.components.v2.component("watchlist", html='<div class="rail"></div>', css=WATCHLIST_CSS, js=WATCHLIST_JS)
 

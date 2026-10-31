@@ -40,24 +40,25 @@ class Response:
 
 def fake_get(url, **kwargs):
     assert kwargs["timeout"]
-    return Response(METAR if "/metar" in url else TAF)
+    return Response(METAR if "/metar" in url else {"meta": {"valid": "2026-10-31T04:00:00Z"}})
 
 
 def test_fetch_records_failure_without_raising(monkeypatch):
     def fail(url, **kwargs):
-        if "/taf" in url:
+        if "KDFW" in url:
             raise requests.ConnectTimeout("timed out")
         return Response(METAR)
-
     monkeypatch.setattr(requests, "get", fail)
-    bundle = live.fetch_live_weather()
-    assert bundle["metar"] == METAR and bundle["taf"] == []
-    assert "TAF: ConnectTimeout" in bundle["errors"][0]
+    bundle = live.refresh_feed(only=["KATL", "KDFW"])
+    assert bundle["stations"]["KATL"]["reports"] == METAR
+    assert bundle["stations"]["KDFW"]["status"] == "unavailable"
+    assert "ConnectTimeout" in bundle["stations"]["KDFW"]["error"]
 
 
 def test_non_list_response_is_an_error(monkeypatch):
     monkeypatch.setattr(requests, "get", lambda url, **kwargs: Response({"error": "x"}))
-    assert len(live.fetch_live_weather()["errors"]) == 2
+    result = live.refresh_feed(only=["KATL", "KDFW"])
+    assert len(live.failed_sources(result)) == 2
 
 
 def test_ceiling_ignores_scattered_layers():
@@ -65,10 +66,13 @@ def test_ceiling_ignores_scattered_layers():
     assert live.ceiling_ft({"clouds": None}) is None
 
 
-def test_forecast_keeps_conditional_groups_labelled():
-    table = live.forecast_table(TAF[0])
-    assert list(table["Condition"]) == ["Prevailing", "TEMPO"]
-    assert live.forecast_table(None).empty
+def test_failed_refresh_keeps_last_good_reports_and_timestamp(monkeypatch):
+    previous = {"stations": {"KATL": {"reports": METAR, "retrieved_at_utc": "2026-10-31T01:00:00Z"}}, "radar": None}
+    monkeypatch.setattr(requests, "get", lambda *a, **k: Response([]))
+    result = live.refresh_feed(previous, only=["KATL"])
+    assert result["stations"]["KATL"]["status"] == "cached"
+    assert result["stations"]["KATL"]["retrieved_at_utc"] == "2026-10-31T01:00:00Z"
+    assert live.latest(result["stations"]["KATL"]) == METAR[0]
 
 
 def test_stale_age():
@@ -107,14 +111,14 @@ def test_live_fetch_leaves_replay_unchanged(app, monkeypatch):
     monkeypatch.setattr(requests, "get", fake_get)
     app.run()
     before = [(m.label, m.value) for m in app.metric]
-    app.radio(key="mode").set_value("Live weather").run()
+    next(w for w in app.get("button_group") if w.key == "mode").set_value("Live weather").run()
     app.button(key="live-fetch").click().run()
     assert not app.exception
-    assert ("Reported category", "VFR") in [(m.label, m.value) for m in app.metric]
-    app.radio(key="mode").set_value("Historical replay").run()
+    assert "VFR" in " ".join(x.value for x in app.markdown)
+    next(w for w in app.get("button_group") if w.key == "mode").set_value("Historical replay").run()
     assert [(m.label, m.value) for m in app.metric] == before
 
 
-def test_variable_wind_direction_stays_one_column_type():
-    message = {"fcsts": [{"timeFrom": 1, "timeTo": 2, "wdir": "VRB"}, {"timeFrom": 2, "timeTo": 3, "wdir": 70}]}
-    assert list(live.forecast_table(message)["Direction °"]) == ["VRB", "70"]
+def test_variable_wind_direction_stays_explicit():
+    assert live.wind_text({"wdir": "VRB", "wspd": 5}) == "VRB 5 kt"
+    assert live.wind_text({"wdir": 70, "wspd": 5}) == "70° 5 kt"

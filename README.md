@@ -10,16 +10,23 @@ A local Streamlit decision-support prototype for an **airport flow planner** at 
 
 ## Current status (31 Oct 2026)
 
-| Build | Tests | Notes |
-|---|---|---|
-| `main` | 410 passed, **31 failed**; app smoke fails | The Figma dashboard rebuild (`a3f3484`) crashes the replay screen ("Component 'watchlist' is not registered"), and some older tests call removed APIs. **Fix before presenting.** |
-| `codex/member-1-accuracy-integration` | 501 passed; release gate `verified` | Adds review priorities and an illustrative arrival scenario to Compare. Pre-Figma UI; conflicts with `main` in `src/dashboard/app.py`. |
+The unified build includes the Figma dashboard, repaired watchlist registration, exact-cutoff departure review priorities, weather-condition recommendations paired with high-risk flights, illustrative arrival scenarios, and model/data-processing evidence. All five tabs are retained.
 
-Both builds use the same published models. All figures come from [`handover/judging-figures.md`](handover/judging-figures.md); open items are in [`handover/presentation-readiness-review.md`](handover/presentation-readiness-review.md).
+The release gate passed **537 tests**, risk-publication verification and dashboard smoke checks. The authoritative machine-readable record is [`output/delivery/verification.json`](output/delivery/verification.json); its runtime fingerprint binds these checks to the packaged code and inputs. Browser map availability, rehearsal and supervisor acceptance remain manual checks.
+
+For the recommendations demo select **DFW, 2025-07-31 11:00 UTC, +12h**, then **Weather → Weather-condition recommendations → Paired high-risk departures**. The matching departure has 31.44% severe-delay probability against a 14.60% threshold. Pairing means shared forecast context, not causal attribution. See [`handover/weather-recommendations-demo.md`](handover/weather-recommendations-demo.md).
+
+Earlier branch reviews and handoffs are historical checkpoints, not current build status. Published operational figures remain in [`handover/judging-figures.md`](handover/judging-figures.md).
+
+### Full-BTS experiment versus published model
+
+The expanded experiment uses 614,524 eligible 2023 departures from 3,255,098 canonical BTS flights. It passed the pre-set late-2024 selection rule: macro average precision improved 12.24% and Brier error fell 0.96%. Updated 2025 backtests improved macro AP by 1.98% on the original sample and 4.86% on the full population, with some DFW cells regressing. These results are shown in Evaluation and documented in [`handover/full-bts-model-results.md`](handover/full-bts-model-results.md).
+
+**The experimental candidate has not replaced the published operational classifier.** The separate sampled-history feature experiment was rejected; the combined full-BTS/recent-history candidate remains follow-up work. Do not attribute experimental improvements to the published risk metrics below.
 
 ## Quick start
 
-Python 3.14 with the versions in `requirements-observed.txt`. A clean install hasn't been tested yet.
+Python 3.14 with the versions in `requirements-observed.txt`. The pinned environment was installed and checked separately; release verification runs against a fresh package extraction.
 
 ```text
 python -m pip install -r requirements-observed.txt
@@ -30,7 +37,7 @@ The published artifacts are committed, so the app runs offline; only map tiles a
 
 ## Automatic public-data pipeline
 
-Every step downloads and processes public data with no manual work. Run them from the repository root:
+These commands acquire and process the configured public sources. They run on demand, not whenever the dashboard opens. Network access and source availability are required for downloads; use a separate experiment checkout before replacing published artifacts. Run from the repository root:
 
 ```text
 python -m src.data_capacity run                                  # IEM METAR/TAF, BTS, NOAA -> flights, weather, features, traffic (~16 min from empty caches)
@@ -69,7 +76,7 @@ Splits are by airport-local date: train 2023, select on 2024, test January–Jul
 
 **Arrival capacity.**
 - **Genuine facility AAR: unmet.** The organisers supplied none, and FAA ASPM requires credentials; the attempts are logged in `artifacts/capacity/data_access.json`.
-- **Capacity estimate (proxy):** a high-demand, weather-regime frontier for reporting carriers (`artifacts/capacity_estimate/`). Its q0.90 pinball loss beats a no-weather baseline by 1.5–2%. It isn't AAR: there are no uncertainty bounds and no whole-airport scaling. Two further accuracy experiments were rejected under rules fixed in advance.
+- **Capacity estimate (proxy):** a high-demand, weather-regime frontier for reporting carriers (`artifacts/capacity_estimate/`). Its q0.90 pinball loss beats a no-weather baseline by approximately 0.88–1.87% across airport/lead cells. It isn't AAR: there are no uncertainty bounds and no whole-airport scaling. Two further accuracy experiments were rejected under rules fixed in advance.
 - **Arrivals forecast:** forecast of reporting-carrier arrivals per hour, RMSE 9.26 vs 15.43 baseline. In weather-impacted hours, weather improves RMSE by 1.83 (95% CI −3.46 to −0.46). This is throughput, not AAR, and team agreement to present it is pending.
 
 **Safeguards (challenge "want to avoid").**
@@ -79,6 +86,7 @@ Splits are by airport-local date: train 2023, select on 2024, test January–Jul
 - **Not single-airport:** the pipelines are registry-driven.
 
 **Decision support.**
+- Weather review cards cover thunderstorm flags, visibility <3 SM, ceiling <1,000 ft AGL and gusts ≥25 kt. Prevailing and conditional TAF evidence is explicit; historical frequencies and post-cutoff observations never trigger them. Paired flights use exact airport/cutoff/target/lead and their own inclusive risk threshold.
 - Ranked departure review priorities, with an exact-snapshot companion brief: `python -m tools.delivery.controller_brief --airport KATL --asof 2025-07-12T20:00:00Z --lead 3`.
 - Metering and rescheduling stay **unavailable**: there's no verified complete demand, capacity or backlog.
 

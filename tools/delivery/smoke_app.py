@@ -27,12 +27,22 @@ def main():
             for lead in (3, 6, 12):
                 for reveal in (False, True):
                     app.selectbox(key="airport").set_value(airport)
-                    app.radio(key="horizon").set_value(lead)
-                    app.toggle(key="reveal").set_value(reveal)
+                    next(w for w in app.get("button_group") if w.key == "horizon").set_value(lead)
+                    app.session_state["reveal"] = reveal
                     app.run()
+                    errors = [x.message for x in app.exception]
+                    visited = []
+                    for tab in ("Overview", "Weather", "Traffic", "Compare", "Evaluation"):
+                        if errors:
+                            break
+                        app.session_state["tab"] = tab
+                        app.session_state["reveal"] = reveal
+                        app.run()
+                        visited.append(tab)
+                        errors.extend(x.message for x in app.exception)
                     checks.append({"airport": airport, "lead": lead, "reveal": reveal,
-                                   "exceptions": [x.message for x in app.exception]})
-                    if app.exception:
+                                   "tabs": visited, "exceptions": errors})
+                    if errors:
                         return finish(checks)
     return finish(checks)
 

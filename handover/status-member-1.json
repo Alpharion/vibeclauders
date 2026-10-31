@@ -1,10 +1,10 @@
 {
   "member": "1",
   "baseline_commit": "737b46852c2d4b98e7c01e68ed7e3888f6542c5c",
-  "result_commit": null,
+  "result_commit": "5805f89b8ae908b330e1e981536f52ae1725c2ee",
   "state": "ready_for_review",
   "started_at_utc": "2026-10-31T07:19:14Z",
-  "updated_at_utc": "2026-10-31T07:32:00Z",
+  "updated_at_utc": "2026-10-31T08:01:25.776372+00:00",
   "elapsed_minutes": 13,
   "p0_completed": [
     "Traffic-chart crash fixed: reporting_chart draws the cutoff as a shape plus a separate annotation; test_actual_traffic_counts_need_reveal passes with masking unchanged",
@@ -12,27 +12,67 @@
     "Estimate bound into the existing Arrival capacity card (exact-key fallback after genuine AAR) and the Evaluation panel; optional hashed loader group; no new tabs or controls"
   ],
   "owned_files_changed": [
-    "src/dashboard/plots.py", "src/dashboard/data.py", "src/dashboard/views.py", "src/dashboard/app.py",
-    "src/data_capacity/__main__.py", "src/data_capacity/capacity_estimate.py",
-    "tests/dashboard/test_capacity_estimate.py", "tests/data_capacity/test_capacity_estimate.py",
-    "artifacts/capacity_estimate/forecast.parquet", "artifacts/capacity_estimate/evaluation.json",
-    "artifacts/capacity_estimate/assumptions.json", "artifacts/capacity_estimate/model.json",
+    "src/dashboard/plots.py",
+    "src/dashboard/data.py",
+    "src/dashboard/views.py",
+    "src/dashboard/app.py",
+    "src/data_capacity/__main__.py",
+    "src/data_capacity/capacity_estimate.py",
+    "tests/dashboard/test_capacity_estimate.py",
+    "tests/data_capacity/test_capacity_estimate.py",
+    "artifacts/capacity_estimate/forecast.parquet",
+    "artifacts/capacity_estimate/evaluation.json",
+    "artifacts/capacity_estimate/assumptions.json",
+    "artifacts/capacity_estimate/model.json",
     "artifacts/capacity_estimate/manifest.json",
-    "handover/status-member-1.json", "handover/member-1-sprint-results.md"
+    "handover/status-member-1.json",
+    "handover/member-1-sprint-results.md"
   ],
   "artifacts": [
-    {"path": "artifacts/capacity_estimate/", "run_id": "m1-capest-20261031T072310Z-a27968", "status": "partial",
-     "coverage": "KATL/KDFW, leads 3/6/12, held-out replay 2025-01..07, reporting carriers; model proxy, not AAR",
-     "upstream_run_id": "m1-20261031T065014Z-eacdd5"}
+    {
+      "path": "artifacts/capacity_estimate/",
+      "run_id": "m1-capest-20261031T072310Z-a27968",
+      "status": "partial",
+      "coverage": "KATL/KDFW, leads 3/6/12, held-out replay 2025-01..07, reporting carriers; model proxy, not AAR",
+      "upstream_run_id": "m1-20261031T065014Z-eacdd5"
+    }
   ],
   "checks": [
-    {"command": "python -m pytest tests/dashboard/test_additions.py::test_actual_traffic_counts_need_reveal -q", "exit": 0, "result": "1 passed"},
-    {"command": "python -m pytest tests/data_capacity tests/dashboard -q", "exit": 0, "result": "252 passed"},
-    {"command": "python -m pytest tests/flight_risk -q", "exit": 0, "result": "96 passed"},
-    {"command": "python -m pytest tests -q", "exit": 0, "result": "348 passed"},
-    {"command": "python -m src.flight_risk verify", "exit": 0, "result": "risk run 0949771a54bb4e49b4e215528eb5d46b verified"},
-    {"command": "python -m src.data_capacity estimate-capacity --from-published", "exit": 0, "result": "run m1-capest-20261031T072310Z-a27968"},
-    {"command": "AppTest app.py on real repository artifacts (KATL/KDFW x 3/6/12 x reveal off/on)", "exit": 0, "result": "no exceptions; estimate card and proxy evaluation shown"}
+    {
+      "command": "python -m pytest tests/dashboard/test_additions.py::test_actual_traffic_counts_need_reveal -q",
+      "exit": 0,
+      "result": "1 passed"
+    },
+    {
+      "command": "python -m pytest tests/data_capacity tests/dashboard -q",
+      "exit": 0,
+      "result": "252 passed"
+    },
+    {
+      "command": "python -m pytest tests/flight_risk -q",
+      "exit": 0,
+      "result": "96 passed"
+    },
+    {
+      "command": "python -m pytest tests -q",
+      "exit": 0,
+      "result": "348 passed"
+    },
+    {
+      "command": "python -m src.flight_risk verify",
+      "exit": 0,
+      "result": "risk run 0949771a54bb4e49b4e215528eb5d46b verified"
+    },
+    {
+      "command": "python -m src.data_capacity estimate-capacity --from-published",
+      "exit": 0,
+      "result": "run m1-capest-20261031T072310Z-a27968"
+    },
+    {
+      "command": "AppTest app.py on real repository artifacts (KATL/KDFW x 3/6/12 x reveal off/on)",
+      "exit": 0,
+      "result": "no exceptions; estimate card and proxy evaluation shown"
+    }
   ],
   "frozen_input_hashes_unchanged": true,
   "used_other_member_new_outputs": false,
@@ -46,8 +86,20 @@
     "Windows only; Linux not run from this machine"
   ],
   "next_steps": [
-    "Optional after P0 (not done): all-missing traffic-total display, small layout adjustments",
-    "Supervisor merge and combined release checks"
+    "Review and merge codex/member-1-accuracy-integration",
+    "Human browser/map check and three-minute rehearsal",
+    "Independent capacity validation and intervention evaluation remain future work"
   ],
-  "supervisor_acceptance": null
+  "supervisor_acceptance": null,
+  "accuracy_followup": {
+    "branch": "codex/member-1-accuracy-integration",
+    "incumbent_retained": true,
+    "weather_candidate": "rejected: pinball +0.1794%, proxy RMSE -0.5302%",
+    "calibration_candidate": "rejected: pinball +1.2932%, proxy RMSE -2.2597%",
+    "consumer_validation": "implemented",
+    "missing_input_followup": "implemented as explicit illustrative scenario and exact-key dashboard review priorities",
+    "details": "handover/member-1-accuracy-results.md",
+    "combined_gate": "verified: 501 tests passed; risk verifier and 13 real-artifact app checks passed",
+    "runtime_fingerprint": "52ecbb7c5a0aacc3ac7889be7a391987cab27f4fabf1a7cb6e038e3996eaec49"
+  }
 }

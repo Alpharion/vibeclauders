@@ -1,0 +1,1372 @@
+{
+  "protocol": {
+    "declared_before_scoring": true,
+    "candidate": "full_bts_existing_weather_features_v1",
+    "full_bts_training": "2023 full BTS reporting-carrier eligible departures",
+    "train": "incumbent: original sample 2023; candidate: full BTS 2023; identical fixed HGB settings",
+    "threshold_fit": "original sample January-August2024; each model's F1 threshold",
+    "selection": "2024-09-01 through 2024-12-31, original sample, same weather-available cohort",
+    "adoption": {
+      "macro_ap_relative_gain_min": 0.01,
+      "macro_brier_relative_regression_max": 0.02,
+      "per_cell_ap_relative_regression_max": 0.05,
+      "required_cells": 6
+    },
+    "parameters": {
+      "max_iter": 100,
+      "max_depth": 3,
+      "max_leaf_nodes": 8,
+      "learning_rate": 0.08,
+      "l2_regularization": 2.0,
+      "min_samples_leaf": 25,
+      "early_stopping": false,
+      "random_state": 27
+    },
+    "limits": [
+      "The original sample and late-2024 validation were inspected previously; this is not pristine external validation.",
+      "Historical observation receipt latency and schedule revision availability are unverified replay assumptions.",
+      "No capacity ratio: the published capacity estimate cannot be used as a 2023/2024 known-at-cutoff feature.",
+      "A passing experiment is not automatic production adoption; publication and consumer integration require separate review.",
+      "Candidate A evaluates more training data only. Candidate B full-history extra features is deferred unless separately evaluated.",
+      "Full-population secondary metrics use thresholds chosen on the original sample; they are not population-optimal thresholds."
+    ]
+  },
+  "status": "evaluated",
+  "generated_at_utc": "2026-10-31T08:29:33.437220+00:00",
+  "full_bts_status": "evaluated_existing_features",
+  "training_population": "BTS_reporting_carriers",
+  "publication_changed": false,
+  "decision": {
+    "adopt": true,
+    "macro_ap_relative_gain": 0.12238715574472225,
+    "macro_brier_relative_regression": -0.009635844497498769,
+    "worst_cell_ap_relative_regression": 0.01964490650814621,
+    "macro_ap_incumbent": 0.14812578246544308,
+    "macro_ap_candidate": 0.1662544756738501,
+    "macro_brier_incumbent": 0.06776333377531539,
+    "macro_brier_candidate": 0.06711037682842434
+  },
+  "validation": [
+    {
+      "airport": "KATL",
+      "lead": 3,
+      "incumbent": {
+        "n": 1124,
+        "severe_n": 69,
+        "precision": 0.1935483870967742,
+        "recall": 0.08695652173913043,
+        "f1": 0.12,
+        "pr_auc": 0.1579215958852493,
+        "brier": 0.05591005790140336,
+        "confusion": {
+          "tn": 1030,
+          "fp": 25,
+          "fn": 63,
+          "tp": 6
+        }
+      },
+      "candidate": {
+        "n": 1124,
+        "severe_n": 69,
+        "precision": 0.2727272727272727,
+        "recall": 0.13043478260869565,
+        "f1": 0.17647058823529413,
+        "pr_auc": 0.18571471995735175,
+        "brier": 0.05518703803561449,
+        "confusion": {
+          "tn": 1031,
+          "fp": 24,
+          "fn": 60,
+          "tp": 9
+        }
+      },
+      "shared_alert_budget": 31,
+      "incumbent_recall_at_budget": 0.08695652173913043,
+      "candidate_recall_at_budget": 0.11594202898550725
+    },
+    {
+      "airport": "KATL",
+      "lead": 6,
+      "incumbent": {
+        "n": 1124,
+        "severe_n": 69,
+        "precision": 0.2,
+        "recall": 0.08695652173913043,
+        "f1": 0.12121212121212122,
+        "pr_auc": 0.15557557255867266,
+        "brier": 0.055919791823886233,
+        "confusion": {
+          "tn": 1031,
+          "fp": 24,
+          "fn": 63,
+          "tp": 6
+        }
+      },
+      "candidate": {
+        "n": 1124,
+        "severe_n": 69,
+        "precision": 0.25806451612903225,
+        "recall": 0.11594202898550725,
+        "f1": 0.16,
+        "pr_auc": 0.18724964274260936,
+        "brier": 0.05527853827073414,
+        "confusion": {
+          "tn": 1032,
+          "fp": 23,
+          "fn": 61,
+          "tp": 8
+        }
+      },
+      "shared_alert_budget": 30,
+      "incumbent_recall_at_budget": 0.08695652173913043,
+      "candidate_recall_at_budget": 0.11594202898550725
+    },
+    {
+      "airport": "KATL",
+      "lead": 12,
+      "incumbent": {
+        "n": 1119,
+        "severe_n": 68,
+        "precision": 0.23076923076923078,
+        "recall": 0.08823529411764706,
+        "f1": 0.1276595744680851,
+        "pr_auc": 0.1460568198176855,
+        "brier": 0.05579874570000344,
+        "confusion": {
+          "tn": 1031,
+          "fp": 20,
+          "fn": 62,
+          "tp": 6
+        }
+      },
+      "candidate": {
+        "n": 1119,
+        "severe_n": 68,
+        "precision": 0.2857142857142857,
+        "recall": 0.11764705882352941,
+        "f1": 0.16666666666666666,
+        "pr_auc": 0.18141408430726916,
+        "brier": 0.05495189346141377,
+        "confusion": {
+          "tn": 1031,
+          "fp": 20,
+          "fn": 60,
+          "tp": 8
+        }
+      },
+      "shared_alert_budget": 26,
+      "incumbent_recall_at_budget": 0.08823529411764706,
+      "candidate_recall_at_budget": 0.11764705882352941
+    },
+    {
+      "airport": "KDFW",
+      "lead": 3,
+      "incumbent": {
+        "n": 1021,
+        "severe_n": 90,
+        "precision": 0.2222222222222222,
+        "recall": 0.2222222222222222,
+        "f1": 0.2222222222222222,
+        "pr_auc": 0.14848885608373463,
+        "brier": 0.07957476923272742,
+        "confusion": {
+          "tn": 861,
+          "fp": 70,
+          "fn": 70,
+          "tp": 20
+        }
+      },
+      "candidate": {
+        "n": 1021,
+        "severe_n": 90,
+        "precision": 0.2191780821917808,
+        "recall": 0.17777777777777778,
+        "f1": 0.19631901840490798,
+        "pr_auc": 0.1455718063884681,
+        "brier": 0.07924651466463249,
+        "confusion": {
+          "tn": 874,
+          "fp": 57,
+          "fn": 74,
+          "tp": 16
+        }
+      },
+      "shared_alert_budget": 90,
+      "incumbent_recall_at_budget": 0.2222222222222222,
+      "candidate_recall_at_budget": 0.18888888888888888
+    },
+    {
+      "airport": "KDFW",
+      "lead": 6,
+      "incumbent": {
+        "n": 1021,
+        "severe_n": 90,
+        "precision": 0.23076923076923078,
+        "recall": 0.2,
+        "f1": 0.21428571428571427,
+        "pr_auc": 0.14267318131665627,
+        "brier": 0.07956395295294742,
+        "confusion": {
+          "tn": 871,
+          "fp": 60,
+          "fn": 72,
+          "tp": 18
+        }
+      },
+      "candidate": {
+        "n": 1021,
+        "severe_n": 90,
+        "precision": 0.208955223880597,
+        "recall": 0.15555555555555556,
+        "f1": 0.17834394904458598,
+        "pr_auc": 0.1546113766288531,
+        "brier": 0.07873030329414255,
+        "confusion": {
+          "tn": 878,
+          "fp": 53,
+          "fn": 76,
+          "tp": 14
+        }
+      },
+      "shared_alert_budget": 78,
+      "incumbent_recall_at_budget": 0.2,
+      "candidate_recall_at_budget": 0.17777777777777778
+    },
+    {
+      "airport": "KDFW",
+      "lead": 12,
+      "incumbent": {
+        "n": 1021,
+        "severe_n": 90,
+        "precision": 0.17647058823529413,
+        "recall": 0.13333333333333333,
+        "f1": 0.1518987341772152,
+        "pr_auc": 0.1380386691306602,
+        "brier": 0.0798126850409244,
+        "confusion": {
+          "tn": 875,
+          "fp": 56,
+          "fn": 78,
+          "tp": 12
+        }
+      },
+      "candidate": {
+        "n": 1021,
+        "severe_n": 90,
+        "precision": 0.22916666666666666,
+        "recall": 0.12222222222222222,
+        "f1": 0.15942028985507245,
+        "pr_auc": 0.14296522401854908,
+        "brier": 0.0792679732440086,
+        "confusion": {
+          "tn": 894,
+          "fp": 37,
+          "fn": 79,
+          "tp": 11
+        }
+      },
+      "shared_alert_budget": 68,
+      "incumbent_recall_at_budget": 0.13333333333333333,
+      "candidate_recall_at_budget": 0.14444444444444443
+    }
+  ],
+  "thresholds": [
+    0.16162006682682725,
+    0.14410673930065215
+  ],
+  "train_snapshots": 1843390,
+  "train_unique_flights": 614524,
+  "validation_snapshots": 6430,
+  "validation_unique_flights": 2145,
+  "train_audit": {
+    "source_id": "canonical-flights",
+    "input_rows": 621706,
+    "target_departures": 621706,
+    "invalid_schedule_or_key_rows": 0,
+    "duplicate_key_rows": 0,
+    "invalid_or_naive_utc_rows": 0,
+    "original_flight_date_derived_rows": 0,
+    "unique_valid_schedule_rows": 621706,
+    "cancelled_rows": 7182,
+    "unknown_cancellation_rows": 0,
+    "noncancelled_missing_label_rows": 0,
+    "cancelled_with_delay_label_rows": 309,
+    "eligible_labelled_rows": 614524,
+    "split_rows": {
+      "train": 614524
+    },
+    "label_rule": "cancelled == 0 and DEP_DELAY is known; severe iff DEP_DELAY > 45",
+    "schedule_assumption": "Reconstructed historical schedule, not an archived schedule snapshot; publication/revision timing is unverified."
+  },
+  "train_weather_audit": {
+    "input_feature_rows": 135786,
+    "duplicate_key_rows": 0,
+    "invalid_timing_or_source_rows": 0,
+    "no_weather_value_rows": 0,
+    "invalid_or_naive_utc_rows": 0,
+    "unavailable_status_rows": 51,
+    "invalid_numeric_rows": 0,
+    "accepted_feature_rows": 135735,
+    "matched_flight_horizon_rows": 1843390
+  },
+  "sample_weather_audit": {
+    "input_feature_rows": 135786,
+    "duplicate_key_rows": 0,
+    "invalid_timing_or_source_rows": 0,
+    "no_weather_value_rows": 0,
+    "invalid_or_naive_utc_rows": 0,
+    "unavailable_status_rows": 51,
+    "invalid_numeric_rows": 0,
+    "accepted_feature_rows": 135735,
+    "matched_flight_horizon_rows": 47826
+  },
+  "full_bts_manifest_sha256": "21109a3d53a13a22af88b75e118bd0b58c9d11d78f6d4f4039f3ac077c37b1a5",
+  "full_bts_canonical_sha256": "e001ed4f942d975902959e7af6fbe5638c0f0886c090ab1b03e650ea5d98d3e6",
+  "source_months": 31,
+  "sources": {
+    "canonical": {
+      "path": "data\\processed\\flights.parquet",
+      "sha256": "6e446d7c1948333d122bb1fb64b6dd5546537c343e3defbfcf4b07c83ee9b4de"
+    },
+    "weather": {
+      "path": "artifacts\\capacity\\weather_features.parquet",
+      "sha256": "6c4374d1c4ed5816b7b6feba100852ddef250947c301e6a12fd9ffd7faf7fd81"
+    }
+  },
+  "upstream_run_id": "m1-20261031T065014Z-eacdd5",
+  "full_population_validation": [
+    {
+      "airport": "KATL",
+      "lead": 3,
+      "incumbent": {
+        "n": 114529,
+        "severe_n": 6725,
+        "precision": 0.21171465968586387,
+        "recall": 0.09620817843866171,
+        "f1": 0.13229731111338308,
+        "pr_auc": 0.11002898756281838,
+        "brier": 0.05438874026853708,
+        "confusion": {
+          "tn": 105395,
+          "fp": 2409,
+          "fn": 6078,
+          "tp": 647
+        }
+      },
+      "candidate": {
+        "n": 114529,
+        "severe_n": 6725,
+        "precision": 0.19371228961575104,
+        "recall": 0.09070631970260223,
+        "f1": 0.12355681588008913,
+        "pr_auc": 0.12006626310484952,
+        "brier": 0.05395489398128229,
+        "confusion": {
+          "tn": 105265,
+          "fp": 2539,
+          "fn": 6115,
+          "tp": 610
+        }
+      },
+      "shared_alert_budget": 3056,
+      "incumbent_recall_at_budget": 0.09620817843866171,
+      "candidate_recall_at_budget": 0.0887732342007435
+    },
+    {
+      "airport": "KATL",
+      "lead": 6,
+      "incumbent": {
+        "n": 114466,
+        "severe_n": 6725,
+        "precision": 0.20728008088978767,
+        "recall": 0.09144981412639405,
+        "f1": 0.12690879075526207,
+        "pr_auc": 0.11096109716599822,
+        "brier": 0.054372926544278034,
+        "confusion": {
+          "tn": 105389,
+          "fp": 2352,
+          "fn": 6110,
+          "tp": 615
+        }
+      },
+      "candidate": {
+        "n": 114466,
+        "severe_n": 6725,
+        "precision": 0.19458128078817735,
+        "recall": 0.08223048327137547,
+        "f1": 0.11560572802341382,
+        "pr_auc": 0.12062639632707159,
+        "brier": 0.05400077813111019,
+        "confusion": {
+          "tn": 105452,
+          "fp": 2289,
+          "fn": 6172,
+          "tp": 553
+        }
+      },
+      "shared_alert_budget": 2967,
+      "incumbent_recall_at_budget": 0.09144981412639405,
+      "candidate_recall_at_budget": 0.08565055762081784
+    },
+    {
+      "airport": "KATL",
+      "lead": 12,
+      "incumbent": {
+        "n": 114159,
+        "severe_n": 6718,
+        "precision": 0.21038961038961038,
+        "recall": 0.08440011908306043,
+        "f1": 0.12047168809093807,
+        "pr_auc": 0.11203038068784078,
+        "brier": 0.054441776865989645,
+        "confusion": {
+          "tn": 105313,
+          "fp": 2128,
+          "fn": 6151,
+          "tp": 567
+        }
+      },
+      "candidate": {
+        "n": 114159,
+        "severe_n": 6718,
+        "precision": 0.20015366884364194,
+        "recall": 0.07755284310806788,
+        "f1": 0.11179058040982727,
+        "pr_auc": 0.12461494631845617,
+        "brier": 0.0540055142886186,
+        "confusion": {
+          "tn": 105359,
+          "fp": 2082,
+          "fn": 6197,
+          "tp": 521
+        }
+      },
+      "shared_alert_budget": 2695,
+      "incumbent_recall_at_budget": 0.08440011908306043,
+      "candidate_recall_at_budget": 0.07993450431676094
+    },
+    {
+      "airport": "KDFW",
+      "lead": 3,
+      "incumbent": {
+        "n": 103931,
+        "severe_n": 9695,
+        "precision": 0.14266584260403792,
+        "recall": 0.14285714285714285,
+        "f1": 0.1427614286450549,
+        "pr_auc": 0.1280012764838777,
+        "brier": 0.08472336347648729,
+        "confusion": {
+          "tn": 85913,
+          "fp": 8323,
+          "fn": 8310,
+          "tp": 1385
+        }
+      },
+      "candidate": {
+        "n": 103931,
+        "severe_n": 9695,
+        "precision": 0.17002081887578072,
+        "recall": 0.1263537906137184,
+        "f1": 0.14497041420118342,
+        "pr_auc": 0.14016059645196313,
+        "brier": 0.08341921678917247,
+        "confusion": {
+          "tn": 88256,
+          "fp": 5980,
+          "fn": 8470,
+          "tp": 1225
+        }
+      },
+      "shared_alert_budget": 9708,
+      "incumbent_recall_at_budget": 0.14285714285714285,
+      "candidate_recall_at_budget": 0.1592573491490459
+    },
+    {
+      "airport": "KDFW",
+      "lead": 6,
+      "incumbent": {
+        "n": 103924,
+        "severe_n": 9695,
+        "precision": 0.14809384164222875,
+        "recall": 0.1250128932439402,
+        "f1": 0.13557805246378432,
+        "pr_auc": 0.12852271911430974,
+        "brier": 0.0845973891938187,
+        "confusion": {
+          "tn": 87257,
+          "fp": 6972,
+          "fn": 8483,
+          "tp": 1212
+        }
+      },
+      "candidate": {
+        "n": 103924,
+        "severe_n": 9695,
+        "precision": 0.1778383579217447,
+        "recall": 0.11438886023723568,
+        "f1": 0.1392254095788086,
+        "pr_auc": 0.14186130975830696,
+        "brier": 0.08341413087320637,
+        "confusion": {
+          "tn": 89102,
+          "fp": 5127,
+          "fn": 8586,
+          "tp": 1109
+        }
+      },
+      "shared_alert_budget": 8184,
+      "incumbent_recall_at_budget": 0.1250128932439402,
+      "candidate_recall_at_budget": 0.1408973697782362
+    },
+    {
+      "airport": "KDFW",
+      "lead": 12,
+      "incumbent": {
+        "n": 103676,
+        "severe_n": 9678,
+        "precision": 0.1403251794345979,
+        "recall": 0.09898739408968796,
+        "f1": 0.11608603453498939,
+        "pr_auc": 0.12463380769181445,
+        "brier": 0.08476190218990373,
+        "confusion": {
+          "tn": 88129,
+          "fp": 5869,
+          "fn": 8720,
+          "tp": 958
+        }
+      },
+      "candidate": {
+        "n": 103676,
+        "severe_n": 9678,
+        "precision": 0.1735908376375477,
+        "recall": 0.07987187435420541,
+        "f1": 0.10940485457504777,
+        "pr_auc": 0.13771966107221076,
+        "brier": 0.08363746188338135,
+        "confusion": {
+          "tn": 90318,
+          "fp": 3680,
+          "fn": 8905,
+          "tp": 773
+        }
+      },
+      "shared_alert_budget": 6827,
+      "incumbent_recall_at_budget": 0.09898739408968796,
+      "candidate_recall_at_budget": 0.11330853482124405
+    }
+  ],
+  "updated_2025_backtest": [
+    {
+      "airport": "KATL",
+      "lead": 3,
+      "incumbent": {
+        "n": 1759,
+        "severe_n": 228,
+        "precision": 0.27113702623906705,
+        "recall": 0.40789473684210525,
+        "f1": 0.3257443082311734,
+        "pr_auc": 0.2620365401854733,
+        "brier": 0.10657670050847863,
+        "confusion": {
+          "tn": 1281,
+          "fp": 250,
+          "fn": 135,
+          "tp": 93
+        }
+      },
+      "candidate": {
+        "n": 1759,
+        "severe_n": 228,
+        "precision": 0.29863013698630136,
+        "recall": 0.4780701754385965,
+        "f1": 0.3676222596964587,
+        "pr_auc": 0.27842334958915915,
+        "brier": 0.10530406864238366,
+        "confusion": {
+          "tn": 1275,
+          "fp": 256,
+          "fn": 119,
+          "tp": 109
+        }
+      },
+      "shared_alert_budget": 343,
+      "incumbent_recall_at_budget": 0.40789473684210525,
+      "candidate_recall_at_budget": 0.45614035087719296
+    },
+    {
+      "airport": "KATL",
+      "lead": 6,
+      "incumbent": {
+        "n": 1756,
+        "severe_n": 228,
+        "precision": 0.29924242424242425,
+        "recall": 0.34649122807017546,
+        "f1": 0.32113821138211385,
+        "pr_auc": 0.2747299924402046,
+        "brier": 0.10673481072828252,
+        "confusion": {
+          "tn": 1343,
+          "fp": 185,
+          "fn": 149,
+          "tp": 79
+        }
+      },
+      "candidate": {
+        "n": 1756,
+        "severe_n": 228,
+        "precision": 0.3125,
+        "recall": 0.4605263157894737,
+        "f1": 0.3723404255319149,
+        "pr_auc": 0.28226713028675693,
+        "brier": 0.10604230453965154,
+        "confusion": {
+          "tn": 1297,
+          "fp": 231,
+          "fn": 123,
+          "tp": 105
+        }
+      },
+      "shared_alert_budget": 264,
+      "incumbent_recall_at_budget": 0.34649122807017546,
+      "candidate_recall_at_budget": 0.3991228070175439
+    },
+    {
+      "airport": "KATL",
+      "lead": 12,
+      "incumbent": {
+        "n": 1754,
+        "severe_n": 228,
+        "precision": 0.3216374269005848,
+        "recall": 0.2412280701754386,
+        "f1": 0.2756892230576441,
+        "pr_auc": 0.2580955526250208,
+        "brier": 0.10836595557747263,
+        "confusion": {
+          "tn": 1410,
+          "fp": 116,
+          "fn": 173,
+          "tp": 55
+        }
+      },
+      "candidate": {
+        "n": 1754,
+        "severe_n": 228,
+        "precision": 0.31785714285714284,
+        "recall": 0.39035087719298245,
+        "f1": 0.35039370078740156,
+        "pr_auc": 0.27059785883308984,
+        "brier": 0.10742019487592981,
+        "confusion": {
+          "tn": 1335,
+          "fp": 191,
+          "fn": 139,
+          "tp": 89
+        }
+      },
+      "shared_alert_budget": 171,
+      "incumbent_recall_at_budget": 0.2412280701754386,
+      "candidate_recall_at_budget": 0.2675438596491228
+    },
+    {
+      "airport": "KDFW",
+      "lead": 3,
+      "incumbent": {
+        "n": 1771,
+        "severe_n": 264,
+        "precision": 0.2474437627811861,
+        "recall": 0.4583333333333333,
+        "f1": 0.32138114209827356,
+        "pr_auc": 0.24860851622107769,
+        "brier": 0.12287279125704433,
+        "confusion": {
+          "tn": 1139,
+          "fp": 368,
+          "fn": 143,
+          "tp": 121
+        }
+      },
+      "candidate": {
+        "n": 1771,
+        "severe_n": 264,
+        "precision": 0.23986486486486486,
+        "recall": 0.5378787878787878,
+        "f1": 0.3317757009345794,
+        "pr_auc": 0.2525528053816699,
+        "brier": 0.12195513990424171,
+        "confusion": {
+          "tn": 1057,
+          "fp": 450,
+          "fn": 122,
+          "tp": 142
+        }
+      },
+      "shared_alert_budget": 489,
+      "incumbent_recall_at_budget": 0.4583333333333333,
+      "candidate_recall_at_budget": 0.5075757575757576
+    },
+    {
+      "airport": "KDFW",
+      "lead": 6,
+      "incumbent": {
+        "n": 1771,
+        "severe_n": 264,
+        "precision": 0.2675438596491228,
+        "recall": 0.4621212121212121,
+        "f1": 0.3388888888888889,
+        "pr_auc": 0.2570482959332387,
+        "brier": 0.12213956155288702,
+        "confusion": {
+          "tn": 1173,
+          "fp": 334,
+          "fn": 142,
+          "tp": 122
+        }
+      },
+      "candidate": {
+        "n": 1771,
+        "severe_n": 264,
+        "precision": 0.26071428571428573,
+        "recall": 0.553030303030303,
+        "f1": 0.35436893203883496,
+        "pr_auc": 0.25354640453346133,
+        "brier": 0.1217431892125712,
+        "confusion": {
+          "tn": 1093,
+          "fp": 414,
+          "fn": 118,
+          "tp": 146
+        }
+      },
+      "shared_alert_budget": 456,
+      "incumbent_recall_at_budget": 0.4621212121212121,
+      "candidate_recall_at_budget": 0.48484848484848486
+    },
+    {
+      "airport": "KDFW",
+      "lead": 12,
+      "incumbent": {
+        "n": 1767,
+        "severe_n": 261,
+        "precision": 0.28095238095238095,
+        "recall": 0.4521072796934866,
+        "f1": 0.3465491923641703,
+        "pr_auc": 0.27178901899940655,
+        "brier": 0.12038266585251974,
+        "confusion": {
+          "tn": 1204,
+          "fp": 302,
+          "fn": 143,
+          "tp": 118
+        }
+      },
+      "candidate": {
+        "n": 1767,
+        "severe_n": 261,
+        "precision": 0.275092936802974,
+        "recall": 0.5670498084291188,
+        "f1": 0.3704630788485607,
+        "pr_auc": 0.26608957309956777,
+        "brier": 0.11993143206039081,
+        "confusion": {
+          "tn": 1116,
+          "fp": 390,
+          "fn": 113,
+          "tp": 148
+        }
+      },
+      "shared_alert_budget": 420,
+      "incumbent_recall_at_budget": 0.4521072796934866,
+      "candidate_recall_at_budget": 0.4904214559386973
+    }
+  ],
+  "full_population_updated_2025_backtest": [
+    {
+      "airport": "KATL",
+      "lead": 3,
+      "incumbent": {
+        "n": 178754,
+        "severe_n": 21945,
+        "precision": 0.23529573817460536,
+        "recall": 0.3892002734107997,
+        "f1": 0.29328342833596593,
+        "pr_auc": 0.21963068783999623,
+        "brier": 0.10351733314020639,
+        "confusion": {
+          "tn": 129051,
+          "fp": 27758,
+          "fn": 13404,
+          "tp": 8541
+        }
+      },
+      "candidate": {
+        "n": 178754,
+        "severe_n": 21945,
+        "precision": 0.2471019809244314,
+        "recall": 0.46042378673957624,
+        "f1": 0.32160420148006685,
+        "pr_auc": 0.24618671552740187,
+        "brier": 0.10170208239871308,
+        "confusion": {
+          "tn": 126023,
+          "fp": 30786,
+          "fn": 11841,
+          "tp": 10104
+        }
+      },
+      "shared_alert_budget": 36299,
+      "incumbent_recall_at_budget": 0.3892002734107997,
+      "candidate_recall_at_budget": 0.42150831624515833
+    },
+    {
+      "airport": "KATL",
+      "lead": 6,
+      "incumbent": {
+        "n": 178540,
+        "severe_n": 21938,
+        "precision": 0.2580930359085963,
+        "recall": 0.345975020512353,
+        "f1": 0.2956413352549371,
+        "pr_auc": 0.23020604826922203,
+        "brier": 0.10315612615698394,
+        "confusion": {
+          "tn": 134784,
+          "fp": 21818,
+          "fn": 14348,
+          "tp": 7590
+        }
+      },
+      "candidate": {
+        "n": 178540,
+        "severe_n": 21938,
+        "precision": 0.2663420270716408,
+        "recall": 0.44128908742820677,
+        "f1": 0.33218954809045054,
+        "pr_auc": 0.2540333475460676,
+        "brier": 0.10165430154519964,
+        "confusion": {
+          "tn": 129935,
+          "fp": 26667,
+          "fn": 12257,
+          "tp": 9681
+        }
+      },
+      "shared_alert_budget": 29408,
+      "incumbent_recall_at_budget": 0.345975020512353,
+      "candidate_recall_at_budget": 0.37441881666514726
+    },
+    {
+      "airport": "KATL",
+      "lead": 12,
+      "incumbent": {
+        "n": 178300,
+        "severe_n": 21926,
+        "precision": 0.2844062308078834,
+        "recall": 0.23232691781446685,
+        "f1": 0.2557421492582273,
+        "pr_auc": 0.22916824857900062,
+        "brier": 0.10389160787116743,
+        "confusion": {
+          "tn": 143557,
+          "fp": 12817,
+          "fn": 16832,
+          "tp": 5094
+        }
+      },
+      "candidate": {
+        "n": 178300,
+        "severe_n": 21926,
+        "precision": 0.28150671208174716,
+        "recall": 0.38447505244914715,
+        "f1": 0.3250308451573103,
+        "pr_auc": 0.2546370584865382,
+        "brier": 0.10219697111810837,
+        "confusion": {
+          "tn": 134858,
+          "fp": 21516,
+          "fn": 13496,
+          "tp": 8430
+        }
+      },
+      "shared_alert_budget": 17911,
+      "incumbent_recall_at_budget": 0.23232691781446685,
+      "candidate_recall_at_budget": 0.2550396789200037
+    },
+    {
+      "airport": "KDFW",
+      "lead": 3,
+      "incumbent": {
+        "n": 178581,
+        "severe_n": 26298,
+        "precision": 0.2455345403054516,
+        "recall": 0.46155601186402007,
+        "f1": 0.32054718550697847,
+        "pr_auc": 0.23794613084033606,
+        "brier": 0.12196774304469467,
+        "confusion": {
+          "tn": 114986,
+          "fp": 37297,
+          "fn": 14160,
+          "tp": 12138
+        }
+      },
+      "candidate": {
+        "n": 178581,
+        "severe_n": 26298,
+        "precision": 0.2381931535918146,
+        "recall": 0.550612213856567,
+        "f1": 0.3325333853873624,
+        "pr_auc": 0.24006518375685382,
+        "brier": 0.12068933664524073,
+        "confusion": {
+          "tn": 105972,
+          "fp": 46311,
+          "fn": 11818,
+          "tp": 14480
+        }
+      },
+      "shared_alert_budget": 49435,
+      "incumbent_recall_at_budget": 0.46155601186402007,
+      "candidate_recall_at_budget": 0.4689492954380018
+    },
+    {
+      "airport": "KDFW",
+      "lead": 6,
+      "incumbent": {
+        "n": 178395,
+        "severe_n": 26275,
+        "precision": 0.25618323973130713,
+        "recall": 0.4427021883920076,
+        "f1": 0.32455357142857144,
+        "pr_auc": 0.24607492456188365,
+        "brier": 0.12139303666101747,
+        "confusion": {
+          "tn": 118347,
+          "fp": 33773,
+          "fn": 14643,
+          "tp": 11632
+        }
+      },
+      "candidate": {
+        "n": 178395,
+        "severe_n": 26275,
+        "precision": 0.24632359309233887,
+        "recall": 0.5412369172216936,
+        "f1": 0.3385629940005714,
+        "pr_auc": 0.24413172631452437,
+        "brier": 0.1204391858888757,
+        "confusion": {
+          "tn": 108608,
+          "fp": 43512,
+          "fn": 12054,
+          "tp": 14221
+        }
+      },
+      "shared_alert_budget": 45405,
+      "incumbent_recall_at_budget": 0.4427021883920076,
+      "candidate_recall_at_budget": 0.4473073263558516
+    },
+    {
+      "airport": "KDFW",
+      "lead": 12,
+      "incumbent": {
+        "n": 178216,
+        "severe_n": 26270,
+        "precision": 0.26875803915963986,
+        "recall": 0.42950133231823373,
+        "f1": 0.3306276739143175,
+        "pr_auc": 0.255897625197048,
+        "brier": 0.12099550713925776,
+        "confusion": {
+          "tn": 121247,
+          "fp": 30699,
+          "fn": 14987,
+          "tp": 11283
+        }
+      },
+      "candidate": {
+        "n": 178216,
+        "severe_n": 26270,
+        "precision": 0.2531615409992302,
+        "recall": 0.5258089074990483,
+        "f1": 0.34177058590657167,
+        "pr_auc": 0.2488456793244888,
+        "brier": 0.12033575689481729,
+        "confusion": {
+          "tn": 111197,
+          "fp": 40749,
+          "fn": 12457,
+          "tp": 13813
+        }
+      },
+      "shared_alert_budget": 41982,
+      "incumbent_recall_at_budget": 0.42950133231823373,
+      "candidate_recall_at_budget": 0.43161400837457176
+    }
+  ],
+  "sample_fallback_previous_result": {
+    "protocol": {
+      "declared_before_scoring": true,
+      "candidate": "sample_cutoff_history_and_full_reporting_carrier_scheduled_counts_v1",
+      "full_bts_training": "not_run: monthly raw caches are absent on this machine",
+      "train": "original flight-local dates in 2023; both fixed HGB models",
+      "threshold_fit": "2024-01-01 through 2024-08-31, global F1-maximizing threshold per model",
+      "selection": "2024-09-01 through 2024-12-31, original sample, same weather-available cohort",
+      "adoption": {
+        "macro_ap_relative_gain_min": 0.01,
+        "macro_brier_relative_regression_max": 0.02,
+        "per_cell_ap_relative_regression_max": 0.05,
+        "required_cells": 6
+      },
+      "parameters": {
+        "max_iter": 100,
+        "max_depth": 3,
+        "max_leaf_nodes": 8,
+        "learning_rate": 0.08,
+        "l2_regularization": 2.0,
+        "min_samples_leaf": 25,
+        "early_stopping": false,
+        "random_state": 27
+      },
+      "limits": [
+        "The original sample and late-2024 validation were inspected previously; this is not pristine external validation.",
+        "Recent completed departures are only the challenge sample, not complete airport state.",
+        "Historical observation receipt latency and schedule revision availability are unverified replay assumptions.",
+        "Full-BTS expansion, inbound-tail state, destination weather and calibration are not evaluated here.",
+        "No capacity ratio: the published capacity estimate cannot be used as a 2023/2024 known-at-cutoff feature.",
+        "A passing experiment is not automatic production adoption; publication and consumer integration require separate review."
+      ]
+    },
+    "status": "evaluated",
+    "generated_at_utc": "2026-10-31T08:23:32.604421+00:00",
+    "full_bts_status": "blocked_missing_raw_caches",
+    "training_population": "original_challenge_sample",
+    "feature_history_population": "original_challenge_sample",
+    "feature_schedule_population": "BTS_reporting_carriers",
+    "publication_changed": false,
+    "decision": {
+      "adopt": false,
+      "macro_ap_relative_gain": -0.062297297084285774,
+      "macro_brier_relative_regression": 0.0018595781980781378,
+      "worst_cell_ap_relative_regression": 0.12562758354672032,
+      "macro_ap_incumbent": 0.14812578246544308,
+      "macro_ap_candidate": 0.1388979465893511,
+      "macro_brier_incumbent": 0.06776333377531539,
+      "macro_brier_candidate": 0.06788934499343306
+    },
+    "validation": [
+      {
+        "airport": "KATL",
+        "lead": 3,
+        "incumbent": {
+          "n": 1124,
+          "severe_n": 69,
+          "precision": 0.1935483870967742,
+          "recall": 0.08695652173913043,
+          "f1": 0.12,
+          "pr_auc": 0.1579215958852493,
+          "brier": 0.05591005790140336,
+          "confusion": {
+            "tn": 1030,
+            "fp": 25,
+            "fn": 63,
+            "tp": 6
+          }
+        },
+        "candidate": {
+          "n": 1124,
+          "severe_n": 69,
+          "precision": 0.21212121212121213,
+          "recall": 0.10144927536231885,
+          "f1": 0.13725490196078433,
+          "pr_auc": 0.14202877808431746,
+          "brier": 0.05615798080270593,
+          "confusion": {
+            "tn": 1029,
+            "fp": 26,
+            "fn": 62,
+            "tp": 7
+          }
+        },
+        "shared_alert_budget": 31,
+        "incumbent_recall_at_budget": 0.08695652173913043,
+        "candidate_recall_at_budget": 0.08695652173913043
+      },
+      {
+        "airport": "KATL",
+        "lead": 6,
+        "incumbent": {
+          "n": 1124,
+          "severe_n": 69,
+          "precision": 0.2,
+          "recall": 0.08695652173913043,
+          "f1": 0.12121212121212122,
+          "pr_auc": 0.15557557255867266,
+          "brier": 0.055919791823886233,
+          "confusion": {
+            "tn": 1031,
+            "fp": 24,
+            "fn": 63,
+            "tp": 6
+          }
+        },
+        "candidate": {
+          "n": 1124,
+          "severe_n": 69,
+          "precision": 0.2413793103448276,
+          "recall": 0.10144927536231885,
+          "f1": 0.14285714285714285,
+          "pr_auc": 0.13622611318883776,
+          "brier": 0.056177481967996844,
+          "confusion": {
+            "tn": 1033,
+            "fp": 22,
+            "fn": 62,
+            "tp": 7
+          }
+        },
+        "shared_alert_budget": 30,
+        "incumbent_recall_at_budget": 0.08695652173913043,
+        "candidate_recall_at_budget": 0.10144927536231885
+      },
+      {
+        "airport": "KATL",
+        "lead": 12,
+        "incumbent": {
+          "n": 1119,
+          "severe_n": 68,
+          "precision": 0.23076923076923078,
+          "recall": 0.08823529411764706,
+          "f1": 0.1276595744680851,
+          "pr_auc": 0.1460568198176855,
+          "brier": 0.05579874570000344,
+          "confusion": {
+            "tn": 1031,
+            "fp": 20,
+            "fn": 62,
+            "tp": 6
+          }
+        },
+        "candidate": {
+          "n": 1119,
+          "severe_n": 68,
+          "precision": 0.25,
+          "recall": 0.08823529411764706,
+          "f1": 0.13043478260869565,
+          "pr_auc": 0.12770805448347095,
+          "brier": 0.056021927659983706,
+          "confusion": {
+            "tn": 1033,
+            "fp": 18,
+            "fn": 62,
+            "tp": 6
+          }
+        },
+        "shared_alert_budget": 26,
+        "incumbent_recall_at_budget": 0.08823529411764706,
+        "candidate_recall_at_budget": 0.08823529411764706
+      },
+      {
+        "airport": "KDFW",
+        "lead": 3,
+        "incumbent": {
+          "n": 1021,
+          "severe_n": 90,
+          "precision": 0.2222222222222222,
+          "recall": 0.2222222222222222,
+          "f1": 0.2222222222222222,
+          "pr_auc": 0.14848885608373463,
+          "brier": 0.07957476923272742,
+          "confusion": {
+            "tn": 861,
+            "fp": 70,
+            "fn": 70,
+            "tp": 20
+          }
+        },
+        "candidate": {
+          "n": 1021,
+          "severe_n": 90,
+          "precision": 0.16279069767441862,
+          "recall": 0.23333333333333334,
+          "f1": 0.1917808219178082,
+          "pr_auc": 0.14799902972445733,
+          "brier": 0.07956050582704136,
+          "confusion": {
+            "tn": 823,
+            "fp": 108,
+            "fn": 69,
+            "tp": 21
+          }
+        },
+        "shared_alert_budget": 90,
+        "incumbent_recall_at_budget": 0.2222222222222222,
+        "candidate_recall_at_budget": 0.2111111111111111
+      },
+      {
+        "airport": "KDFW",
+        "lead": 6,
+        "incumbent": {
+          "n": 1021,
+          "severe_n": 90,
+          "precision": 0.23076923076923078,
+          "recall": 0.2,
+          "f1": 0.21428571428571427,
+          "pr_auc": 0.14267318131665627,
+          "brier": 0.07956395295294742,
+          "confusion": {
+            "tn": 871,
+            "fp": 60,
+            "fn": 72,
+            "tp": 18
+          }
+        },
+        "candidate": {
+          "n": 1021,
+          "severe_n": 90,
+          "precision": 0.1743119266055046,
+          "recall": 0.2111111111111111,
+          "f1": 0.19095477386934673,
+          "pr_auc": 0.1425170968939442,
+          "brier": 0.07966351529572514,
+          "confusion": {
+            "tn": 841,
+            "fp": 90,
+            "fn": 71,
+            "tp": 19
+          }
+        },
+        "shared_alert_budget": 78,
+        "incumbent_recall_at_budget": 0.2,
+        "candidate_recall_at_budget": 0.16111111111111112
+      },
+      {
+        "airport": "KDFW",
+        "lead": 12,
+        "incumbent": {
+          "n": 1021,
+          "severe_n": 90,
+          "precision": 0.17647058823529413,
+          "recall": 0.13333333333333333,
+          "f1": 0.1518987341772152,
+          "pr_auc": 0.1380386691306602,
+          "brier": 0.0798126850409244,
+          "confusion": {
+            "tn": 875,
+            "fp": 56,
+            "fn": 78,
+            "tp": 12
+          }
+        },
+        "candidate": {
+          "n": 1021,
+          "severe_n": 90,
+          "precision": 0.19387755102040816,
+          "recall": 0.2111111111111111,
+          "f1": 0.20212765957446807,
+          "pr_auc": 0.13690860716107886,
+          "brier": 0.07975465840714539,
+          "confusion": {
+            "tn": 852,
+            "fp": 79,
+            "fn": 71,
+            "tp": 19
+          }
+        },
+        "shared_alert_budget": 68,
+        "incumbent_recall_at_budget": 0.13333333333333333,
+        "candidate_recall_at_budget": 0.14444444444444443
+      }
+    ],
+    "thresholds": [
+      0.16162006682682725,
+      0.1468315992158443
+    ],
+    "train_snapshots": 18190,
+    "threshold_snapshots": 12593,
+    "validation_snapshots": 6430,
+    "train_unique_flights": 6064,
+    "validation_unique_flights": 2145,
+    "temporal_boundaries": {
+      "training_available_at_utc": "2024-01-01T06:00:00+00:00",
+      "threshold_available_at_utc": "2024-09-01T05:00:00+00:00",
+      "selection_available_at_utc": "2025-01-01T06:00:00+00:00",
+      "early_rows_excluded_before_training_available": 4,
+      "late_rows_excluded_before_threshold_available": 3
+    },
+    "feature_columns": [
+      "recent_departure_count_2h",
+      "recent_severe_delay_share_2h",
+      "recent_departure_count_3h",
+      "recent_severe_delay_share_3h",
+      "scheduled_arrivals_target_hour",
+      "scheduled_departures_target_hour"
+    ],
+    "weather_audit": {
+      "input_feature_rows": 135786,
+      "duplicate_key_rows": 0,
+      "invalid_timing_or_source_rows": 0,
+      "no_weather_value_rows": 0,
+      "invalid_or_naive_utc_rows": 0,
+      "unavailable_status_rows": 51,
+      "invalid_numeric_rows": 0,
+      "accepted_feature_rows": 135735,
+      "matched_flight_horizon_rows": 47826
+    },
+    "flight_audit": {
+      "source_id": "canonical-flights",
+      "input_rows": 25299,
+      "target_departures": 16151,
+      "invalid_schedule_or_key_rows": 0,
+      "duplicate_key_rows": 0,
+      "invalid_or_naive_utc_rows": 0,
+      "original_flight_date_derived_rows": 0,
+      "unique_valid_schedule_rows": 16151,
+      "cancelled_rows": 204,
+      "unknown_cancellation_rows": 0,
+      "noncancelled_missing_label_rows": 0,
+      "cancelled_with_delay_label_rows": 7,
+      "eligible_labelled_rows": 15947,
+      "split_rows": {
+        "test": 3537,
+        "train": 6064,
+        "validation": 6346
+      },
+      "label_rule": "cancelled == 0 and DEP_DELAY is known; severe iff DEP_DELAY > 45",
+      "schedule_assumption": "Reconstructed historical schedule, not an archived schedule snapshot; publication/revision timing is unverified."
+    },
+    "sources": {
+      "canonical": {
+        "path": "data\\processed\\flights.parquet",
+        "sha256": "6e446d7c1948333d122bb1fb64b6dd5546537c343e3defbfcf4b07c83ee9b4de"
+      },
+      "weather": {
+        "path": "artifacts\\capacity\\weather_features.parquet",
+        "sha256": "6c4374d1c4ed5816b7b6feba100852ddef250947c301e6a12fd9ffd7faf7fd81"
+      },
+      "traffic": {
+        "path": "artifacts\\capacity\\traffic_hourly.parquet",
+        "sha256": "bd14ee2bfc7aab93276306c248562e78b2723549ad9e2fe0911afb0c5cbedcde"
+      }
+    },
+    "upstream_run_id": "m1-20261031T065014Z-eacdd5",
+    "updated_2025_backtest": null,
+    "selection_disclosure": "Same fixed HGB family as incumbent, refit on 2023; both thresholds reselected on Jan-Aug2024. This isolates features but is not a comparison to a newly unseen validation period.",
+    "elapsed_seconds": 3.57
+  },
+  "temporal_boundaries": {
+    "training_available_at_utc": "2024-01-01T14:14:00+00:00",
+    "threshold_available_at_utc": "2024-09-01T05:00:00+00:00",
+    "selection_available_at_utc": "2025-01-01T14:02:00+00:00"
+  },
+  "elapsed_seconds": 56.94,
+  "test_disclosure": "Previously inspected 2025, updated backtest only; selection was locked first.",
+  "model_artifact": {
+    "path": "tmp\\full-bts-experiment\\full-candidate-models.joblib",
+    "sha256": "8ba78e2016ec0bc3fb226bdf4987c432ac436c4f4c2ecd2f94a9c8f7e9d2a938",
+    "reload_predictions_match": true,
+    "prediction_rows_checked_per_model": 6430
+  }
+}

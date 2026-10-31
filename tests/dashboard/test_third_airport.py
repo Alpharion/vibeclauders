@@ -7,7 +7,7 @@ from src.dashboard.views import Snapshot, resolve_airport, risk_rows
 from src.dashboard.data import load_bundle
 from src.shared import AIRPORTS, airport_icao
 from tests.dashboard import conftest as c
-from tests.dashboard.test_app import run, text  # noqa: F401
+from tests.dashboard.test_app import run, text, show  # noqa: F401
 
 KORD = {"iata": "ORD", "name": "Chicago", "timezone": "America/Chicago", "heading": 100, "lat": 41.98, "lon": -87.9}
 
@@ -35,10 +35,11 @@ def test_app_serves_configured_airport(run, tmp_path, registered):
     app = run(tmp_path)
     assert "ORD · Chicago" in app.selectbox(key="airport").options
     app.selectbox(key="airport").set_value("KORD").run()
-    app.radio(key="horizon").set_value(6).run()
+    next(w for w in app.get("button_group") if w.key == "horizon").set_value(6).run()
     assert not app.exception
-    assert "Flights scored" in [m.label for m in app.metric]
-    assert "fixed heading 100°" in text(app)
+    assert "Flights scored" in [m.label for m in show(app, "Traffic").metric]
+    assert resolve_airport("KORD").heading == 100
+    assert "Cutoff-safe weather unavailable" in text(show(app, "Weather"))
 
 
 def test_unconfigured_airport_does_not_appear_in_app(run, tmp_path):
@@ -54,7 +55,7 @@ def test_missing_heading_is_refused_not_guessed(run, tmp_path, monkeypatch):
     app = run(tmp_path)
     app.selectbox(key="airport").set_value("KORD").run()
     assert not app.exception
-    assert "no configured runway heading" in text(app)
+    assert "no configured runway heading" in text(show(app, "Weather"))
 
 
 def test_keys_stay_exact_with_a_third_airport(tmp_path, registered):

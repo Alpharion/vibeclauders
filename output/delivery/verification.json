@@ -2,27 +2,27 @@
   "schema_version": "1.0",
   "status": "verified",
   "scope": "combined_runtime",
-  "generated_at_utc": "2026-10-31T07:39:25.863833+00:00",
+  "generated_at_utc": "2026-10-31T08:40:27.162376+00:00",
   "source": {
-    "commit": "ddc7b24a520b0a4776440240dfccaa72fb14f953",
+    "commit": "0c7e96799ab2d509e41b6b4ebe826e22b9f41a18",
     "dirty": true,
-    "status": "M output/delivery/VERIFICATION.md\n M output/delivery/controller-brief.json\n M output/delivery/verification.json",
-    "branch": "codex/challenge5-readiness-reviewed"
+    "status": "M output/delivery/VERIFICATION.md\n M output/delivery/verification.json",
+    "branch": "codex/member-1-accuracy-integration"
   },
-  "runtime_fingerprint": "8303c9cb6eb5126446e8af66dd225863ce5cd70bdfae14161bf0784450989c15",
+  "runtime_fingerprint": "2e642c20efbb58845dcaf73e79678a71f2473124914b3be62f8a481b2618b7f3",
   "runtime_unchanged": true,
   "tested_archive": {
-    "archive": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\tested.zip",
-    "sha256": "17cef3d04aafa89f6ac700ad82049f84a72870eeb54d49031032737e494ad966",
-    "payload_files": 148,
-    "archive_bytes": 32372659,
+    "archive": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-dh16cz8c\\tested.zip",
+    "sha256": "26b83fc694adafacc33c423b97f65c6c31f129f2fbb37b99543c7f8044d63822",
+    "payload_files": 203,
+    "archive_bytes": 32537810,
     "source": {
-      "commit": "ddc7b24a520b0a4776440240dfccaa72fb14f953",
+      "commit": "f583a7e53e0a45645e8675df227d93ce63a73c49",
       "dirty": true,
-      "status": "M output/delivery/controller-brief.json",
-      "branch": "codex/challenge5-readiness-reviewed"
+      "status": "M output/delivery/VERIFICATION.md\n M output/delivery/verification.json\n M src/dashboard/replay.py\n M src/dashboard/weather_actions.py\n M tests/dashboard/test_weather_actions.py",
+      "branch": "codex/member-1-accuracy-integration"
     },
-    "runtime_fingerprint": "8303c9cb6eb5126446e8af66dd225863ce5cd70bdfae14161bf0784450989c15",
+    "runtime_fingerprint": "2e642c20efbb58845dcaf73e79678a71f2473124914b3be62f8a481b2618b7f3",
     "verification_status": "unverified_or_stale_execution_evidence",
     "producer_runs": [
       "m1-20261031T065014Z-eacdd5",
@@ -40,8 +40,8 @@
         "verify"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 3.34,
-      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\risk_verify.log",
+      "elapsed_seconds": 3.19,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-dh16cz8c\\risk_verify.log",
       "log_sha256": "9de83d24e4d4b385b14018ebc56f605deb56ee465060b822e7c38b418c54a6c5"
     },
     {
@@ -53,20 +53,20 @@
         "-q",
         "--tb=short",
         "--basetemp",
-        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\pytest",
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-dh16cz8c\\pytest",
         "--junitxml",
-        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\pytest.xml"
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-dh16cz8c\\pytest.xml"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 68.61,
-      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\full_suite.log",
-      "log_sha256": "79bb38eb9e209da2d23ea641a4820a1e0dbae4c38d6fea9209c24da643441d13",
+      "elapsed_seconds": 105.15,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-dh16cz8c\\full_suite.log",
+      "log_sha256": "3d4b6ab6ff2dc1d3ebdf82fc2cedc3c15c2061d2ce0d25e0e92e34fb5f2dce2f",
       "test_counts": {
-        "tests": 395,
+        "tests": 537,
         "failures": 0,
         "errors": 0,
         "skipped": 0,
-        "passed": 395
+        "passed": 537
       }
     },
     {
@@ -75,12 +75,12 @@
         "-m",
         "tools.delivery.smoke_app",
         "--report",
-        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\app.json"
+        "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-dh16cz8c\\app.json"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 19.06,
-      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\readiness-integration\\output\\delivery\\logs\\release-ee2lqzdl\\app_smoke.log",
-      "log_sha256": "7e4ce6ddaeb8e68fb4441916c57378a5100b546975bb15bf709d085504762f50",
+      "elapsed_seconds": 102.31,
+      "log": "C:\\Users\\simho\\OneDrive\\Documents\\ChatGPT\\vibeClaude\\tmp\\m1-accuracy-integration\\output\\delivery\\logs\\release-dh16cz8c\\app_smoke.log",
+      "log_sha256": "597c9385031e6926e412118257663e05f8765af1ef767de06d14ad2d1b8d60a2",
       "app_result": {
         "status": "passed",
         "checks": [
@@ -92,72 +92,156 @@
             "airport": "KATL",
             "lead": 3,
             "reveal": false,
+            "tabs": [
+              "Overview",
+              "Weather",
+              "Traffic",
+              "Compare",
+              "Evaluation"
+            ],
             "exceptions": []
           },
           {
             "airport": "KATL",
             "lead": 3,
             "reveal": true,
+            "tabs": [
+              "Overview",
+              "Weather",
+              "Traffic",
+              "Compare",
+              "Evaluation"
+            ],
             "exceptions": []
           },
           {
             "airport": "KATL",
             "lead": 6,
             "reveal": false,
+            "tabs": [
+              "Overview",
+              "Weather",
+              "Traffic",
+              "Compare",
+              "Evaluation"
+            ],
             "exceptions": []
           },
           {
             "airport": "KATL",
             "lead": 6,
             "reveal": true,
+            "tabs": [
+              "Overview",
+              "Weather",
+              "Traffic",
+              "Compare",
+              "Evaluation"
+            ],
             "exceptions": []
           },
           {
             "airport": "KATL",
             "lead": 12,
             "reveal": false,
+            "tabs": [
+              "Overview",
+              "Weather",
+              "Traffic",
+              "Compare",
+              "Evaluation"
+            ],
             "exceptions": []
           },
           {
             "airport": "KATL",
             "lead": 12,
             "reveal": true,
+            "tabs": [
+              "Overview",
+              "Weather",
+              "Traffic",
+              "Compare",
+              "Evaluation"
+            ],
             "exceptions": []
           },
           {
             "airport": "KDFW",
             "lead": 3,
             "reveal": false,
+            "tabs": [
+              "Overview",
+              "Weather",
+              "Traffic",
+              "Compare",
+              "Evaluation"
+            ],
             "exceptions": []
           },
           {
             "airport": "KDFW",
             "lead": 3,
             "reveal": true,
+            "tabs": [
+              "Overview",
+              "Weather",
+              "Traffic",
+              "Compare",
+              "Evaluation"
+            ],
             "exceptions": []
           },
           {
             "airport": "KDFW",
             "lead": 6,
             "reveal": false,
+            "tabs": [
+              "Overview",
+              "Weather",
+              "Traffic",
+              "Compare",
+              "Evaluation"
+            ],
             "exceptions": []
           },
           {
             "airport": "KDFW",
             "lead": 6,
             "reveal": true,
+            "tabs": [
+              "Overview",
+              "Weather",
+              "Traffic",
+              "Compare",
+              "Evaluation"
+            ],
             "exceptions": []
           },
           {
             "airport": "KDFW",
             "lead": 12,
             "reveal": false,
+            "tabs": [
+              "Overview",
+              "Weather",
+              "Traffic",
+              "Compare",
+              "Evaluation"
+            ],
             "exceptions": []
           },
           {
             "airport": "KDFW",
             "lead": 12,
             "reveal": true,
+            "tabs": [
+              "Overview",
+              "Weather",
+              "Traffic",
+              "Compare",
+              "Evaluation"
+            ],
             "exceptions": []
           }
         ]

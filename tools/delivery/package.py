@@ -72,7 +72,7 @@ def collect(root: Path) -> tuple[dict[str, bytes], list[dict]]:
                 add(path)
     add(root / "output/delivery/build-package.py")
     for name in ("verification.json", "VERIFICATION.md", "frozen-baseline.json",
-                 "controller-brief.json", "CONTROLLER_BRIEF.md"):
+                 "controller-brief.json", "CONTROLLER_BRIEF.md", "arrival-scenario.json"):
         path = root / "output/delivery" / name
         if path.is_file():
             add(path)
@@ -116,7 +116,8 @@ def runtime_fingerprint(files: dict[str, bytes]) -> str:
     """Bind execution evidence to code, tests, dependencies and runtime inputs, excluding prose."""
     selected = {k: digest(v) for k, v in sorted(files.items()) if
                 k.startswith(("src/", "tests/", "tools/delivery/", "artifacts/", "data/", ".streamlit/"))
-                or k in {"app.py", "requirements.txt", "requirements-observed.txt", "output/delivery/build-package.py"}}
+                or k in {"app.py", "requirements.txt", "requirements-observed.txt", "output/delivery/build-package.py",
+                         "handover/full-bts-model-evidence.json"}}
     return digest(json_bytes(selected))
 
 

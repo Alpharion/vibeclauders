@@ -154,7 +154,7 @@ def test_partial_weather_risk_keeps_its_reason(root):
     set_capabilities(root, {"weather_risk": {"status": "partial", "reason": "coverage gap"}})
     tables = {"weather_features": c.pd.DataFrame(), "predictions": c.predictions().assign(model_kind="weather_enhanced")}
     group = Group(manifest=json.loads((root / "artifacts/risk/manifest.json").read_text()))
-    groups = {"risk": group, "decision": Group(), "capacity": Group()}
+    groups = {"risk": group, "decision": Group(), "capacity": Group(), "forecast": Group()}
     capability = next(x for x in _capabilities(tables, {}, groups) if x.name == "Weather risk")
     assert (capability.status, capability.reasons) == ("partial", ["coverage gap"])
 

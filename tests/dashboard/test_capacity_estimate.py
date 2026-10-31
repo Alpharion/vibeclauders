@@ -152,20 +152,25 @@ def test_app_all_airports_leads_and_reveal_with_estimate(run, root):
     for icao in ("KATL", "KDFW"):
         app.selectbox(key="airport").set_value(icao).run()
         for lead in (3, 6, 12):
-            app.radio(key="horizon").set_value(lead).run()
+            next(w for w in app.get("button_group") if w.key == "horizon").set_value(lead).run()
             for reveal in (False, True):
-                app.toggle(key="reveal").set_value(reveal).run()
+                app.session_state["reveal"] = reveal
+                app.session_state["tab"] = "Evaluation"
+                app.run()
                 assert not app.exception, (icao, lead, reveal)
                 body = text(app)
                 assert "high_demand_weather_frontier_v1" in body  # Evaluation panel proxy section
                 assert ("mean_observed" in str([f.value.columns.tolist() for f in app.dataframe])) == reveal
     app.selectbox(key="airport").set_value("KATL").run()
-    app.radio(key="horizon").set_value(6).run()
-    labels = [m.label for m in app.metric]
-    assert any(views.ESTIMATE_TITLE in label for label in labels)
+    next(w for w in app.get("button_group") if w.key == "horizon").set_value(6).run()
+    app.session_state["tab"] = "Overview"
+    app.run()
+    assert any(views.ESTIMATE_TITLE in m.label for m in app.metric)
     assert "Model proxy, not facility AAR" in text(app)
 
 
 def test_app_without_estimate_still_launches(run, root):
-    body = text(run(root))
-    assert "Capacity estimate (proxy) not loaded" in body
+    app = run(root)
+    app.session_state["tab"] = "Evaluation"
+    app.run()
+    assert "Capacity estimate (proxy) not loaded" in text(app)

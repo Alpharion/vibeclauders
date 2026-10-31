@@ -631,7 +631,7 @@ def _capabilities(tables, docs, groups) -> list[Capability]:
     )
     capabilities.append(
         _capability(
-            "Review advisory", bool(recommendations.get("recommendations")),
+            "Operational advisory", bool(recommendations.get("recommendations")),
             gate or ["no deficit at the published snapshot, so no action is advised"], decision,
         )
     )
@@ -651,7 +651,7 @@ def _capabilities(tables, docs, groups) -> list[Capability]:
     capabilities.append(_movement_capability(tables, docs, capacity, forecast_group))
     capabilities.append(
         _capability(
-            "Proposed actions", "proposed_actions" in tables,
+            "Published operational actions", "proposed_actions" in tables,
             forecast_group.problems.get("proposed_actions", []), forecast_group,
         )
     )

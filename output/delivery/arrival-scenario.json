@@ -1,0 +1,101 @@
+{
+  "status": "scenario",
+  "scenario_only": true,
+  "operationally_eligible": false,
+  "queue": [
+    {
+      "target_hour_utc": "2025-07-12 20:00:00+00:00",
+      "demand_count": 46,
+      "start_backlog": 84,
+      "served": 80,
+      "end_backlog": 50,
+      "capacity": 80,
+      "capacity_proxy": 80.0,
+      "status": "illustrative_scenario"
+    },
+    {
+      "target_hour_utc": "2025-07-12 21:00:00+00:00",
+      "demand_count": 39,
+      "start_backlog": 50,
+      "served": 80,
+      "end_backlog": 9,
+      "capacity": 80,
+      "capacity_proxy": 80.0,
+      "status": "illustrative_scenario"
+    },
+    {
+      "target_hour_utc": "2025-07-12 22:00:00+00:00",
+      "demand_count": 54,
+      "start_backlog": 9,
+      "served": 63,
+      "end_backlog": 0,
+      "capacity": 80,
+      "capacity_proxy": 80.0,
+      "status": "illustrative_scenario"
+    },
+    {
+      "target_hour_utc": "2025-07-12 23:00:00+00:00",
+      "demand_count": 59,
+      "start_backlog": 0,
+      "served": 59,
+      "end_backlog": 0,
+      "capacity": 80,
+      "capacity_proxy": 80.0,
+      "status": "illustrative_scenario"
+    },
+    {
+      "target_hour_utc": "2025-07-13 00:00:00+00:00",
+      "demand_count": 53,
+      "start_backlog": 0,
+      "served": 53,
+      "end_backlog": 0,
+      "capacity": 80,
+      "capacity_proxy": 80.0,
+      "status": "illustrative_scenario"
+    },
+    {
+      "target_hour_utc": "2025-07-13 01:00:00+00:00",
+      "demand_count": 36,
+      "start_backlog": 0,
+      "served": 36,
+      "end_backlog": 0,
+      "capacity": 80,
+      "capacity_proxy": 80.0,
+      "status": "illustrative_scenario"
+    }
+  ],
+  "metrics": {
+    "initial_backlog_flights": 84,
+    "end_backlog_flights": 0,
+    "peak_backlog_flights": 84,
+    "scheduled_arrivals": 287,
+    "constant_capacity_proxy_per_hour": 80.0
+  },
+  "missing_inputs": [],
+  "limitations": [
+    "Retrospective scenario only: schedules are reconstructed after the fact; their availability at cutoff is assumed, not verified.",
+    "Only BTS reporting carriers are represented; these are not complete airport arrival inputs.",
+    "Scheduled gate arrivals include cancellations; observed counts represent runway arrivals. Their difference is an aggregate imbalance proxy, not identified waiting aircraft.",
+    "Backlog starts at an explicitly assumed zero at the warmup boundary; earlier backlog, early arrivals, diversions and cancellations are not reconstructed.",
+    "Completed-hour observations are assumed immediately available for this replay; historical publication latency is unknown.",
+    "No current/future actual arrivals or post-cutoff cancellation labels are used. No flight rescheduling or operational metering is supported.",
+    "Model-estimated capacity for reporting carriers, not independently validated facility AAR.",
+    "Scenario inputs are not eligible for the verified operational arrival queue.",
+    "No delay savings, metering rate, rescheduling or intervention benefit is established.",
+    "The caller must verify publication hashes before supplying this dataframe.",
+    "The +3h forecast rate is assumed constant across all 6 hours; these are scenario rates, not forecasts at unscored horizons. No rate interpolation is performed.",
+    "Queue counts describe this assumed scenario, not identified aircraft, measured delay, savings, or a tested intervention."
+  ],
+  "anchor_lead": 3,
+  "anchor_target_hour_utc": "2025-07-12T23:00:00+00:00",
+  "source_runs": {
+    "traffic": "m1-20261031T065014Z-eacdd5",
+    "capacity": "m1-capest-20261031T072310Z-a27968"
+  },
+  "evidence": {
+    "artifacts/capacity/traffic_hourly.parquet": "bd14ee2bfc7aab93276306c248562e78b2723549ad9e2fe0911afb0c5cbedcde",
+    "artifacts/capacity_estimate/forecast.parquet": "7cc2d8b9f277b634a77e8070d50fa13b9bb39cfdb298d585af2d49b310352219"
+  },
+  "airport": "KATL",
+  "asof_utc": "2025-07-12T20:00:00Z"
+}
