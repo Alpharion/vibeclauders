@@ -1,0 +1,2761 @@
+{
+  "specification": {
+    "candidate": "conditional_risk_gust_unknown_v1",
+    "train": "airport-local target date in 2023",
+    "validation": "airport-local target date 2024-09-01 through 2024-12-31",
+    "quantile": 0.9,
+    "demand_percentile": 0.75,
+    "conditional_rule": "any conditional TS/frozen/IFR or gust >=25 promotes prevailing VFR to mvfr risk stratum; no probability-as-certainty",
+    "wind_rule": "gust crosswind >=15 or gust-scaled tailwind >=10; unknown direction stays unknown unless peak speed <10 bounds both thresholds",
+    "adoption": {
+      "macro_pinball_reduction_min": 0.01,
+      "macro_rmse_increase_max": 0.02,
+      "cell_pinball_increase_max": 0.05
+    },
+    "headings": {
+      "KATL": 80,
+      "KDFW": 180
+    },
+    "limitations": "Reporting-carrier throughput proxy, not facility AAR. Conditional mvfr means forecast risk, not literal MVFR. No probability/hazard linkage recoverable from aggregates."
+  },
+  "source_hashes": {
+    "capacity_manifest": "artifacts/capacity/manifest.json",
+    "capacity_manifest_sha256": "e41f85fb26d73d4cddef33c2f5ed146199ef5d0207a505cae4bb424b152b2656",
+    "upstream_run_id": "m1-20261031T065014Z-eacdd5",
+    "inputs": [
+      {
+        "name": "traffic_hourly",
+        "path": "artifacts/capacity/traffic_hourly.parquet",
+        "sha256": "bd14ee2bfc7aab93276306c248562e78b2723549ad9e2fe0911afb0c5cbedcde",
+        "upstream_run_id": "m1-20261031T065014Z-eacdd5"
+      },
+      {
+        "name": "weather_features",
+        "path": "artifacts/capacity/weather_features.parquet",
+        "sha256": "6c4374d1c4ed5816b7b6feba100852ddef250947c301e6a12fd9ffd7faf7fd81",
+        "upstream_run_id": "m1-20261031T065014Z-eacdd5"
+      }
+    ]
+  },
+  "estimator_sha256": "589aa8ea467c6aee5b38741ede2f4d5ec3f274685c1e9d10acc2fb9032f1824f",
+  "experiment_sha256": "69fd09fd124a7f670017880283189378093404e05800e3987e8d57e04beb221c",
+  "validation": {
+    "cells": [
+      {
+        "airport": "KATL",
+        "lead": 3,
+        "incumbent": {
+          "n": 906,
+          "unique_target_hours": 906,
+          "rmse": 20.123299017691124,
+          "pinball": 2.424911699779249,
+          "below_frontier_share": 0.8774834437086093
+        },
+        "candidate": {
+          "n": 906,
+          "unique_target_hours": 906,
+          "rmse": 19.969086484139368,
+          "pinball": 2.4239293598233993,
+          "below_frontier_share": 0.8719646799116998
+        },
+        "airport_baseline": {
+          "n": 906,
+          "unique_target_hours": 906,
+          "rmse": 20.256005023556565,
+          "pinball": 2.428145695364238,
+          "below_frontier_share": 0.8785871964679912
+        },
+        "eligible_n": 906,
+        "support_min": {
+          "incumbent": 118,
+          "candidate": 169
+        },
+        "backoff_counts": {
+          "incumbent": {
+            "regime": 906
+          },
+          "candidate": {
+            "regime": 906
+          }
+        },
+        "regime_counts": {
+          "incumbent": {
+            "vfr": 690,
+            "ifr": 99,
+            "mvfr": 84,
+            "wind": 33
+          },
+          "candidate": {
+            "vfr": 635,
+            "ifr": 99,
+            "wind": 87,
+            "mvfr": 85
+          }
+        },
+        "regime_metrics": {
+          "incumbent": {
+            "ifr": {
+              "n": 99,
+              "unique_target_hours": 99,
+              "rmse": 22.71775881676197,
+              "pinball": 2.345252525252525,
+              "below_frontier_share": 0.9393939393939394
+            },
+            "mvfr": {
+              "n": 84,
+              "unique_target_hours": 84,
+              "rmse": 19.087517736293876,
+              "pinball": 2.1857142857142855,
+              "below_frontier_share": 0.8809523809523809
+            },
+            "vfr": {
+              "n": 690,
+              "unique_target_hours": 690,
+              "rmse": 20.05044363237563,
+              "pinball": 2.4840579710144928,
+              "below_frontier_share": 0.8666666666666667
+            },
+            "wind": {
+              "n": 33,
+              "unique_target_hours": 33,
+              "rmse": 15.364826025304637,
+              "pinball": 2.036060606060606,
+              "below_frontier_share": 0.9090909090909091
+            }
+          },
+          "candidate": {
+            "ifr": {
+              "n": 99,
+              "unique_target_hours": 99,
+              "rmse": 22.71775881676197,
+              "pinball": 2.345252525252525,
+              "below_frontier_share": 0.9393939393939394
+            },
+            "mvfr": {
+              "n": 85,
+              "unique_target_hours": 85,
+              "rmse": 18.667682045213233,
+              "pinball": 2.1376470588235295,
+              "below_frontier_share": 0.8823529411764706
+            },
+            "vfr": {
+              "n": 635,
+              "unique_target_hours": 635,
+              "rmse": 19.973368095312974,
+              "pinball": 2.5325984251968503,
+              "below_frontier_share": 0.8566929133858268
+            },
+            "wind": {
+              "n": 87,
+              "unique_target_hours": 87,
+              "rmse": 17.695378966883112,
+              "pinball": 2.0000000000000004,
+              "below_frontier_share": 0.896551724137931
+            }
+          }
+        },
+        "severe": {
+          "n": 0
+        }
+      },
+      {
+        "airport": "KATL",
+        "lead": 6,
+        "incumbent": {
+          "n": 906,
+          "unique_target_hours": 906,
+          "rmse": 20.15760008184513,
+          "pinball": 2.435353200883002,
+          "below_frontier_share": 0.8774834437086093
+        },
+        "candidate": {
+          "n": 906,
+          "unique_target_hours": 906,
+          "rmse": 19.98675057820797,
+          "pinball": 2.4403973509933774,
+          "below_frontier_share": 0.8730684326710817
+        },
+        "airport_baseline": {
+          "n": 906,
+          "unique_target_hours": 906,
+          "rmse": 20.256005023556565,
+          "pinball": 2.428145695364238,
+          "below_frontier_share": 0.8785871964679912
+        },
+        "eligible_n": 906,
+        "support_min": {
+          "incumbent": 120,
+          "candidate": 174
+        },
+        "backoff_counts": {
+          "incumbent": {
+            "regime": 906
+          },
+          "candidate": {
+            "regime": 906
+          }
+        },
+        "regime_counts": {
+          "incumbent": {
+            "vfr": 705,
+            "ifr": 101,
+            "mvfr": 73,
+            "wind": 27
+          },
+          "candidate": {
+            "vfr": 650,
+            "ifr": 101,
+            "wind": 82,
+            "mvfr": 73
+          }
+        },
+        "regime_metrics": {
+          "incumbent": {
+            "ifr": {
+              "n": 101,
+              "unique_target_hours": 101,
+              "rmse": 22.635729226684134,
+              "pinball": 2.338613861386138,
+              "below_frontier_share": 0.9405940594059405
+            },
+            "mvfr": {
+              "n": 73,
+              "unique_target_hours": 73,
+              "rmse": 19.67960142708096,
+              "pinball": 2.3401369863013697,
+              "below_frontier_share": 0.863013698630137
+            },
+            "vfr": {
+              "n": 705,
+              "unique_target_hours": 705,
+              "rmse": 20.009820284085972,
+              "pinball": 2.4659574468085106,
+              "below_frontier_share": 0.8695035460992908
+            },
+            "wind": {
+              "n": 27,
+              "unique_target_hours": 27,
+              "rmse": 14.700718047466632,
+              "pinball": 2.255555555555555,
+              "below_frontier_share": 0.8888888888888888
+            }
+          },
+          "candidate": {
+            "ifr": {
+              "n": 101,
+              "unique_target_hours": 101,
+              "rmse": 22.635729226684134,
+              "pinball": 2.338613861386138,
+              "below_frontier_share": 0.9405940594059405
+            },
+            "mvfr": {
+              "n": 73,
+              "unique_target_hours": 73,
+              "rmse": 19.249977761951218,
+              "pinball": 2.2534246575342465,
+              "below_frontier_share": 0.8767123287671232
+            },
+            "vfr": {
+              "n": 650,
+              "unique_target_hours": 650,
+              "rmse": 19.914741350992312,
+              "pinball": 2.494461538461538,
+              "below_frontier_share": 0.8630769230769231
+            },
+            "wind": {
+              "n": 82,
+              "unique_target_hours": 82,
+              "rmse": 17.575967516650156,
+              "pinball": 2.3036585365853655,
+              "below_frontier_share": 0.8658536585365854
+            }
+          }
+        },
+        "severe": {
+          "n": 0
+        }
+      },
+      {
+        "airport": "KATL",
+        "lead": 12,
+        "incumbent": {
+          "n": 906,
+          "unique_target_hours": 906,
+          "rmse": 20.130123057364447,
+          "pinball": 2.4248344370860924,
+          "below_frontier_share": 0.8763796909492274
+        },
+        "candidate": {
+          "n": 906,
+          "unique_target_hours": 906,
+          "rmse": 19.945026545111684,
+          "pinball": 2.4335540838852094,
+          "below_frontier_share": 0.8708609271523179
+        },
+        "airport_baseline": {
+          "n": 906,
+          "unique_target_hours": 906,
+          "rmse": 20.256005023556565,
+          "pinball": 2.428145695364238,
+          "below_frontier_share": 0.8785871964679912
+        },
+        "eligible_n": 906,
+        "support_min": {
+          "incumbent": 118,
+          "candidate": 180
+        },
+        "backoff_counts": {
+          "incumbent": {
+            "regime": 906
+          },
+          "candidate": {
+            "regime": 906
+          }
+        },
+        "regime_counts": {
+          "incumbent": {
+            "vfr": 708,
+            "ifr": 96,
+            "mvfr": 73,
+            "wind": 29
+          },
+          "candidate": {
+            "vfr": 668,
+            "ifr": 96,
+            "mvfr": 72,
+            "wind": 70
+          }
+        },
+        "regime_metrics": {
+          "incumbent": {
+            "ifr": {
+              "n": 96,
+              "unique_target_hours": 96,
+              "rmse": 23.617392955193,
+              "pinball": 2.401041666666666,
+              "below_frontier_share": 0.9375
+            },
+            "mvfr": {
+              "n": 73,
+              "unique_target_hours": 73,
+              "rmse": 18.9433184808917,
+              "pinball": 2.1863013698630134,
+              "below_frontier_share": 0.863013698630137
+            },
+            "vfr": {
+              "n": 708,
+              "unique_target_hours": 708,
+              "rmse": 19.961757222560077,
+              "pinball": 2.47090395480226,
+              "below_frontier_share": 0.867231638418079
+            },
+            "wind": {
+              "n": 29,
+              "unique_target_hours": 29,
+              "rmse": 13.480509557543975,
+              "pinball": 1.9793103448275862,
+              "below_frontier_share": 0.9310344827586207
+            }
+          },
+          "candidate": {
+            "ifr": {
+              "n": 96,
+              "unique_target_hours": 96,
+              "rmse": 23.617392955193,
+              "pinball": 2.401041666666666,
+              "below_frontier_share": 0.9375
+            },
+            "mvfr": {
+              "n": 72,
+              "unique_target_hours": 72,
+              "rmse": 18.079684731764544,
+              "pinball": 2.2097222222222217,
+              "below_frontier_share": 0.8611111111111112
+            },
+            "vfr": {
+              "n": 668,
+              "unique_target_hours": 668,
+              "rmse": 19.839664196984327,
+              "pinball": 2.4962574850299397,
+              "below_frontier_share": 0.8607784431137725
+            },
+            "wind": {
+              "n": 70,
+              "unique_target_hours": 70,
+              "rmse": 17.069396173101314,
+              "pinball": 2.1099999999999994,
+              "below_frontier_share": 0.8857142857142857
+            }
+          }
+        },
+        "severe": {
+          "n": 0
+        }
+      },
+      {
+        "airport": "KDFW",
+        "lead": 3,
+        "incumbent": {
+          "n": 869,
+          "unique_target_hours": 869,
+          "rmse": 21.634319366538776,
+          "pinball": 3.3770080552359034,
+          "below_frontier_share": 0.766398158803222
+        },
+        "candidate": {
+          "n": 869,
+          "unique_target_hours": 869,
+          "rmse": 21.57717782732359,
+          "pinball": 3.3872382048331406,
+          "below_frontier_share": 0.766398158803222
+        },
+        "airport_baseline": {
+          "n": 869,
+          "unique_target_hours": 869,
+          "rmse": 22.10256976764731,
+          "pinball": 3.4426927502876867,
+          "below_frontier_share": 0.7744533947065593
+        },
+        "eligible_n": 869,
+        "support_min": {
+          "incumbent": 61,
+          "candidate": 61
+        },
+        "backoff_counts": {
+          "incumbent": {
+            "regime": 869
+          },
+          "candidate": {
+            "regime": 869
+          }
+        },
+        "regime_counts": {
+          "incumbent": {
+            "vfr": 664,
+            "wind": 83,
+            "mvfr": 57,
+            "ifr": 34,
+            "convective": 31
+          },
+          "candidate": {
+            "vfr": 655,
+            "wind": 92,
+            "mvfr": 57,
+            "ifr": 34,
+            "convective": 31
+          }
+        },
+        "regime_metrics": {
+          "incumbent": {
+            "convective": {
+              "n": 31,
+              "unique_target_hours": 31,
+              "rmse": 32.670890663925796,
+              "pinball": 3.132258064516128,
+              "below_frontier_share": 0.9032258064516129
+            },
+            "ifr": {
+              "n": 34,
+              "unique_target_hours": 34,
+              "rmse": 19.4928342791728,
+              "pinball": 3.5205882352941167,
+              "below_frontier_share": 0.7352941176470589
+            },
+            "mvfr": {
+              "n": 57,
+              "unique_target_hours": 57,
+              "rmse": 17.77427670204056,
+              "pinball": 2.7294736842105256,
+              "below_frontier_share": 0.8070175438596491
+            },
+            "vfr": {
+              "n": 664,
+              "unique_target_hours": 664,
+              "rmse": 21.75181753934738,
+              "pinball": 3.515361445783132,
+              "below_frontier_share": 0.7605421686746988
+            },
+            "wind": {
+              "n": 83,
+              "unique_target_hours": 83,
+              "rmse": 18.546041697640028,
+              "pinball": 2.7474698795180705,
+              "below_frontier_share": 0.7469879518072289
+            }
+          },
+          "candidate": {
+            "convective": {
+              "n": 31,
+              "unique_target_hours": 31,
+              "rmse": 32.670890663925796,
+              "pinball": 3.132258064516128,
+              "below_frontier_share": 0.9032258064516129
+            },
+            "ifr": {
+              "n": 34,
+              "unique_target_hours": 34,
+              "rmse": 19.4928342791728,
+              "pinball": 3.5205882352941167,
+              "below_frontier_share": 0.7352941176470589
+            },
+            "mvfr": {
+              "n": 57,
+              "unique_target_hours": 57,
+              "rmse": 17.716247870147097,
+              "pinball": 2.7387719298245603,
+              "below_frontier_share": 0.8070175438596491
+            },
+            "vfr": {
+              "n": 655,
+              "unique_target_hours": 655,
+              "rmse": 21.830296197282085,
+              "pinball": 3.5450381679389307,
+              "below_frontier_share": 0.7572519083969466
+            },
+            "wind": {
+              "n": 92,
+              "unique_target_hours": 92,
+              "rmse": 17.612372133642676,
+              "pinball": 2.7021739130434783,
+              "below_frontier_share": 0.7717391304347826
+            }
+          }
+        },
+        "severe": {
+          "incumbent": {
+            "n": 31,
+            "unique_target_hours": 31,
+            "rmse": 32.670890663925796,
+            "pinball": 3.132258064516128,
+            "below_frontier_share": 0.9032258064516129
+          },
+          "candidate": {
+            "n": 31,
+            "unique_target_hours": 31,
+            "rmse": 32.670890663925796,
+            "pinball": 3.132258064516128,
+            "below_frontier_share": 0.9032258064516129
+          }
+        }
+      },
+      {
+        "airport": "KDFW",
+        "lead": 6,
+        "incumbent": {
+          "n": 869,
+          "unique_target_hours": 869,
+          "rmse": 21.530644524139454,
+          "pinball": 3.3866743383199074,
+          "below_frontier_share": 0.7640966628308401
+        },
+        "candidate": {
+          "n": 869,
+          "unique_target_hours": 869,
+          "rmse": 21.47388490763763,
+          "pinball": 3.394936708860759,
+          "below_frontier_share": 0.7640966628308401
+        },
+        "airport_baseline": {
+          "n": 869,
+          "unique_target_hours": 869,
+          "rmse": 22.10256976764731,
+          "pinball": 3.4426927502876867,
+          "below_frontier_share": 0.7744533947065593
+        },
+        "eligible_n": 869,
+        "support_min": {
+          "incumbent": 71,
+          "candidate": 71
+        },
+        "backoff_counts": {
+          "incumbent": {
+            "regime": 869
+          },
+          "candidate": {
+            "regime": 869
+          }
+        },
+        "regime_counts": {
+          "incumbent": {
+            "vfr": 666,
+            "wind": 84,
+            "mvfr": 58,
+            "ifr": 31,
+            "convective": 30
+          },
+          "candidate": {
+            "vfr": 659,
+            "wind": 91,
+            "mvfr": 58,
+            "ifr": 31,
+            "convective": 30
+          }
+        },
+        "regime_metrics": {
+          "incumbent": {
+            "convective": {
+              "n": 30,
+              "unique_target_hours": 30,
+              "rmse": 31.399044571451537,
+              "pinball": 3.036666666666666,
+              "below_frontier_share": 0.8333333333333334
+            },
+            "ifr": {
+              "n": 31,
+              "unique_target_hours": 31,
+              "rmse": 18.74962365213697,
+              "pinball": 3.496774193548386,
+              "below_frontier_share": 0.7419354838709677
+            },
+            "mvfr": {
+              "n": 58,
+              "unique_target_hours": 58,
+              "rmse": 18.328421494573902,
+              "pinball": 2.865517241379311,
+              "below_frontier_share": 0.7931034482758621
+            },
+            "vfr": {
+              "n": 666,
+              "unique_target_hours": 666,
+              "rmse": 21.82289482948444,
+              "pinball": 3.5190690690690687,
+              "below_frontier_share": 0.7597597597597597
+            },
+            "wind": {
+              "n": 84,
+              "unique_target_hours": 84,
+              "rmse": 17.493930920396917,
+              "pinball": 2.7811904761904738,
+              "below_frontier_share": 0.7619047619047619
+            }
+          },
+          "candidate": {
+            "convective": {
+              "n": 30,
+              "unique_target_hours": 30,
+              "rmse": 31.399044571451537,
+              "pinball": 3.036666666666666,
+              "below_frontier_share": 0.8333333333333334
+            },
+            "ifr": {
+              "n": 31,
+              "unique_target_hours": 31,
+              "rmse": 18.74962365213697,
+              "pinball": 3.496774193548386,
+              "below_frontier_share": 0.7419354838709677
+            },
+            "mvfr": {
+              "n": 58,
+              "unique_target_hours": 58,
+              "rmse": 18.328421494573902,
+              "pinball": 2.865517241379311,
+              "below_frontier_share": 0.7931034482758621
+            },
+            "vfr": {
+              "n": 659,
+              "unique_target_hours": 659,
+              "rmse": 21.81126798765113,
+              "pinball": 3.5373292867981787,
+              "below_frontier_share": 0.7572078907435509
+            },
+            "wind": {
+              "n": 91,
+              "unique_target_hours": 91,
+              "rmse": 17.30590955409468,
+              "pinball": 2.784615384615384,
+              "below_frontier_share": 0.7802197802197802
+            }
+          }
+        },
+        "severe": {
+          "incumbent": {
+            "n": 30,
+            "unique_target_hours": 30,
+            "rmse": 31.399044571451537,
+            "pinball": 3.036666666666666,
+            "below_frontier_share": 0.8333333333333334
+          },
+          "candidate": {
+            "n": 30,
+            "unique_target_hours": 30,
+            "rmse": 31.399044571451537,
+            "pinball": 3.036666666666666,
+            "below_frontier_share": 0.8333333333333334
+          }
+        }
+      },
+      {
+        "airport": "KDFW",
+        "lead": 12,
+        "incumbent": {
+          "n": 869,
+          "unique_target_hours": 869,
+          "rmse": 21.48784011312614,
+          "pinball": 3.3932105868814726,
+          "below_frontier_share": 0.762945914844649
+        },
+        "candidate": {
+          "n": 869,
+          "unique_target_hours": 869,
+          "rmse": 21.448784504765666,
+          "pinball": 3.393233601841196,
+          "below_frontier_share": 0.761795166858458
+        },
+        "airport_baseline": {
+          "n": 869,
+          "unique_target_hours": 869,
+          "rmse": 22.10256976764731,
+          "pinball": 3.4426927502876867,
+          "below_frontier_share": 0.7744533947065593
+        },
+        "eligible_n": 869,
+        "support_min": {
+          "incumbent": 84,
+          "candidate": 84
+        },
+        "backoff_counts": {
+          "incumbent": {
+            "regime": 869
+          },
+          "candidate": {
+            "regime": 869
+          }
+        },
+        "regime_counts": {
+          "incumbent": {
+            "vfr": 671,
+            "wind": 90,
+            "mvfr": 49,
+            "ifr": 33,
+            "convective": 26
+          },
+          "candidate": {
+            "vfr": 666,
+            "wind": 94,
+            "mvfr": 50,
+            "ifr": 33,
+            "convective": 26
+          }
+        },
+        "regime_metrics": {
+          "incumbent": {
+            "convective": {
+              "n": 26,
+              "unique_target_hours": 26,
+              "rmse": 28.292428995431596,
+              "pinball": 3.253846153846154,
+              "below_frontier_share": 0.8076923076923077
+            },
+            "ifr": {
+              "n": 33,
+              "unique_target_hours": 33,
+              "rmse": 21.52165928040443,
+              "pinball": 3.4636363636363634,
+              "below_frontier_share": 0.7575757575757576
+            },
+            "mvfr": {
+              "n": 49,
+              "unique_target_hours": 49,
+              "rmse": 15.973830639709513,
+              "pinball": 2.5489795918367344,
+              "below_frontier_share": 0.7755102040816326
+            },
+            "vfr": {
+              "n": 671,
+              "unique_target_hours": 671,
+              "rmse": 22.115601980699132,
+              "pinball": 3.5335320417287632,
+              "below_frontier_share": 0.7585692995529061
+            },
+            "wind": {
+              "n": 90,
+              "unique_target_hours": 90,
+              "rmse": 16.48399897543743,
+              "pinball": 2.821111111111111,
+              "below_frontier_share": 0.7777777777777778
+            }
+          },
+          "candidate": {
+            "convective": {
+              "n": 26,
+              "unique_target_hours": 26,
+              "rmse": 28.292428995431596,
+              "pinball": 3.253846153846154,
+              "below_frontier_share": 0.8076923076923077
+            },
+            "ifr": {
+              "n": 33,
+              "unique_target_hours": 33,
+              "rmse": 21.52165928040443,
+              "pinball": 3.4636363636363634,
+              "below_frontier_share": 0.7575757575757576
+            },
+            "mvfr": {
+              "n": 50,
+              "unique_target_hours": 50,
+              "rmse": 16.089748288895013,
+              "pinball": 2.54,
+              "below_frontier_share": 0.78
+            },
+            "vfr": {
+              "n": 666,
+              "unique_target_hours": 666,
+              "rmse": 22.059025377395997,
+              "pinball": 3.542042042042042,
+              "below_frontier_share": 0.7567567567567568
+            },
+            "wind": {
+              "n": 94,
+              "unique_target_hours": 94,
+              "rmse": 16.843067896621832,
+              "pinball": 2.8065957446808496,
+              "below_frontier_share": 0.776595744680851
+            }
+          }
+        },
+        "severe": {
+          "incumbent": {
+            "n": 26,
+            "unique_target_hours": 26,
+            "rmse": 28.292428995431596,
+            "pinball": 3.253846153846154,
+            "below_frontier_share": 0.8076923076923077
+          },
+          "candidate": {
+            "n": 26,
+            "unique_target_hours": 26,
+            "rmse": 28.292428995431596,
+            "pinball": 3.253846153846154,
+            "below_frontier_share": 0.8076923076923077
+          }
+        }
+      }
+    ],
+    "failure_example_absolute_error": [
+      {
+        "airport": "KATL",
+        "target_hour_utc": "2024-09-03 12:00:00+00:00",
+        "lead": 12,
+        "observed": 81.0,
+        "incumbent": 80.0,
+        "candidate": 79.0,
+        "regime_before": "mvfr",
+        "regime_after": "mvfr"
+      }
+    ],
+    "unique_airport_target_hours": 1775,
+    "missing_observed_in_window": 0,
+    "missing_or_future_features_in_window": 0,
+    "total_window_snapshots": 17574,
+    "eligible_snapshots": 5325,
+    "common_snapshots": 5325,
+    "excluded_input_or_demand": 12249,
+    "unavailable_incumbent": 0,
+    "unavailable_candidate": 0
+  },
+  "decision_locked_before_2025": {
+    "adopt": false,
+    "macro_pinball_ratio": 1.001794347313112,
+    "macro_rmse_ratio": 0.9946977848521358,
+    "worst_cell_pinball_ratio": 1.003595976148209
+  },
+  "model": {
+    "demand_thresholds": {
+      "KATL": 57.0,
+      "KDFW": 60.0
+    },
+    "cells": [
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "convective",
+        "support_n": 3,
+        "estimate": 84.2
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "winter",
+        "support_n": 0,
+        "estimate": null
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "ifr",
+        "support_n": 169,
+        "estimate": 82.20000000000002
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "wind",
+        "support_n": 290,
+        "estimate": 76.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "mvfr",
+        "support_n": 247,
+        "estimate": 81.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "vfr",
+        "support_n": 1567,
+        "estimate": 81.0
+      },
+      {
+        "level": "group",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "degraded",
+        "support_n": 709,
+        "estimate": 80.0
+      },
+      {
+        "level": "group",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "vfr",
+        "support_n": 1567,
+        "estimate": 81.0
+      },
+      {
+        "level": "airport",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "all",
+        "support_n": 2276,
+        "estimate": 81.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "convective",
+        "support_n": 4,
+        "estimate": 84.3
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "winter",
+        "support_n": 0,
+        "estimate": null
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "ifr",
+        "support_n": 174,
+        "estimate": 82.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "wind",
+        "support_n": 263,
+        "estimate": 76.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "mvfr",
+        "support_n": 239,
+        "estimate": 81.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "vfr",
+        "support_n": 1596,
+        "estimate": 81.0
+      },
+      {
+        "level": "group",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "degraded",
+        "support_n": 680,
+        "estimate": 80.0
+      },
+      {
+        "level": "group",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "vfr",
+        "support_n": 1596,
+        "estimate": 81.0
+      },
+      {
+        "level": "airport",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "all",
+        "support_n": 2276,
+        "estimate": 81.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "convective",
+        "support_n": 1,
+        "estimate": 46.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "winter",
+        "support_n": 0,
+        "estimate": null
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "ifr",
+        "support_n": 180,
+        "estimate": 83.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "wind",
+        "support_n": 252,
+        "estimate": 74.9
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "mvfr",
+        "support_n": 280,
+        "estimate": 79.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "vfr",
+        "support_n": 1563,
+        "estimate": 81.0
+      },
+      {
+        "level": "group",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "degraded",
+        "support_n": 713,
+        "estimate": 79.0
+      },
+      {
+        "level": "group",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "vfr",
+        "support_n": 1563,
+        "estimate": 81.0
+      },
+      {
+        "level": "airport",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "all",
+        "support_n": 2276,
+        "estimate": 81.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "convective",
+        "support_n": 143,
+        "estimate": 68.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "winter",
+        "support_n": 3,
+        "estimate": 55.400000000000006
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "ifr",
+        "support_n": 61,
+        "estimate": 61.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "wind",
+        "support_n": 198,
+        "estimate": 72.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "mvfr",
+        "support_n": 148,
+        "estimate": 65.30000000000001
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "vfr",
+        "support_n": 1668,
+        "estimate": 74.0
+      },
+      {
+        "level": "group",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "degraded",
+        "support_n": 553,
+        "estimate": 68.0
+      },
+      {
+        "level": "group",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "vfr",
+        "support_n": 1668,
+        "estimate": 74.0
+      },
+      {
+        "level": "airport",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "all",
+        "support_n": 2221,
+        "estimate": 73.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "convective",
+        "support_n": 134,
+        "estimate": 67.4
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "winter",
+        "support_n": 6,
+        "estimate": 59.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "ifr",
+        "support_n": 71,
+        "estimate": 61.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "wind",
+        "support_n": 207,
+        "estimate": 71.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "mvfr",
+        "support_n": 151,
+        "estimate": 64.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "vfr",
+        "support_n": 1652,
+        "estimate": 74.0
+      },
+      {
+        "level": "group",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "degraded",
+        "support_n": 569,
+        "estimate": 67.0
+      },
+      {
+        "level": "group",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "vfr",
+        "support_n": 1652,
+        "estimate": 74.0
+      },
+      {
+        "level": "airport",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "all",
+        "support_n": 2221,
+        "estimate": 73.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "convective",
+        "support_n": 125,
+        "estimate": 65.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "winter",
+        "support_n": 7,
+        "estimate": 40.000000000000014
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "ifr",
+        "support_n": 84,
+        "estimate": 62.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "wind",
+        "support_n": 213,
+        "estimate": 70.80000000000001
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "mvfr",
+        "support_n": 165,
+        "estimate": 63.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "vfr",
+        "support_n": 1627,
+        "estimate": 74.0
+      },
+      {
+        "level": "group",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "degraded",
+        "support_n": 594,
+        "estimate": 67.0
+      },
+      {
+        "level": "group",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "vfr",
+        "support_n": 1627,
+        "estimate": 74.0
+      },
+      {
+        "level": "airport",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "all",
+        "support_n": 2221,
+        "estimate": 73.0
+      }
+    ],
+    "baseline_airport_frontier": {
+      "KATL": 81.0,
+      "KDFW": 73.0
+    }
+  },
+  "incumbent_model": {
+    "demand_thresholds": {
+      "KATL": 57.0,
+      "KDFW": 60.0
+    },
+    "cells": [
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "convective",
+        "support_n": 3,
+        "estimate": 84.2
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "winter",
+        "support_n": 0,
+        "estimate": null
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "ifr",
+        "support_n": 169,
+        "estimate": 82.20000000000002
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "wind",
+        "support_n": 118,
+        "estimate": 72.3
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "mvfr",
+        "support_n": 186,
+        "estimate": 81.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "vfr",
+        "support_n": 1800,
+        "estimate": 81.0
+      },
+      {
+        "level": "group",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "degraded",
+        "support_n": 476,
+        "estimate": 80.0
+      },
+      {
+        "level": "group",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "vfr",
+        "support_n": 1800,
+        "estimate": 81.0
+      },
+      {
+        "level": "airport",
+        "airport": "KATL",
+        "horizon_hours": 3,
+        "regime": "all",
+        "support_n": 2276,
+        "estimate": 81.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "convective",
+        "support_n": 4,
+        "estimate": 84.3
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "winter",
+        "support_n": 0,
+        "estimate": null
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "ifr",
+        "support_n": 174,
+        "estimate": 82.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "wind",
+        "support_n": 120,
+        "estimate": 72.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "mvfr",
+        "support_n": 190,
+        "estimate": 81.1
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "vfr",
+        "support_n": 1788,
+        "estimate": 81.0
+      },
+      {
+        "level": "group",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "degraded",
+        "support_n": 488,
+        "estimate": 81.0
+      },
+      {
+        "level": "group",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "vfr",
+        "support_n": 1788,
+        "estimate": 81.0
+      },
+      {
+        "level": "airport",
+        "airport": "KATL",
+        "horizon_hours": 6,
+        "regime": "all",
+        "support_n": 2276,
+        "estimate": 81.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "convective",
+        "support_n": 1,
+        "estimate": 46.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "winter",
+        "support_n": 0,
+        "estimate": null
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "ifr",
+        "support_n": 180,
+        "estimate": 83.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "wind",
+        "support_n": 118,
+        "estimate": 70.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "mvfr",
+        "support_n": 208,
+        "estimate": 80.0
+      },
+      {
+        "level": "regime",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "vfr",
+        "support_n": 1769,
+        "estimate": 81.0
+      },
+      {
+        "level": "group",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "degraded",
+        "support_n": 507,
+        "estimate": 80.0
+      },
+      {
+        "level": "group",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "vfr",
+        "support_n": 1769,
+        "estimate": 81.0
+      },
+      {
+        "level": "airport",
+        "airport": "KATL",
+        "horizon_hours": 12,
+        "regime": "all",
+        "support_n": 2276,
+        "estimate": 81.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "convective",
+        "support_n": 143,
+        "estimate": 68.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "winter",
+        "support_n": 3,
+        "estimate": 55.400000000000006
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "ifr",
+        "support_n": 61,
+        "estimate": 61.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "wind",
+        "support_n": 183,
+        "estimate": 72.80000000000001
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "mvfr",
+        "support_n": 147,
+        "estimate": 65.4
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "vfr",
+        "support_n": 1684,
+        "estimate": 74.0
+      },
+      {
+        "level": "group",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "degraded",
+        "support_n": 537,
+        "estimate": 69.0
+      },
+      {
+        "level": "group",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "vfr",
+        "support_n": 1684,
+        "estimate": 74.0
+      },
+      {
+        "level": "airport",
+        "airport": "KDFW",
+        "horizon_hours": 3,
+        "regime": "all",
+        "support_n": 2221,
+        "estimate": 73.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "convective",
+        "support_n": 134,
+        "estimate": 67.4
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "winter",
+        "support_n": 6,
+        "estimate": 59.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "ifr",
+        "support_n": 71,
+        "estimate": 61.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "wind",
+        "support_n": 193,
+        "estimate": 71.80000000000001
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "mvfr",
+        "support_n": 151,
+        "estimate": 64.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "vfr",
+        "support_n": 1666,
+        "estimate": 74.0
+      },
+      {
+        "level": "group",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "degraded",
+        "support_n": 555,
+        "estimate": 67.0
+      },
+      {
+        "level": "group",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "vfr",
+        "support_n": 1666,
+        "estimate": 74.0
+      },
+      {
+        "level": "airport",
+        "airport": "KDFW",
+        "horizon_hours": 6,
+        "regime": "all",
+        "support_n": 2221,
+        "estimate": 73.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "convective",
+        "support_n": 125,
+        "estimate": 65.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "winter",
+        "support_n": 7,
+        "estimate": 40.000000000000014
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "ifr",
+        "support_n": 84,
+        "estimate": 62.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "wind",
+        "support_n": 206,
+        "estimate": 71.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "mvfr",
+        "support_n": 164,
+        "estimate": 63.0
+      },
+      {
+        "level": "regime",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "vfr",
+        "support_n": 1635,
+        "estimate": 74.0
+      },
+      {
+        "level": "group",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "degraded",
+        "support_n": 586,
+        "estimate": 67.0
+      },
+      {
+        "level": "group",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "vfr",
+        "support_n": 1635,
+        "estimate": 74.0
+      },
+      {
+        "level": "airport",
+        "airport": "KDFW",
+        "horizon_hours": 12,
+        "regime": "all",
+        "support_n": 2221,
+        "estimate": 73.0
+      }
+    ],
+    "baseline_airport_frontier": {
+      "KATL": 81.0,
+      "KDFW": 73.0
+    }
+  },
+  "publication_changed": false,
+  "updated_2025_backtest": {
+    "cells": [
+      {
+        "airport": "KATL",
+        "lead": 3,
+        "incumbent": {
+          "n": 827,
+          "unique_target_hours": 827,
+          "rmse": 22.666040042788282,
+          "pinball": 2.0525876662636033,
+          "below_frontier_share": 0.9721886336154776
+        },
+        "candidate": {
+          "n": 827,
+          "unique_target_hours": 827,
+          "rmse": 22.32575903130872,
+          "pinball": 2.0369286577992742,
+          "below_frontier_share": 0.9685610640870617
+        },
+        "airport_baseline": {
+          "n": 827,
+          "unique_target_hours": 827,
+          "rmse": 23.0610094574084,
+          "pinball": 2.085489721886336,
+          "below_frontier_share": 0.9746070133010882
+        },
+        "eligible_n": 827,
+        "support_min": {
+          "incumbent": 118,
+          "candidate": 169
+        },
+        "backoff_counts": {
+          "incumbent": {
+            "regime": 787,
+            "group": 40
+          },
+          "candidate": {
+            "regime": 787,
+            "group": 40
+          }
+        },
+        "regime_counts": {
+          "incumbent": {
+            "vfr": 648,
+            "ifr": 52,
+            "wind": 45,
+            "mvfr": 42,
+            "convective": 38,
+            "winter": 2
+          },
+          "candidate": {
+            "vfr": 507,
+            "wind": 136,
+            "mvfr": 92,
+            "ifr": 52,
+            "convective": 38,
+            "winter": 2
+          }
+        },
+        "regime_metrics": {
+          "incumbent": {
+            "convective": {
+              "n": 38,
+              "unique_target_hours": 38,
+              "rmse": 25.793205959791244,
+              "pinball": 2.3763157894736837,
+              "below_frontier_share": 1.0
+            },
+            "ifr": {
+              "n": 52,
+              "unique_target_hours": 52,
+              "rmse": 19.585846538135264,
+              "pinball": 1.783461538461539,
+              "below_frontier_share": 0.9615384615384616
+            },
+            "mvfr": {
+              "n": 42,
+              "unique_target_hours": 42,
+              "rmse": 22.7800037626988,
+              "pinball": 1.945238095238095,
+              "below_frontier_share": 1.0
+            },
+            "vfr": {
+              "n": 648,
+              "unique_target_hours": 648,
+              "rmse": 22.86953064885166,
+              "pinball": 2.071913580246913,
+              "below_frontier_share": 0.9722222222222222
+            },
+            "wind": {
+              "n": 45,
+              "unique_target_hours": 45,
+              "rmse": 18.000771588400806,
+              "pinball": 1.8255555555555552,
+              "below_frontier_share": 0.9333333333333333
+            },
+            "winter": {
+              "n": 2,
+              "unique_target_hours": 2,
+              "rmse": 46.647615158762406,
+              "pinball": 3.999999999999999,
+              "below_frontier_share": 1.0
+            }
+          },
+          "candidate": {
+            "convective": {
+              "n": 38,
+              "unique_target_hours": 38,
+              "rmse": 25.793205959791244,
+              "pinball": 2.3763157894736837,
+              "below_frontier_share": 1.0
+            },
+            "ifr": {
+              "n": 52,
+              "unique_target_hours": 52,
+              "rmse": 19.585846538135264,
+              "pinball": 1.783461538461539,
+              "below_frontier_share": 0.9615384615384616
+            },
+            "mvfr": {
+              "n": 92,
+              "unique_target_hours": 92,
+              "rmse": 27.216722800513658,
+              "pinball": 2.3445652173913034,
+              "below_frontier_share": 1.0
+            },
+            "vfr": {
+              "n": 507,
+              "unique_target_hours": 507,
+              "rmse": 21.513355330902904,
+              "pinball": 1.964891518737672,
+              "below_frontier_share": 0.9664694280078896
+            },
+            "wind": {
+              "n": 136,
+              "unique_target_hours": 136,
+              "rmse": 20.974073631650157,
+              "pinball": 2.070588235294117,
+              "below_frontier_share": 0.9485294117647058
+            },
+            "winter": {
+              "n": 2,
+              "unique_target_hours": 2,
+              "rmse": 46.647615158762406,
+              "pinball": 3.999999999999999,
+              "below_frontier_share": 1.0
+            }
+          }
+        },
+        "severe": {
+          "incumbent": {
+            "n": 40,
+            "unique_target_hours": 40,
+            "rmse": 27.218100595008462,
+            "pinball": 2.4574999999999996,
+            "below_frontier_share": 1.0
+          },
+          "candidate": {
+            "n": 40,
+            "unique_target_hours": 40,
+            "rmse": 27.218100595008462,
+            "pinball": 2.4574999999999996,
+            "below_frontier_share": 1.0
+          }
+        }
+      },
+      {
+        "airport": "KATL",
+        "lead": 6,
+        "incumbent": {
+          "n": 827,
+          "unique_target_hours": 827,
+          "rmse": 22.764348757765404,
+          "pinball": 2.0627327690447395,
+          "below_frontier_share": 0.9721886336154776
+        },
+        "candidate": {
+          "n": 827,
+          "unique_target_hours": 827,
+          "rmse": 22.420705364028052,
+          "pinball": 2.045344619105199,
+          "below_frontier_share": 0.969770253929867
+        },
+        "airport_baseline": {
+          "n": 827,
+          "unique_target_hours": 827,
+          "rmse": 23.0610094574084,
+          "pinball": 2.085489721886336,
+          "below_frontier_share": 0.9746070133010882
+        },
+        "eligible_n": 827,
+        "support_min": {
+          "incumbent": 120,
+          "candidate": 174
+        },
+        "backoff_counts": {
+          "incumbent": {
+            "regime": 803,
+            "group": 24
+          },
+          "candidate": {
+            "regime": 803,
+            "group": 24
+          }
+        },
+        "regime_counts": {
+          "incumbent": {
+            "vfr": 667,
+            "ifr": 52,
+            "mvfr": 48,
+            "wind": 36,
+            "convective": 23,
+            "winter": 1
+          },
+          "candidate": {
+            "vfr": 518,
+            "wind": 124,
+            "mvfr": 109,
+            "ifr": 52,
+            "convective": 23,
+            "winter": 1
+          }
+        },
+        "regime_metrics": {
+          "incumbent": {
+            "convective": {
+              "n": 23,
+              "unique_target_hours": 23,
+              "rmse": 29.166687370593063,
+              "pinball": 2.5565217391304347,
+              "below_frontier_share": 1.0
+            },
+            "ifr": {
+              "n": 52,
+              "unique_target_hours": 52,
+              "rmse": 21.071307505705477,
+              "pinball": 1.8461538461538458,
+              "below_frontier_share": 0.9615384615384616
+            },
+            "mvfr": {
+              "n": 48,
+              "unique_target_hours": 48,
+              "rmse": 20.36197436399525,
+              "pinball": 1.8704166666666657,
+              "below_frontier_share": 0.9791666666666666
+            },
+            "vfr": {
+              "n": 667,
+              "unique_target_hours": 667,
+              "rmse": 22.88354587174304,
+              "pinball": 2.0811094452773613,
+              "below_frontier_share": 0.9730134932533733
+            },
+            "wind": {
+              "n": 36,
+              "unique_target_hours": 36,
+              "rmse": 18.637626219857268,
+              "pinball": 1.8527777777777779,
+              "below_frontier_share": 0.9444444444444444
+            },
+            "winter": {
+              "n": 1,
+              "unique_target_hours": 1,
+              "rmse": 65.0,
+              "pinball": 6.499999999999998,
+              "below_frontier_share": 1.0
+            }
+          },
+          "candidate": {
+            "convective": {
+              "n": 23,
+              "unique_target_hours": 23,
+              "rmse": 28.29426120949802,
+              "pinball": 2.456521739130434,
+              "below_frontier_share": 1.0
+            },
+            "ifr": {
+              "n": 52,
+              "unique_target_hours": 52,
+              "rmse": 21.071307505705477,
+              "pinball": 1.8461538461538458,
+              "below_frontier_share": 0.9615384615384616
+            },
+            "mvfr": {
+              "n": 109,
+              "unique_target_hours": 109,
+              "rmse": 26.808700491041122,
+              "pinball": 2.329357798165137,
+              "below_frontier_share": 1.0
+            },
+            "vfr": {
+              "n": 518,
+              "unique_target_hours": 518,
+              "rmse": 21.571287938379186,
+              "pinball": 1.97027027027027,
+              "below_frontier_share": 0.9691119691119691
+            },
+            "wind": {
+              "n": 124,
+              "unique_target_hours": 124,
+              "rmse": 20.230725594118372,
+              "pinball": 2.0814516129032254,
+              "below_frontier_share": 0.9435483870967742
+            },
+            "winter": {
+              "n": 1,
+              "unique_target_hours": 1,
+              "rmse": 64.0,
+              "pinball": 6.399999999999999,
+              "below_frontier_share": 1.0
+            }
+          }
+        },
+        "severe": {
+          "incumbent": {
+            "n": 24,
+            "unique_target_hours": 24,
+            "rmse": 31.484784685092997,
+            "pinball": 2.7208333333333328,
+            "below_frontier_share": 1.0
+          },
+          "candidate": {
+            "n": 24,
+            "unique_target_hours": 24,
+            "rmse": 30.624744896896694,
+            "pinball": 2.6208333333333327,
+            "below_frontier_share": 1.0
+          }
+        }
+      },
+      {
+        "airport": "KATL",
+        "lead": 12,
+        "incumbent": {
+          "n": 827,
+          "unique_target_hours": 827,
+          "rmse": 22.762668051700853,
+          "pinball": 2.067110036275695,
+          "below_frontier_share": 0.9709794437726723
+        },
+        "candidate": {
+          "n": 827,
+          "unique_target_hours": 827,
+          "rmse": 22.131839490338766,
+          "pinball": 2.0329504232164446,
+          "below_frontier_share": 0.9576783555018138
+        },
+        "airport_baseline": {
+          "n": 827,
+          "unique_target_hours": 827,
+          "rmse": 23.0610094574084,
+          "pinball": 2.085489721886336,
+          "below_frontier_share": 0.9746070133010882
+        },
+        "eligible_n": 827,
+        "support_min": {
+          "incumbent": 118,
+          "candidate": 180
+        },
+        "backoff_counts": {
+          "incumbent": {
+            "regime": 823,
+            "group": 4
+          },
+          "candidate": {
+            "regime": 823,
+            "group": 4
+          }
+        },
+        "regime_counts": {
+          "incumbent": {
+            "vfr": 679,
+            "mvfr": 60,
+            "ifr": 52,
+            "wind": 32,
+            "convective": 3,
+            "winter": 1
+          },
+          "candidate": {
+            "vfr": 521,
+            "mvfr": 135,
+            "wind": 115,
+            "ifr": 52,
+            "convective": 3,
+            "winter": 1
+          }
+        },
+        "regime_metrics": {
+          "incumbent": {
+            "convective": {
+              "n": 3,
+              "unique_target_hours": 3,
+              "rmse": 22.37558192911788,
+              "pinball": 2.1999999999999993,
+              "below_frontier_share": 1.0
+            },
+            "ifr": {
+              "n": 52,
+              "unique_target_hours": 52,
+              "rmse": 21.385203367677452,
+              "pinball": 1.8942307692307687,
+              "below_frontier_share": 0.9615384615384616
+            },
+            "mvfr": {
+              "n": 60,
+              "unique_target_hours": 60,
+              "rmse": 17.612968706798597,
+              "pinball": 1.5283333333333329,
+              "below_frontier_share": 0.9666666666666667
+            },
+            "vfr": {
+              "n": 679,
+              "unique_target_hours": 679,
+              "rmse": 23.41389766418997,
+              "pinball": 2.1206185567010305,
+              "below_frontier_share": 0.9749631811487481
+            },
+            "wind": {
+              "n": 32,
+              "unique_target_hours": 32,
+              "rmse": 16.079878730886,
+              "pinball": 2.0749999999999997,
+              "below_frontier_share": 0.90625
+            },
+            "winter": {
+              "n": 1,
+              "unique_target_hours": 1,
+              "rmse": 64.0,
+              "pinball": 6.399999999999999,
+              "below_frontier_share": 1.0
+            }
+          },
+          "candidate": {
+            "convective": {
+              "n": 3,
+              "unique_target_hours": 3,
+              "rmse": 21.393145319626722,
+              "pinball": 2.0999999999999996,
+              "below_frontier_share": 1.0
+            },
+            "ifr": {
+              "n": 52,
+              "unique_target_hours": 52,
+              "rmse": 21.385203367677452,
+              "pinball": 1.8942307692307687,
+              "below_frontier_share": 0.9615384615384616
+            },
+            "mvfr": {
+              "n": 135,
+              "unique_target_hours": 135,
+              "rmse": 23.767702953876373,
+              "pinball": 2.0577777777777775,
+              "below_frontier_share": 0.9555555555555556
+            },
+            "vfr": {
+              "n": 521,
+              "unique_target_hours": 521,
+              "rmse": 22.249415010964544,
+              "pinball": 2.025335892514395,
+              "below_frontier_share": 0.9692898272552783
+            },
+            "wind": {
+              "n": 115,
+              "unique_target_hours": 115,
+              "rmse": 19.060715347678258,
+              "pinball": 2.062173913043478,
+              "below_frontier_share": 0.9043478260869565
+            },
+            "winter": {
+              "n": 1,
+              "unique_target_hours": 1,
+              "rmse": 63.0,
+              "pinball": 6.299999999999999,
+              "below_frontier_share": 1.0
+            }
+          }
+        },
+        "severe": {
+          "incumbent": {
+            "n": 4,
+            "unique_target_hours": 4,
+            "rmse": 37.40989174001978,
+            "pinball": 3.249999999999999,
+            "below_frontier_share": 1.0
+          },
+          "candidate": {
+            "n": 4,
+            "unique_target_hours": 4,
+            "rmse": 36.54449342924321,
+            "pinball": 3.1499999999999995,
+            "below_frontier_share": 1.0
+          }
+        }
+      },
+      {
+        "airport": "KDFW",
+        "lead": 3,
+        "incumbent": {
+          "n": 1412,
+          "unique_target_hours": 1412,
+          "rmse": 22.286785805264632,
+          "pinball": 2.3668980169971667,
+          "below_frontier_share": 0.8696883852691218
+        },
+        "candidate": {
+          "n": 1412,
+          "unique_target_hours": 1412,
+          "rmse": 22.183854316851136,
+          "pinball": 2.366012747875353,
+          "below_frontier_share": 0.8696883852691218
+        },
+        "airport_baseline": {
+          "n": 1412,
+          "unique_target_hours": 1412,
+          "rmse": 22.935600814073947,
+          "pinball": 2.4119688385269122,
+          "below_frontier_share": 0.8739376770538244
+        },
+        "eligible_n": 1412,
+        "support_min": {
+          "incumbent": 61,
+          "candidate": 61
+        },
+        "backoff_counts": {
+          "incumbent": {
+            "regime": 1405,
+            "group": 7
+          },
+          "candidate": {
+            "regime": 1405,
+            "group": 7
+          }
+        },
+        "regime_counts": {
+          "incumbent": {
+            "vfr": 1024,
+            "wind": 156,
+            "mvfr": 87,
+            "convective": 74,
+            "ifr": 64,
+            "winter": 7
+          },
+          "candidate": {
+            "vfr": 1016,
+            "wind": 164,
+            "mvfr": 87,
+            "convective": 74,
+            "ifr": 64,
+            "winter": 7
+          }
+        },
+        "regime_metrics": {
+          "incumbent": {
+            "convective": {
+              "n": 74,
+              "unique_target_hours": 74,
+              "rmse": 32.993856922078606,
+              "pinball": 2.9729729729729724,
+              "below_frontier_share": 0.9459459459459459
+            },
+            "ifr": {
+              "n": 64,
+              "unique_target_hours": 64,
+              "rmse": 16.83513810457164,
+              "pinball": 2.7359375,
+              "below_frontier_share": 0.78125
+            },
+            "mvfr": {
+              "n": 87,
+              "unique_target_hours": 87,
+              "rmse": 18.269728747459478,
+              "pinball": 2.4308045977011488,
+              "below_frontier_share": 0.8160919540229885
+            },
+            "vfr": {
+              "n": 1024,
+              "unique_target_hours": 1024,
+              "rmse": 20.757481708410584,
+              "pinball": 2.2619140625,
+              "below_frontier_share": 0.869140625
+            },
+            "wind": {
+              "n": 156,
+              "unique_target_hours": 156,
+              "rmse": 25.619809042703963,
+              "pinball": 2.39602564102564,
+              "below_frontier_share": 0.8974358974358975
+            },
+            "winter": {
+              "n": 7,
+              "unique_target_hours": 7,
+              "rmse": 65.46427597225397,
+              "pinball": 6.499999999999998,
+              "below_frontier_share": 1.0
+            }
+          },
+          "candidate": {
+            "convective": {
+              "n": 74,
+              "unique_target_hours": 74,
+              "rmse": 32.993856922078606,
+              "pinball": 2.9729729729729724,
+              "below_frontier_share": 0.9459459459459459
+            },
+            "ifr": {
+              "n": 64,
+              "unique_target_hours": 64,
+              "rmse": 16.83513810457164,
+              "pinball": 2.7359375,
+              "below_frontier_share": 0.78125
+            },
+            "mvfr": {
+              "n": 87,
+              "unique_target_hours": 87,
+              "rmse": 18.204530824185934,
+              "pinball": 2.4391954022988496,
+              "below_frontier_share": 0.8160919540229885
+            },
+            "vfr": {
+              "n": 1016,
+              "unique_target_hours": 1016,
+              "rmse": 20.77805000967907,
+              "pinball": 2.2674212598425196,
+              "below_frontier_share": 0.8681102362204725
+            },
+            "wind": {
+              "n": 164,
+              "unique_target_hours": 164,
+              "rmse": 24.646278104213707,
+              "pinball": 2.347560975609756,
+              "below_frontier_share": 0.9024390243902439
+            },
+            "winter": {
+              "n": 7,
+              "unique_target_hours": 7,
+              "rmse": 64.47147763601691,
+              "pinball": 6.399999999999999,
+              "below_frontier_share": 1.0
+            }
+          }
+        },
+        "severe": {
+          "incumbent": {
+            "n": 81,
+            "unique_target_hours": 81,
+            "rmse": 36.94423558838207,
+            "pinball": 3.2777777777777772,
+            "below_frontier_share": 0.9506172839506173
+          },
+          "candidate": {
+            "n": 81,
+            "unique_target_hours": 81,
+            "rmse": 36.793048189321425,
+            "pinball": 3.269135802469135,
+            "below_frontier_share": 0.9506172839506173
+          }
+        }
+      },
+      {
+        "airport": "KDFW",
+        "lead": 6,
+        "incumbent": {
+          "n": 1412,
+          "unique_target_hours": 1412,
+          "rmse": 22.0677953603886,
+          "pinball": 2.3736260623229457,
+          "below_frontier_share": 0.8654390934844193
+        },
+        "candidate": {
+          "n": 1412,
+          "unique_target_hours": 1412,
+          "rmse": 21.980277020631082,
+          "pinball": 2.3736543909348438,
+          "below_frontier_share": 0.8654390934844193
+        },
+        "airport_baseline": {
+          "n": 1412,
+          "unique_target_hours": 1412,
+          "rmse": 22.935600814073947,
+          "pinball": 2.4119688385269122,
+          "below_frontier_share": 0.8739376770538244
+        },
+        "eligible_n": 1412,
+        "support_min": {
+          "incumbent": 71,
+          "candidate": 71
+        },
+        "backoff_counts": {
+          "incumbent": {
+            "regime": 1405,
+            "group": 7
+          },
+          "candidate": {
+            "regime": 1405,
+            "group": 7
+          }
+        },
+        "regime_counts": {
+          "incumbent": {
+            "vfr": 1020,
+            "wind": 152,
+            "mvfr": 85,
+            "convective": 75,
+            "ifr": 73,
+            "winter": 7
+          },
+          "candidate": {
+            "vfr": 1015,
+            "wind": 156,
+            "mvfr": 86,
+            "convective": 75,
+            "ifr": 73,
+            "winter": 7
+          }
+        },
+        "regime_metrics": {
+          "incumbent": {
+            "convective": {
+              "n": 75,
+              "unique_target_hours": 75,
+              "rmse": 32.648675317690916,
+              "pinball": 2.802666666666666,
+              "below_frontier_share": 0.96
+            },
+            "ifr": {
+              "n": 73,
+              "unique_target_hours": 73,
+              "rmse": 15.803588980277052,
+              "pinball": 2.1260273972602737,
+              "below_frontier_share": 0.7945205479452054
+            },
+            "mvfr": {
+              "n": 85,
+              "unique_target_hours": 85,
+              "rmse": 16.16568624478113,
+              "pinball": 2.928235294117647,
+              "below_frontier_share": 0.788235294117647
+            },
+            "vfr": {
+              "n": 1020,
+              "unique_target_hours": 1020,
+              "rmse": 20.923787944843646,
+              "pinball": 2.2763725490196074,
+              "below_frontier_share": 0.8666666666666667
+            },
+            "wind": {
+              "n": 152,
+              "unique_target_hours": 152,
+              "rmse": 24.664629479650035,
+              "pinball": 2.442499999999999,
+              "below_frontier_share": 0.881578947368421
+            },
+            "winter": {
+              "n": 7,
+              "unique_target_hours": 7,
+              "rmse": 63.478905382586966,
+              "pinball": 6.299999999999999,
+              "below_frontier_share": 1.0
+            }
+          },
+          "candidate": {
+            "convective": {
+              "n": 75,
+              "unique_target_hours": 75,
+              "rmse": 32.648675317690916,
+              "pinball": 2.802666666666666,
+              "below_frontier_share": 0.96
+            },
+            "ifr": {
+              "n": 73,
+              "unique_target_hours": 73,
+              "rmse": 15.803588980277052,
+              "pinball": 2.1260273972602737,
+              "below_frontier_share": 0.7945205479452054
+            },
+            "mvfr": {
+              "n": 86,
+              "unique_target_hours": 86,
+              "rmse": 16.27846344385806,
+              "pinball": 2.9220930232558135,
+              "below_frontier_share": 0.7906976744186046
+            },
+            "vfr": {
+              "n": 1015,
+              "unique_target_hours": 1015,
+              "rmse": 20.905181199530933,
+              "pinball": 2.2772413793103445,
+              "below_frontier_share": 0.8660098522167488
+            },
+            "wind": {
+              "n": 156,
+              "unique_target_hours": 156,
+              "rmse": 23.942773654203272,
+              "pinball": 2.432051282051282,
+              "below_frontier_share": 0.8846153846153846
+            },
+            "winter": {
+              "n": 7,
+              "unique_target_hours": 7,
+              "rmse": 63.478905382586966,
+              "pinball": 6.299999999999999,
+              "below_frontier_share": 1.0
+            }
+          }
+        },
+        "severe": {
+          "incumbent": {
+            "n": 82,
+            "unique_target_hours": 82,
+            "rmse": 36.31706579960285,
+            "pinball": 3.101219512195122,
+            "below_frontier_share": 0.9634146341463414
+          },
+          "candidate": {
+            "n": 82,
+            "unique_target_hours": 82,
+            "rmse": 36.31706579960285,
+            "pinball": 3.101219512195122,
+            "below_frontier_share": 0.9634146341463414
+          }
+        }
+      },
+      {
+        "airport": "KDFW",
+        "lead": 12,
+        "incumbent": {
+          "n": 1412,
+          "unique_target_hours": 1412,
+          "rmse": 21.83822181431747,
+          "pinball": 2.36699716713881,
+          "below_frontier_share": 0.8640226628895185
+        },
+        "candidate": {
+          "n": 1412,
+          "unique_target_hours": 1412,
+          "rmse": 21.79344574913285,
+          "pinball": 2.365495750708215,
+          "below_frontier_share": 0.8618980169971672
+        },
+        "airport_baseline": {
+          "n": 1412,
+          "unique_target_hours": 1412,
+          "rmse": 22.935600814073947,
+          "pinball": 2.4119688385269122,
+          "below_frontier_share": 0.8739376770538244
+        },
+        "eligible_n": 1412,
+        "support_min": {
+          "incumbent": 84,
+          "candidate": 84
+        },
+        "backoff_counts": {
+          "incumbent": {
+            "regime": 1405,
+            "group": 7
+          },
+          "candidate": {
+            "regime": 1405,
+            "group": 7
+          }
+        },
+        "regime_counts": {
+          "incumbent": {
+            "vfr": 1022,
+            "wind": 142,
+            "mvfr": 98,
+            "convective": 74,
+            "ifr": 69,
+            "winter": 7
+          },
+          "candidate": {
+            "vfr": 1016,
+            "wind": 146,
+            "mvfr": 100,
+            "convective": 74,
+            "ifr": 69,
+            "winter": 7
+          }
+        },
+        "regime_metrics": {
+          "incumbent": {
+            "convective": {
+              "n": 74,
+              "unique_target_hours": 74,
+              "rmse": 30.963361085801548,
+              "pinball": 2.6567567567567565,
+              "below_frontier_share": 0.9459459459459459
+            },
+            "ifr": {
+              "n": 69,
+              "unique_target_hours": 69,
+              "rmse": 16.70676336185395,
+              "pinball": 2.450724637681159,
+              "below_frontier_share": 0.7971014492753623
+            },
+            "mvfr": {
+              "n": 98,
+              "unique_target_hours": 98,
+              "rmse": 14.781055166554744,
+              "pinball": 2.554081632653061,
+              "below_frontier_share": 0.7959183673469388
+            },
+            "vfr": {
+              "n": 1022,
+              "unique_target_hours": 1022,
+              "rmse": 20.995433293411264,
+              "pinball": 2.2694716242661443,
+              "below_frontier_share": 0.8669275929549902
+            },
+            "wind": {
+              "n": 142,
+              "unique_target_hours": 142,
+              "rmse": 24.186045330570153,
+              "pinball": 2.554225352112676,
+              "below_frontier_share": 0.8732394366197183
+            },
+            "winter": {
+              "n": 7,
+              "unique_target_hours": 7,
+              "rmse": 63.478905382586966,
+              "pinball": 6.299999999999999,
+              "below_frontier_share": 1.0
+            }
+          },
+          "candidate": {
+            "convective": {
+              "n": 74,
+              "unique_target_hours": 74,
+              "rmse": 30.963361085801548,
+              "pinball": 2.6567567567567565,
+              "below_frontier_share": 0.9459459459459459
+            },
+            "ifr": {
+              "n": 69,
+              "unique_target_hours": 69,
+              "rmse": 16.70676336185395,
+              "pinball": 2.450724637681159,
+              "below_frontier_share": 0.7971014492753623
+            },
+            "mvfr": {
+              "n": 100,
+              "unique_target_hours": 100,
+              "rmse": 15.045265035884213,
+              "pinball": 2.5519999999999996,
+              "below_frontier_share": 0.8
+            },
+            "vfr": {
+              "n": 1016,
+              "unique_target_hours": 1016,
+              "rmse": 20.95500428834147,
+              "pinball": 2.268897637795275,
+              "below_frontier_share": 0.8661417322834646
+            },
+            "wind": {
+              "n": 146,
+              "unique_target_hours": 146,
+              "rmse": 23.90756170857487,
+              "pinball": 2.533424657534246,
+              "below_frontier_share": 0.8561643835616438
+            },
+            "winter": {
+              "n": 7,
+              "unique_target_hours": 7,
+              "rmse": 63.478905382586966,
+              "pinball": 6.299999999999999,
+              "below_frontier_share": 1.0
+            }
+          }
+        },
+        "severe": {
+          "incumbent": {
+            "n": 81,
+            "unique_target_hours": 81,
+            "rmse": 34.98729928289852,
+            "pinball": 2.971604938271604,
+            "below_frontier_share": 0.9506172839506173
+          },
+          "candidate": {
+            "n": 81,
+            "unique_target_hours": 81,
+            "rmse": 34.98729928289852,
+            "pinball": 2.971604938271604,
+            "below_frontier_share": 0.9506172839506173
+          }
+        }
+      }
+    ],
+    "failure_example_absolute_error": [
+      {
+        "airport": "KATL",
+        "target_hour_utc": "2025-01-06 13:00:00+00:00",
+        "lead": 12,
+        "observed": 67.0,
+        "incumbent": 70.0,
+        "candidate": 74.9,
+        "regime_before": "wind",
+        "regime_after": "wind"
+      }
+    ],
+    "unique_airport_target_hours": 2239,
+    "missing_observed_in_window": 12,
+    "missing_or_future_features_in_window": 0,
+    "total_window_snapshots": 30522,
+    "eligible_snapshots": 6717,
+    "common_snapshots": 6717,
+    "excluded_input_or_demand": 23805,
+    "unavailable_incumbent": 0,
+    "unavailable_candidate": 0
+  },
+  "test_disclosure": "2025 already inspected by team; updated held-out backtest, not pristine external validation. Not used in selection."
+}
