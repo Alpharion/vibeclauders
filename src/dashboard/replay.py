@@ -61,6 +61,11 @@ def render(bundle: Bundle, snapshot: Snapshot | None, window: int, reveal: bool,
     if tabs[4].open:
         with tabs[4]:
             evaluation_tab(bundle, snapshot, reveal)
+    from src.dashboard.illustrative import render_examples
+    for tab, name in zip(tabs, TABS):
+        if tab.open:
+            with tab:
+                render_examples(name, bundle, snapshot)
 
 
 def set_reveal(value: bool) -> None:
@@ -183,7 +188,13 @@ def movement_card(bundle: Bundle, snapshot: Snapshot, reveal: bool, forecasts: M
     incoming, outgoing = forecasts.at(target, "arrival"), forecasts.at(target, "departure")
 
     def cell(name: str, row) -> str:
-        shown = f'{row.forecast:.0f} <small>/h</small>' if row else "—"
+        from src.dashboard.illustrative import movement_value
+        scheduled = views.scheduled_at(bundle.table("traffic_hourly"), snapshot.airport, target)
+        direction = "arrival" if name.startswith("Incoming") else "departure"
+        example = movement_value(row, scheduled[0 if direction == "arrival" else 1], direction)
+        shown = f'{example:.0f} <small>/h</small>'
+        if row is None:
+            shown += '<small> · PLACEHOLDER (schedule-based or fixed demo value; not a forecast)</small>'
         return f'<div><div class="cap">{name}</div><div class="big {"" if row else "none"}">{shown}</div></div>'
 
     with card("movements"):
@@ -495,20 +506,23 @@ def traffic_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool, f
 
 
 def traffic_tiles(traffic, snapshot: Snapshot, forecasts: MovementForecasts) -> None:
+    from src.dashboard.illustrative import movement_value
     target = snapshot.target_hour_utc
     incoming, outgoing = forecasts.at(target, "arrival"), forecasts.at(target, "departure")
     arrivals, departures = views.scheduled_at(traffic, snapshot.airport, target)
 
     def forecast_tile(label, row, tone, glyph, direction):
         if row is None:
-            return tile(label, "—", forecasts.reasons.get(direction, "Unavailable"), "muted", glyph, badge("UNAVAILABLE"))
+            from src.dashboard.illustrative import movement_value
+            example = movement_value(None, arrivals if direction == "arrival" else departures, direction)
+            return tile(label, f"{example:.0f}", "PLACEHOLDER · schedule used as illustration; 40/45 fallback if absent. Not a forecast.", "muted", glyph, badge("ILLUSTRATIVE"))
         interval = f" · range {row.lower:.0f}–{row.upper:.0f}" if row.lower is not None else ""
         tag = badge("PREVIEW", "amber") if forecasts.held else badge("FORECAST")
         return tile(label, f"{row.forecast:.0f}", f"FORECAST {window_label(snapshot)}{interval}", tone, glyph, tag)
 
     total = (
         tile("Total movements", f"{incoming.forecast + outgoing.forecast:.0f}", f"FORECAST · {incoming.forecast:.0f} in + {outgoing.forecast:.0f} out", "", "swap")
-        if incoming and outgoing else tile("Total movements", "—", "Needs both incoming and outgoing forecasts", "muted", "swap", badge("UNAVAILABLE"))
+        if incoming and outgoing else tile("Total movements", f"{movement_value(incoming, arrivals, 'arrival') + movement_value(outgoing, departures, 'departure'):.0f}", "PLACEHOLDER TOTAL · includes illustrative missing-direction values; not a total forecast", "muted", "swap", badge("ILLUSTRATIVE"))
     )
     scheduled = (
         tile("Scheduled demand", "—", "No schedule at the target hour", "muted", "calendar")
