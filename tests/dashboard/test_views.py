@@ -204,3 +204,41 @@ def test_history_pools_a_day_split_across_cohorts():
     rollup = views.history_rollup(frame, "D")
     assert len(rollup) == 1
     assert rollup["eligible_departures"].item() == 16
+
+
+@pytest.mark.parametrize(
+    ("name", "value", "shown"),
+    [
+        ("visibility_sm", 6.01, "Over 6"),
+        ("visibility_sm", 2.5, "2.5"),
+        ("ceiling_ft_agl", 30000, "No ceiling"),
+        ("ceiling_ft_agl", 1200, "1,200"),
+        ("wind_gust_kt", 6.0, "No gust"),
+        ("wind_gust_kt", 21.0, "21.0"),
+        ("precip_flag", 1, "Forecast"),
+        ("thunderstorm_flag", 0, "Not forecast"),
+        ("crosswind_kt", None, "Unknown"),
+        ("crosswind_kt", 5.19615, "5.2"),
+    ],
+)
+def test_weather_display_decodes_markers(name, value, shown):
+    row = pd.Series({"wind_speed_kt": 6.0, name: value}, dtype=object)
+    row["wind_speed_kt"] = 6.0
+    assert views.weather_display(name, row) == shown
+
+
+def test_flagged_uses_each_rows_own_threshold():
+    rows = pd.DataFrame({"probability_severe_delay": [0.15, 0.15], "threshold": [0.146, 0.157]})
+    assert views.flagged(rows).tolist() == [True, False]
+
+
+def test_model_mix_counts_both_models():
+    rows = pd.DataFrame({"model_kind": ["weather_enhanced"] * 3 + ["schedule_only"]})
+    assert views.model_mix(rows) == {"Weather enhanced": 3, "Schedule-only": 1}
+
+
+def test_busiest_cutoffs_rank_scored_keys_only(root):
+    index = views.replay_index(load_bundle(root))
+    busiest = views.busiest_cutoffs(index, "KATL", 6)
+    assert busiest["asof_utc"].tolist() == [c.ASOF]
+    assert views.busiest_cutoffs(index, "KATL", 12).empty

@@ -97,3 +97,26 @@ def test_app_has_no_transmission_paths():
             elif isinstance(node, ast.ImportFrom):
                 names = [node.module or ""]
             assert not {n.split(".")[0] for n in names} & forbidden, path
+
+
+def test_mixed_models_show_each_threshold_and_counts(run, tmp_path):
+    table = c.predictions()
+    table.loc[1, ["model_kind", "threshold"]] = ["weather_enhanced", 0.12]
+    c.publish_risk(tmp_path, table=table)
+    app = run(tmp_path)
+    app.radio(key="horizon").set_value(6).run()  # f1 and f2 share only the +6 h key.
+    assert "Schedule-only model** for 1 of 2 flights" in text(app)
+    assert any(m.value == "0.120 / 0.150" for m in app.metric)
+    assert "1 weather enhanced" in text(app)
+
+
+def test_jump_to_published_decision_sets_cutoff_and_window(run, root):
+    app = run(root)
+    app.number_input(key="window").set_value(3).run()
+    assert "No decision output" in text(app)
+    jump = app.selectbox(key="jump-KATL")
+    option = next(o for o in jump.options if o.startswith("Published decision"))
+    jump.set_value(option).run()
+    assert not app.exception
+    assert app.number_input(key="window").value == 6
+    assert "No decision output" not in text(app)

@@ -20,7 +20,7 @@ STATUS_MARK = {"available": "✅ Available", "partial": "⚠️ Partial", "unava
 WEATHER_LABELS = {
     "crosswind_kt": "Crosswind (kt)", "tailwind_kt": "Tailwind (kt)",
     "wind_speed_kt": "Wind (kt)", "wind_gust_kt": "Gust (kt)", "visibility_sm": "Visibility (SM)",
-    "ceiling_ft_agl": "Ceiling (ft AGL)", "temperature_c": "Temperature (°C)",
+    "ceiling_ft_agl": "Ceiling (ft AGL)", "temperature_c": "Temperature at cutoff, observed (°C)",
     "precip_flag": "Precipitation", "thunderstorm_flag": "Thunderstorm",
 }
 
@@ -51,7 +51,8 @@ def sidebar(bundle: Bundle) -> tuple[Snapshot | None, int, bool]:
     horizon = st.sidebar.radio(
         "Forecast lead (hours)", SCORED_HORIZONS, index=0, horizontal=True, key="horizon",
     )
-    window = st.sidebar.number_input("Planning window (hours)", 1, 24, 6, key="window")
+    st.session_state.setdefault("window", 6)
+    window = st.sidebar.number_input("Planning window (hours)", 1, 24, key="window")
     reveal = st.sidebar.toggle(
         "Reveal outcomes", False, key="reveal",
         help="Actual outcomes stay hidden during replay until you choose to reveal them.",
@@ -61,21 +62,57 @@ def sidebar(bundle: Bundle) -> tuple[Snapshot | None, int, bool]:
         st.sidebar.info("No replay cutoffs are published for this airport.")
         return None, window, reveal
 
+    busiest = views.busiest_cutoffs(index, icao, horizon)
+    default_cutoff = busiest["asof_utc"].iloc[0] if len(busiest) else rows["asof_utc"].iloc[0]
+    counts = views.scored_counts(index, icao, horizon)
+    jump_to(bundle, icao, busiest, rows)
+
     dates = sorted(rows["asof_utc"].dt.strftime("%Y-%m-%d").unique())
-    scored = rows[(rows["horizon_hours"] == horizon) & (rows["predictions"] > 0)]
-    default_cutoff = scored.loc[scored["predictions"].idxmax(), "asof_utc"] if len(scored) else rows["asof_utc"].iloc[0]
+    per_date = counts.groupby(counts.index.strftime("%Y-%m-%d")).sum()
+    date_key = f"date-{icao}"
+    st.session_state.setdefault(date_key, default_cutoff.strftime("%Y-%m-%d"))
     date = st.sidebar.selectbox(
-        "Cutoff date (UTC)", dates, index=dates.index(default_cutoff.strftime("%Y-%m-%d")),
-        key=f"date-{icao}",
+        "Cutoff date (UTC)", dates, key=date_key,
+        format_func=lambda d: f"{d} · {per_date.get(d, 0)} scored",
     )
     on_date = rows[rows["asof_utc"].dt.strftime("%Y-%m-%d") == date]
     hours = sorted(on_date["asof_utc"].dt.strftime("%H:%M").unique())
-    default_hour = default_cutoff.strftime("%H:%M")
+    hour_key = f"hour-{icao}-{date}"
+    if default_cutoff.strftime("%Y-%m-%d") == date:
+        st.session_state.setdefault(hour_key, default_cutoff.strftime("%H:%M"))
     hour = st.sidebar.selectbox(
-        "Cutoff hour (UTC)", hours, index=hours.index(default_hour) if default_hour in hours else 0,
-        key=f"hour-{icao}-{date}",
+        "Cutoff hour (UTC)", hours, key=hour_key,
+        format_func=lambda h: f"{h} · {counts.get(views.utc(f'{date} {h}'), 0)} scored",
     )
     return Snapshot(airport, views.utc(f"{date} {hour}"), horizon), window, reveal
+
+
+def jump_to(bundle: Bundle, icao: str, busiest: pd.DataFrame, rows: pd.DataFrame) -> None:
+    """Shortcuts, because most cutoffs in this sample score a single flight."""
+    targets = {
+        f"{row.asof_utc:%Y-%m-%d %H:%M} · {row.predictions:.0f} scored": (row.asof_utc, None)
+        for row in busiest.itertuples()
+    }
+    published = bundle.docs.get("recommendations")
+    if published and views.resolve_airport(str(published.get("airport"))).icao == icao:
+        asof = views.utc(published["asof_utc"])
+        targets[f"Published decision snapshot · {asof:%Y-%m-%d %H:%M}"] = (asof, published.get("horizon_hours"))
+
+    def apply() -> None:
+        choice = st.session_state[f"jump-{icao}"]
+        if choice is None:
+            return
+        asof, window = targets[choice]
+        date = asof.strftime("%Y-%m-%d")
+        st.session_state[f"date-{icao}"] = date
+        st.session_state[f"hour-{icao}-{date}"] = asof.strftime("%H:%M")
+        if window:
+            st.session_state["window"] = window
+
+    st.sidebar.selectbox(
+        "Jump to", list(targets), index=None, key=f"jump-{icao}", on_change=apply,
+        placeholder="Busiest cutoffs and published decision",
+    )
 
 
 def header(bundle: Bundle, snapshot: Snapshot | None) -> None:
@@ -103,8 +140,7 @@ def forecast_tab(bundle: Bundle, snapshot: Snapshot, reveal: bool) -> None:
     else:
         columns = st.columns(5)
         for index, name in enumerate(WEATHER_FEATURES):
-            value = "Unknown" if pd.isna(row[name]) else f"{row[name]:g}"
-            columns[index % 5].metric(WEATHER_LABELS[name], value)
+            columns[index % 5].metric(WEATHER_LABELS[name], views.weather_display(name, row))
         st.caption(f"Latest input available {fmt_time(row['available_at_utc'])} · source {row['source_id']}")
     weather = bundle.table("weather")
     if weather is not None:
@@ -136,29 +172,34 @@ def forecast_tab(bundle: Bundle, snapshot: Snapshot, reveal: bool) -> None:
             icon="🚫",
         )
         return
-    threshold = float(rows["threshold"].iloc[0])
-    flagged = int((rows["probability_severe_delay"] >= threshold).sum())
+    thresholds = sorted(rows["threshold"].unique())
     left, middle, right = st.columns(3)
     left.metric("Flights scored", len(rows))
-    middle.metric("At or above threshold", flagged)
-    right.metric("Selected threshold", f"{threshold:.3f}")
-    kinds = rows["model_kind"].unique()
-    if all(is_schedule_only(kind) for kind in kinds):
+    middle.metric("At or above threshold", int(views.flagged(rows).sum()))
+    right.metric("Selected threshold", " / ".join(f"{t:.3f}" for t in thresholds))
+    schedule_only = int(rows["model_kind"].map(is_schedule_only).sum())
+    if schedule_only:
         st.warning(
-            "**Schedule-only model.** It uses no weather, so repeated scores across leads say "
-            "nothing about weather sensitivity.", icon="⚠️",
+            f"**Schedule-only model** for {schedule_only} of {len(rows)} flights, with no accepted "
+            "weather at this key. It uses no weather, so repeated scores across leads say nothing "
+            "about weather sensitivity.", icon="⚠️",
         )
     st.caption(
         f"Applies to departures from {snapshot.airport.iata} only; inbound flights are never scored. "
         f"Model {', '.join(map(str, rows['model_version'].unique()))} · run {rows['run_id'].iloc[0]} · "
         f"coverage {', '.join(map(str, rows['coverage'].unique()))}. Probabilities, not delay minutes."
     )
-    st.plotly_chart(plots.risk_bars(rows, threshold), key="risk")
+    st.plotly_chart(plots.risk_bars(rows, thresholds[0] if len(thresholds) == 1 else None), key="risk")
     flights = bundle.table("flights")
     table = rows
     if flights is not None and reveal:
         table = rows.merge(flights[["flight_id", *views.OUTCOME_COLUMNS]], how="left", on="flight_id")
-    shown = [c for c in table.columns if c not in ("airport", "asof_utc", "target_hour_utc", "horizon_hours", "run_id")]
+    table = table.assign(
+        Model=table["model_kind"].map(views.model_label),
+        Flagged=views.flagged(table).map({True: "Above threshold", False: "Below threshold"}),
+    )
+    hidden = ("airport", "asof_utc", "target_hour_utc", "horizon_hours", "run_id", "model_kind")
+    shown = [c for c in table.columns if c not in hidden]
     st.dataframe(views.mask_outcomes(table[shown], reveal), hide_index=True)
 
 
@@ -302,6 +343,10 @@ def evaluation_tab(bundle: Bundle, reveal: bool) -> None:
     st.caption("Measured prediction quality. It is separate from any simulated operational benefit.")
     evaluation_section("Delay risk", bundle.docs.get("risk_evaluation"), bundle.problem("risk_evaluation"))
     evaluation_section("AAR capacity", bundle.docs.get("capacity_evaluation"), bundle.problem("capacity_evaluation"))
+    predictions = bundle.table("predictions")
+    if predictions is not None:
+        mix = ", ".join(f"{count:,} {label.lower()}" for label, count in views.model_mix(predictions).items())
+        st.caption(f"Held-out predictions by model: {mix}.")
     st.subheader("Failure cases")
     cases = views.find_failure_cases(bundle.docs.get("risk_evaluation"))
     cases += views.find_failure_cases(bundle.docs.get("capacity_evaluation"))

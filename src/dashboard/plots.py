@@ -40,7 +40,7 @@ def _layout(figure: go.Figure, title: str, y_title: str, height: int = 320) -> g
     return figure
 
 
-def risk_bars(rows: pd.DataFrame, threshold: float) -> go.Figure:
+def risk_bars(rows: pd.DataFrame, threshold: float | None) -> go.Figure:
     ordered = rows.sort_values("probability_severe_delay")
     labels = ordered["flight_id"].str[:8]
     if "flight_number" in ordered:
@@ -55,10 +55,11 @@ def risk_bars(rows: pd.DataFrame, threshold: float) -> go.Figure:
             hovertemplate="%{y}: %{x:.1%}<extra></extra>",
         )
     )
-    figure.add_vline(
-        x=threshold, line={"color": INK, "dash": "dot", "width": 2},
-        annotation_text=f"Threshold {threshold:.3f}", annotation_font_color=INK,
-    )
+    if threshold is not None:  # Mixed models have one threshold each; the table flags them.
+        figure.add_vline(
+            x=threshold, line={"color": INK, "dash": "dot", "width": 2},
+            annotation_text=f"Threshold {threshold:.3f}", annotation_font_color=INK,
+        )
     _layout(figure, "Severe-delay probability, flights in target hour", "", 150 + 26 * len(rows))
     figure.update_layout(hovermode="closest")
     figure.update_xaxes(title="Probability of departure delay over 45 min", tickformat=".0%")

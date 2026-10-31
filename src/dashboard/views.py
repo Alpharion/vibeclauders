@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from src.dashboard.data import SCORED_HORIZONS, Bundle
+from src.dashboard.data import SCORED_HORIZONS, Bundle, is_schedule_only
 from src.shared import AIRPORTS, airport_icao
 
 # Allowlist: a new producer column stays hidden until someone decides it is safe.
@@ -15,6 +15,9 @@ UNREVEALED_FLIGHT_COLUMNS = [
     "scheduled_arr_utc", "coverage",
 ]
 OUTCOME_COLUMNS = ["dep_delay_min", "arr_delay_min", "cancelled", "diverted"]
+# Encodings documented in the capacity manifest's feature_semantics.
+VISIBILITY_OVER_6_SM = 6.01
+NO_CEILING_FT = 30000
 
 
 @dataclass(frozen=True)
@@ -111,6 +114,30 @@ def scored_flights(flights: pd.DataFrame, snapshot: Snapshot) -> pd.DataFrame:
     ]
 
 
+def model_label(model_kind: str) -> str:
+    return "Schedule-only" if is_schedule_only(model_kind) else str(model_kind).replace("_", " ").capitalize()
+
+
+def model_mix(predictions: pd.DataFrame) -> dict[str, int]:
+    return predictions["model_kind"].map(model_label).value_counts().to_dict()
+
+
+def flagged(rows: pd.DataFrame) -> pd.Series:
+    """Each row carries its own model's threshold, so compare row by row."""
+    return rows["probability_severe_delay"] >= rows["threshold"]
+
+
+def busiest_cutoffs(index: pd.DataFrame, airport: str, horizon: int, count: int = 5) -> pd.DataFrame:
+    rows = index[(index["airport"] == airport) & (index["horizon_hours"] == horizon) & (index["predictions"] > 0)]
+    return rows.sort_values(["predictions", "asof_utc"], ascending=[False, True]).head(count)
+
+
+def scored_counts(index: pd.DataFrame, airport: str, horizon: int) -> pd.Series:
+    """Flights scored per cutoff, zero where the exact key has no predictions."""
+    rows = index[(index["airport"] == airport) & (index["horizon_hours"] == horizon)]
+    return rows.set_index("asof_utc")["predictions"].astype(int)
+
+
 def planning_movements(
     flights: pd.DataFrame, airport: Airport, asof_utc: pd.Timestamp, window_hours: int
 ) -> dict:
@@ -188,6 +215,22 @@ def weather_feature_row(bundle: Bundle, snapshot: Snapshot) -> tuple[pd.Series |
     if row["available_at_utc"] > snapshot.asof_utc:
         return None, "Weather row became available after the cutoff, so replay excludes it."
     return row, None
+
+
+def weather_display(name: str, row: pd.Series) -> str:
+    """Render a feature for reading, decoding values that are markers rather than measurements."""
+    value = row[name]
+    if pd.isna(value):
+        return "Unknown"
+    if name in ("precip_flag", "thunderstorm_flag"):
+        return "Forecast" if value == 1 else "Not forecast"
+    if name == "visibility_sm" and value == VISIBILITY_OVER_6_SM:
+        return "Over 6"
+    if name == "ceiling_ft_agl" and value == NO_CEILING_FT:
+        return "No ceiling"
+    if name == "wind_gust_kt" and value == row["wind_speed_kt"]:
+        return "No gust"
+    return f"{value:,.0f}" if name == "ceiling_ft_agl" else f"{value:.1f}"
 
 
 def bulletins_as_of(weather: pd.DataFrame, snapshot: Snapshot) -> pd.DataFrame:
