@@ -1,0 +1,21 @@
+{
+  "upstream_manifest": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\capacity\\manifest.json",
+  "upstream_run_id": "m1-20261031T062924Z-d9dfcd",
+  "inputs": [
+    {
+      "original": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\data\\processed\\storm_events.parquet",
+      "snapshot": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\571f5ceda96448999f730c4da4203f72\\0-storm_events.parquet",
+      "sha256": "526cae770223b82dd52fd38aa421afac00938b39f2931d538127d71d73718d04"
+    },
+    {
+      "original": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\capacity\\weather_features.parquet",
+      "snapshot": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\571f5ceda96448999f730c4da4203f72\\1-weather_features.parquet",
+      "sha256": "aa6f389d38078f427c433a464429015fb8993f19653c1d191f639ba40327859e"
+    },
+    {
+      "original": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\data\\processed\\flights.parquet",
+      "snapshot": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\571f5ceda96448999f730c4da4203f72\\2-flights.parquet",
+      "sha256": "6e446d7c1948333d122bb1fb64b6dd5546537c343e3defbfcf4b07c83ee9b4de"
+    }
+  ]
+}

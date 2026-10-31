@@ -2,7 +2,7 @@
 
 ## Completion boundary
 
-The local risk-model, normalized-metric, queue-validation and advisory implementation is complete and tested. It has now been refreshed with Member 1's verified canonical flights and cutoff-safe weather features (now capacity run `m1-20261031T060631Z-6c6e38`, merged from branch `zeph`), and extended with the parallel-plan evaluation additions (storm cohorts, status-quo impact, alert rates, explained failure cases, calibration experiment). Current project capability is still **partial**: no genuine AAR, complete demand or cutoff backlog is published, so queue/advice remain unavailable. Member 3's v2 dashboard is on `main`; its rendering of these outputs was reviewed in `handover/message-to-member-3.md`. This is not a claim that Challenge 5 is fully satisfied.
+The local risk-model, normalized-metric, queue-validation and advisory implementation is complete and tested. It has now been refreshed with Member 1's verified canonical flights and cutoff-safe weather features (now capacity run `m1-20261031T062924Z-d9dfcd`, merged from branch `zeph`), and extended with the parallel-plan evaluation additions (storm cohorts, status-quo impact, alert rates, explained failure cases, calibration experiment). Current project capability is still **partial**: no genuine AAR, complete demand or cutoff backlog is published, so queue/advice remain unavailable. Member 3's v2 dashboard is on `main`; its rendering of these outputs was reviewed in `handover/message-to-member-3.md`. This is not a claim that Challenge 5 is fully satisfied.
 
 ## Published real outputs
 
@@ -11,7 +11,7 @@ The local risk-model, normalized-metric, queue-validation and advisory implement
 - `artifacts/risk/normalized_metrics.parquet`: daily UTC observed delay/cancellation/missingness cohorts with explicit denominators and outcome-reveal flags.
 - `artifacts/risk/evaluation.json`: candidate comparison, thresholds, per-airport/horizon metrics, weather vs schedule matched-cohort comparison, reliability bins, exclusions, plus the frozen contract additions `storm_cohorts`, `impact`, `alert_rates`, `failure_cases` and the `calibration_experiment` record. The legacy single `failure_case` key is kept.
 - `artifacts/risk/manifest.json`: schema, runtime, source hashes, artifact hashes, row counts and capability status.
-- `artifacts/risk/input_snapshots/d388c78a3eb6443a8b17d00ec7a3b2be/`: immutable copies of the verified upstream flights, weather-feature and storm-event bytes used for training, with provenance pointing to capacity run `m1-20261031T060631Z-6c6e38`. Superseded snapshots were removed from the tree; they remain in git history.
+- `artifacts/risk/input_snapshots/571f5ceda96448999f730c4da4203f72/`: immutable copies of the verified upstream flights, weather-feature and storm-event bytes used for training, with provenance pointing to capacity run `m1-20261031T062924Z-d9dfcd`. Superseded snapshots were removed from the tree; they remain in git history.
 - `artifacts/risk/recommendations.json`, `queue.parquet`, `decision_manifest.json`: verified unavailable result at KATL / 2025-07-15T12:00:00Z / six-hour window because demand, capacity and initial backlog are missing. Queue is empty with typed columns; no invented benefit or flight action.
 
 The run used 15,947 eligible labels from 25,299 canonical rows (16,151 target departures): 6,064 training, 6,346 validation and 3,537 test departures. All 204 cancelled departures were excluded, including seven with nonmissing delay labels. No invalid schedule, duplicate or naive-UTC rows. Seven test flight/horizon combinations were excluded because their cutoff preceded selection completion (2025-01-01T06:00Z).
@@ -28,7 +28,7 @@ Weather-enhanced and schedule-only models are compared on the identical flight/h
 | KATL | 6h | 1,760 | 0.2747 | 0.2496 | 0.2081 | 0.292 / 0.500 | 0.319 / 0.285 | 0.1065 |
 | KATL | 12h | 1,758 | 0.2579 | 0.2496 | 0.2082 | 0.312 / 0.320 | 0.319 / 0.285 | 0.1081 |
 | KDFW | 3h | 1,774 | 0.2485 | 0.2276 | 0.1960 | 0.235 / 0.489 | 0.249 / 0.477 | 0.1227 |
-| KDFW | 6h | 1,774 | 0.2567 | 0.2276 | 0.1960 | 0.255 / 0.500 | 0.249 / 0.477 | 0.1220 |
+| KDFW | 6h | 1,774 | 0.2570 | 0.2276 | 0.1960 | 0.255 / 0.500 | 0.249 / 0.477 | 0.1219 |
 | KDFW | 12h | 1,770 | 0.2714 | 0.2276 | 0.1961 | 0.263 / 0.498 | 0.249 / 0.479 | 0.1212 |
 
 Baseline AP is the training-only airport/local-hour smoothed severe-delay rate, evaluated on the full test cohort for that airport/lead.
@@ -62,7 +62,7 @@ NOAA Storm Events are used only after prediction, never as features; a test prov
 | KATL | 6h | 41 (10) | 0.407 / 0.248 | 0.500 / 0.450 | 0.273 / 0.208 |
 | KATL | 12h | 41 (10) | 0.280 / 0.248 | 0.300 / 0.100 | 0.259 / 0.208 |
 | KDFW | 3h | 90 (30) | 0.470 / 0.428 | 0.633 / 0.650 | 0.225 / 0.183 |
-| KDFW | 6h | 90 (30) | 0.557 / 0.428 | 0.633 / 0.667 | 0.226 / 0.183 |
+| KDFW | 6h | 90 (30) | 0.557 / 0.428 | 0.633 / 0.667 | 0.227 / 0.183 |
 | KDFW | 12h | 90 (30) | 0.531 / 0.428 | 0.633 / 0.700 | 0.239 / 0.183 |
 
 Baseline recall here also uses equal alert counts. Severe delays are far more common near storms (24-33% vs 13-14%). The model ranks storm-window departures better than the baseline (higher AP in every cell), but at its chosen threshold it does **not** beat the baseline's recall at DFW. The storm cohorts are small (41 and 90 departures per cell), so these differences are not statistically established.
@@ -85,10 +85,10 @@ Platt scaling was fitted on 2024 validation before September and judged on Septe
 python -m src.flight_risk train
 python -m src.flight_risk decide --airport KATL --asof 2025-07-15T12:00:00Z --window-hours 6
 python -m src.flight_risk verify
-python -m pytest tests -q --basetemp=tmp/pt-all-5
+python -m pytest tests -q --basetemp=tmp/pt-all-6
 ```
 
-All Member 2 commands exited 0. The full suite, including Member 1's and Member 3's tests, gave **290 passed**. `verify` reported `passed`, model status `partial`, decision status `unavailable`, 10,604 predictions / 3,537 flights / both airports / leads 3, 6, 12. The `tmp/` directory must exist before running pytest with `--basetemp=tmp/...`.
+All Member 2 commands exited 0. The full suite, including Member 1's and Member 3's tests, gave **291 passed**. `verify` reported `passed`, model status `partial`, decision status `unavailable`, 10,604 predictions / 3,537 flights / both airports / leads 3, 6, 12. The `tmp/` directory must exist before running pytest with `--basetemp=tmp/...`.
 
 Member 2 test coverage includes storm events never changing predictions, small-cohort withholding, equal-workload baseline ties, alert-rate counts, failure-case kinds, calibration decisions independent of test labels, third-airport scoring through the registry only, LF-only published JSON, leakage under changed test outcomes, original-date/2400 splits, daylight-saving ambiguity, cancelled labels, source/availability/feature validity, queue conservation, stale/mismatched populations, complete hourly windows, capacity target provenance, model selection timing, manifest tampering, generation mismatch, typed unavailable outputs and CLI publication. Test fixtures stay under tests/tmp and are not passed off as real data.
 
@@ -104,11 +104,13 @@ Member 1's first published manifest (`m1-20261031T045159Z-3df67d`) lacked the co
 
 ## Runtime and provenance
 
-Model run: `9dbee2fd44d94d96b70e275c6d9d9f11`; generated `2026-10-31T06:33:11.422400+00:00`.
-Decision run: `70afa0e88de3428581af497d64d0a859`.
-Upstream capacity run: `m1-20261031T060631Z-6c6e38` (adds `traffic_hourly.parquet` and the `aar_observed` column; model inputs unchanged).
+Model run: `0949771a54bb4e49b4e215528eb5d46b`; generated `2026-10-31T06:38:52.388647+00:00`.
+Decision run: `a7b89e44c69449d1a7ecfbf0cb8ff3b5`.
+Upstream capacity run: `m1-20261031T062924Z-d9dfcd`.
 
-This retrain followed Member 1's TAF/METAR validity fix (plan 1.4), which changed `weather_features.parquet`. The fix altered only columns Member 2 does not use (`cond_*` conditional-group summaries and `taf_group_valid_to_utc`). The 9 contract features, keys, availability times and statuses are identical across all 135,786 rows. As a result, probabilities, thresholds and every metric in this document match the previous runs `b307f1c5…`, `28ffd143…` and `b3747032…` exactly; only run identity and upstream provenance changed.
+This run follows Member 1's deterministic weather decoding (commit `20693d7`), which changed 4 model features (`crosswind_kt`, `wind_speed_kt`, `wind_gust_kt`, `temperature_c`) in 3 of 135,786 rows. Retraining changed exactly 3 held-out probabilities (largest change 0.04); thresholds are identical and no alert flipped. The only visible metric changes are KDFW 6h (average precision 0.2567 to 0.2570, Brier 0.12197 to 0.12194) and the KDFW 6h no-storm cohort (AP 0.226 to 0.227). All other values in this document are unchanged.
+
+An earlier retrain (run `b307f1c5…`) followed Member 1's TAF/METAR validity fix (plan 1.4), which changed `weather_features.parquet`. The fix altered only columns Member 2 does not use (`cond_*` conditional-group summaries and `taf_group_valid_to_utc`). The 9 contract features, keys, availability times and statuses are identical across all 135,786 rows. As a result, probabilities, thresholds and every metric in this document matched runs `28ffd143…` and `b3747032…` exactly. Run `9dbee2fd…` (capacity run `m1-20261031T060631Z-6c6e38`, which added `traffic_hourly.parquet` and `aar_observed`) was likewise identical.
 Python `3.14.6`; numpy 2.4.6, pandas 3.0.3, scikit-learn 1.9.0, pyarrow 23.0.1.
 
 The old root requirements constrain pandas below 3, while the verified runtime uses pandas 3.0.3. Member 3 owns dependency reconciliation. Serialized model reuse requires compatible versions or retraining.

@@ -1,7 +1,7 @@
 {
   "member": 2,
   "schema_version": "2.0",
-  "updated_at_utc": "2026-10-31T06:34:33.288144+00:00",
+  "updated_at_utc": "2026-10-31T06:40:28.777406+00:00",
   "state": "ready_for_review",
   "completed": [
     "Revised comprehensive plan and v2 shared contract",
@@ -19,18 +19,19 @@
     "Plan 2.6: third-airport registry tests (KORD fixture) pass without modelling changes",
     "Plan 2.7: validation-only Platt calibration experiment; not adopted (0.07% gain < 1% rule)",
     "Merged Member 1 zeph (capacity run m1-20261031T054026Z-670c8c) and retrained; model inputs unchanged, so metrics are identical",
-    "Merged Member 1 republish m1-20261031T060631Z-6c6e38 and retrained (run 9dbee2fd); outputs unchanged"
+    "Merged Member 1 republish m1-20261031T060631Z-6c6e38 and retrained (run 9dbee2fd); outputs unchanged",
+    "Merged Member 1 run m1-20261031T062924Z-d9dfcd (deterministic weather decoding) and retrained (run 0949771a); 3 probabilities changed, no alerts changed"
   ],
   "artifacts": [
     {
       "path": "artifacts/risk/manifest.json",
-      "run_id": "9dbee2fd44d94d96b70e275c6d9d9f11",
+      "run_id": "0949771a54bb4e49b4e215528eb5d46b",
       "status": "partial",
       "coverage": "KATL/KDFW, leads 3/6/12, test 2025-01-01..2025-07-31; 10,599/10,604 rows weather-enhanced"
     },
     {
       "path": "artifacts/risk/decision_manifest.json",
-      "run_id": "70afa0e88de3428581af497d64d0a859",
+      "run_id": "a7b89e44c69449d1a7ecfbf0cb8ff3b5",
       "status": "unavailable",
       "coverage": null
     },
@@ -45,13 +46,13 @@
     "python -m src.flight_risk train",
     "python -m src.flight_risk decide --airport KATL --asof 2025-07-15T12:00:00Z --window-hours 6",
     "python -m src.flight_risk verify",
-    "python -m pytest tests -q --basetemp=tmp/pt-all-5"
+    "python -m pytest tests -q --basetemp=tmp/pt-all-6"
   ],
   "test_results": [
     {
-      "command": "python -m pytest tests -q --basetemp=tmp/pt-all-5",
+      "command": "python -m pytest tests -q --basetemp=tmp/pt-all-6",
       "result": "passed",
-      "evidence": "290 passed; exit 0"
+      "evidence": "291 passed; exit 0"
     },
     {
       "command": "python -m src.flight_risk verify",
@@ -80,8 +81,8 @@
     }
   ],
   "next_steps": [
-    "Plan 2.9 at Gate 3: rerun decide only if AAR forecasts and complete demand are on main",
-    "Member 3 renders Member 2 outputs from run 9dbee2fd44d94d96b70e275c6d9d9f11"
+    "Plan 2.9 at Gate 3: rerun decide only if AAR forecasts and complete demand are on main (Member 1 recorded AAR as unmet at Gate 2)",
+    "Member 3 renders Member 2 outputs from run 0949771a54bb4e49b4e215528eb5d46b"
   ],
   "contract_changes_requested": []
 }

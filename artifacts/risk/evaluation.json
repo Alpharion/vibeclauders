@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
-  "run_id": "9dbee2fd44d94d96b70e275c6d9d9f11",
-  "generated_at_utc": "2026-10-31T06:33:11.422400+00:00",
+  "run_id": "0949771a54bb4e49b4e215528eb5d46b",
+  "generated_at_utc": "2026-10-31T06:38:52.388647+00:00",
   "producer": "member-2",
   "runtime": {
     "python": "3.14.6",
@@ -47,11 +47,11 @@
     "validation_late_brier_raw": 0.06717232966378897,
     "validation_late_brier_calibrated": 0.06712611723473708,
     "validation_relative_gain": 0.0006879682345870324,
-    "test_brier_raw_reported_only": 0.11448759418461868,
-    "test_brier_calibrated_reported_only": 0.1138478907619529,
+    "test_brier_raw_reported_only": 0.1144834060889108,
+    "test_brier_calibrated_reported_only": 0.11384443031863821,
     "validation_mean_probability": 0.09353797895220961,
     "validation_severe_rate": 0.10835522858644246,
-    "test_mean_probability": 0.10904611334271547,
+    "test_mean_probability": 0.1090541170694208,
     "test_severe_rate": 0.1391640720822719
   },
   "threshold": 0.15743372204945102,
@@ -296,8 +296,8 @@
         "precision": 0.2548262548262548,
         "recall": 0.5,
         "f1": 0.3375959079283887,
-        "pr_auc": 0.2567235277579559,
-        "brier": 0.12196504700268719,
+        "pr_auc": 0.2569783347839764,
+        "brier": 0.12194002466536596,
         "confusion": {
           "tn": 1124,
           "fp": 386,
@@ -593,7 +593,7 @@
       "airport": "KDFW",
       "horizon_hours": 6,
       "metric": "pr_auc",
-      "value": 0.2567235277579559,
+      "value": 0.2569783347839764,
       "baseline_value": 0.19598833448292508,
       "n": 1774,
       "severe_n": 264,
@@ -603,7 +603,7 @@
       "airport": "KDFW",
       "horizon_hours": 6,
       "metric": "brier",
-      "value": 0.12196504700268719,
+      "value": 0.12194002466536596,
       "baseline_value": 0.12537718023628502,
       "n": 1774,
       "severe_n": 264,
@@ -989,8 +989,8 @@
         "precision": 0.2548262548262548,
         "recall": 0.5,
         "f1": 0.3375959079283887,
-        "pr_auc": 0.2567235277579559,
-        "brier": 0.12196504700268719,
+        "pr_auc": 0.2569783347839764,
+        "brier": 0.12194002466536596,
         "confusion": {
           "tn": 1124,
           "fp": 386,
@@ -1018,7 +1018,7 @@
           "lower": 0.0,
           "upper": 0.1,
           "n": 1008,
-          "mean_probability": 0.05524482603335686,
+          "mean_probability": 0.055249652311794406,
           "observed_severe_rate": 0.09027777777777778
         },
         {
@@ -1032,7 +1032,7 @@
           "lower": 0.2,
           "upper": 0.3,
           "n": 264,
-          "mean_probability": 0.24178297977993385,
+          "mean_probability": 0.24208588360828537,
           "observed_severe_rate": 0.2916666666666667
         },
         {
@@ -1165,17 +1165,17 @@
   ],
   "sources": [
     {
-      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\d388c78a3eb6443a8b17d00ec7a3b2be\\1-flights.parquet",
+      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\571f5ceda96448999f730c4da4203f72\\2-flights.parquet",
       "sha256": "6e446d7c1948333d122bb1fb64b6dd5546537c343e3defbfcf4b07c83ee9b4de",
       "size_bytes": 2472318
     },
     {
-      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\d388c78a3eb6443a8b17d00ec7a3b2be\\2-weather_features.parquet",
-      "sha256": "b768b5a3beb4915374fd4442431f7c354715c1cdf2223849e23c6b34c3b8ba91",
-      "size_bytes": 5374413
+      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\571f5ceda96448999f730c4da4203f72\\1-weather_features.parquet",
+      "sha256": "aa6f389d38078f427c433a464429015fb8993f19653c1d191f639ba40327859e",
+      "size_bytes": 5374451
     },
     {
-      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\d388c78a3eb6443a8b17d00ec7a3b2be\\0-storm_events.parquet",
+      "path": "C:\\Users\\simho\\OneDrive\\Desktop\\AutonomousSG\\vibeclauders\\artifacts\\risk\\input_snapshots\\571f5ceda96448999f730c4da4203f72\\0-storm_events.parquet",
       "sha256": "526cae770223b82dd52fd38aa421afac00938b39f2931d538127d71d73718d04",
       "size_bytes": 46529
     }
@@ -1843,7 +1843,7 @@
       "airport": "KDFW",
       "horizon_hours": 6,
       "metric": "pr_auc",
-      "value": 0.22648374013602549,
+      "value": 0.22679283897888253,
       "baseline_value": 0.18304791479710342,
       "n": 1684,
       "severe_n": 234,
@@ -1879,7 +1879,7 @@
       "airport": "KDFW",
       "horizon_hours": 6,
       "metric": "brier",
-      "value": 0.11623832799927619,
+      "value": 0.11621196836364206,
       "baseline_value": 0.117998867436292,
       "n": 1684,
       "severe_n": 234,
