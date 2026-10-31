@@ -1,7 +1,7 @@
 from streamlit.testing.v1 import AppTest
 
 
-def test_missing_movement_forecasts_and_schedules_stay_unknown():
+def test_missing_forecasts_have_explicitly_labelled_examples_not_fake_schedules():
     app = AppTest.from_string("""
 import pandas as pd
 from src.dashboard.replay import traffic_tiles
@@ -11,7 +11,9 @@ traffic_tiles(None, Snapshot(resolve_airport("KATL"), pd.Timestamp("2025-07-12T2
 """).run()
     assert not app.exception
     text = " ".join(x.value for x in app.markdown)
-    assert "Needs both incoming and outgoing forecasts" in text
+    assert "PLACEHOLDER TOTAL" in text
+    assert "ILLUSTRATIVE" in text
+    assert ">85<" in text
     assert "No schedule at the target hour" in text
     assert ">0<" not in text
 
