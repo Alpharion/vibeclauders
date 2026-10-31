@@ -1,0 +1,42 @@
+{
+  "schema_version": "2.0",
+  "run_id": "m1-20261031T045159Z-3df67d",
+  "generated_at_utc": "2026-10-31T04:52:30+00:00",
+  "producer": "member-1/data_capacity",
+  "label_audit": {
+    "files": [],
+    "label_kind": "facility_aar",
+    "status": "unavailable",
+    "reason": "no genuine ASPM AAR export found in data/public/aspm/*.csv"
+  },
+  "limitations": [
+    "Unmet core Challenge 5 requirement: no genuine facility AAR labels, so no AAR model or RMSE. Sampled arrival counts are NOT relabelled as capacity."
+  ],
+  "missing_inputs": [
+    "no genuine ASPM AAR export found in data/public/aspm/*.csv"
+  ],
+  "status": "unavailable",
+  "metrics": [],
+  "requested_extract": {
+    "source": "FAA ASPM (https://www.aspm.faa.gov/) - authenticated account required",
+    "report": "Airport Analysis / Airport Quarter Hour (or hourly) export, CSV",
+    "airports": [
+      "ATL",
+      "DFW"
+    ],
+    "dates_local": "2023-01-01 through 2025-07-31 (minimum: 2023-01-01..2023-12-31 train, 2024 validate, 2025-01..07 test)",
+    "fields": [
+      "LOCID",
+      "YYYYMMDD",
+      "HR_LOCAL or HR_GMT (state which)",
+      "quarter (if quarter-hour)",
+      "AAR (facility-set Airport Arrival Rate, arrivals/hour)",
+      "ADR (optional)",
+      "scheduled/actual arrivals (optional, for demand)",
+      "runway configuration (optional)",
+      "MC: VMC/IMC (optional)"
+    ],
+    "drop_location": "data/public/aspm/<anything>.csv",
+    "label_definition_required": "Facility-set called AAR (not actual arrival throughput, not GDP program rate, not efficiency AAR)"
+  }
+}
