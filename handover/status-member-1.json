@@ -3,124 +3,57 @@
   "schema_version": "2.0",
   "state": "ready_for_review",
   "started_at_utc": "2026-10-31T04:28:08Z",
-  "updated_at_utc": "2026-10-31T05:13:50.512816+00:00",
-  "elapsed_minutes": 27,
+  "updated_at_utc": "2026-10-31T06:35:00Z",
+  "elapsed_minutes": 127,
   "completed": [
-    "Access gate: IEM METAR/TAF, BTS PREZIP and NOAA Storm Events download automatically; FAA ASPM hourly AAR is behind an account login (artifacts/capacity/data_access.json)",
-    "Canonical flights from the supplied sample: 25,299 rows touching ATL/DFW, 0 exclusions; UTC resolved via registry timezone + CRS elapsed time; DST/2400 handling",
-    "Identity cross-check: all 726 sample flights for Jan 2023 match the full BTS Jan 2023 month on flight_id, UTC schedule, delays and cancellation (the sample is 0.8% of BTS ATL/DFW traffic)",
-    "Decoded weather: 147,010 rows (METAR + TAF prevailing/FM/TEMPO/PROB groups with amendments), 2022-12-30..2025-08-01, both airports",
-    "Cutoff-safe weather features: 135,786 snapshot rows (KATL/KDFW x horizons 3/6/12), 99.96% status=available; runway-relative crosswind/tailwind at ATL 080 / DFW 180",
-    "NOAA storm events near each airport (1,839 events) published for retrospective cohorts only",
-    "AAR training/evaluation pipeline (pooled HistGradientBoosting vs airport x local-hour baseline, contract split, split-conformal intervals); tested on synthetic fixtures only; no real metrics because labels are absent",
-    "Manifest now carries contract artifact_hashes; rerun uses src.shared.flight_key/AIRPORTS (change applied by Member 2 with user authorization)"
+    "Plan 1.1: JSON written with LF on every OS; a test fails on any CR in published JSON",
+    "Plan 1.2: AAR attempt log (data/public/aspm/attempts.json) copied into data_access.json; 2 entries (ASPM login required; organisers provided no AAR data). Gate 2 decision recorded: AAR unmet",
+    "Plan 1.3: traffic_hourly.parquet from all 31 BTS months 2023-01..2025-07: 90,524 rows, KATL/KDFW, arrivals and departures, 0 failed months, coverage=reporting_carriers",
+    "Plan 1.4: 0 inverted weather validity rows (was 5,582); TAF period = 30 h from the 00/06/12/18Z cycle; TEMPO/PROB periods parsed from raw text; contract features unchanged, 35 rows gain month-end cond_* groups",
+    "Plan 1.5: clean automatic run in a fresh worktree with empty caches: 16m01s, exit 0, no manual step, 0 failed downloads",
+    "Reproducibility fix found by the clean run: weather decoding no longer depends on IEM row order; both download sets now give identical outputs (12 feature cells resolved deterministically)",
+    "Plan 1.6: airport-generic proof with a test-only registry (synthetic KORD, heading 270); missing heading or timezone refused with the field named; no third airport in artifacts",
+    "Plan 2.3 interface: forecast.parquet carries nullable aar_observed",
+    "Merged origin/main into zeph with no conflicts; whole-repo tests pass"
   ],
   "artifacts": [
-    {
-      "path": "data/processed/flights.parquet",
-      "run_id": "m1-20261031T050536Z-89e2f0",
-      "status": "available",
-      "coverage": "ATL/DFW sample flights, local dates 2023-01-01..2025-07-31"
-    },
-    {
-      "path": "artifacts/capacity/weather.parquet",
-      "run_id": "m1-20261031T050536Z-89e2f0",
-      "status": "available",
-      "coverage": "KATL/KDFW METAR+TAF issued 2022-12-30..2025-08-01"
-    },
-    {
-      "path": "artifacts/capacity/weather_features.parquet",
-      "run_id": "m1-20261031T050536Z-89e2f0",
-      "status": "available",
-      "coverage": "KATL/KDFW, target hours covering local dates 2023-01-01..2025-07-31, horizons 3/6/12"
-    },
-    {
-      "path": "artifacts/capacity/forecast.parquet",
-      "run_id": "m1-20261031T050536Z-89e2f0",
-      "status": "unavailable",
-      "coverage": null
-    },
-    {
-      "path": "artifacts/capacity/evaluation.json",
-      "run_id": "m1-20261031T050536Z-89e2f0",
-      "status": "unavailable",
-      "coverage": null
-    },
-    {
-      "path": "artifacts/capacity/data_access.json",
-      "run_id": "m1-20261031T050536Z-89e2f0",
-      "status": "partial",
-      "coverage": null
-    },
-    {
-      "path": "data/processed/provenance.json",
-      "run_id": "m1-20261031T050536Z-89e2f0",
-      "status": "partial",
-      "coverage": null
-    },
-    {
-      "path": "data/processed/storm_events.parquet",
-      "run_id": "m1-20261031T050536Z-89e2f0",
-      "status": "available",
-      "coverage": "2022-2025 vicinity counties; retrospective only"
-    },
-    {
-      "path": "artifacts/capacity/manifest.json",
-      "run_id": "m1-20261031T050536Z-89e2f0",
-      "status": "partial",
-      "coverage": null
-    }
+    {"path": "data/processed/flights.parquet", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "available", "coverage": "ATL/DFW sample flights, local dates 2023-01-01..2025-07-31"},
+    {"path": "artifacts/capacity/weather.parquet", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "available", "coverage": "KATL/KDFW METAR+TAF issued 2022-12-30..2025-08-01"},
+    {"path": "artifacts/capacity/weather_features.parquet", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "available", "coverage": "KATL/KDFW, local dates 2023-01-01..2025-07-31, horizons 3/6/12"},
+    {"path": "artifacts/capacity/traffic_hourly.parquet", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "available", "coverage": "KATL/KDFW hourly, BTS months 2023-01..2025-07, reporting carriers"},
+    {"path": "artifacts/capacity/forecast.parquet", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "unavailable", "coverage": null},
+    {"path": "artifacts/capacity/evaluation.json", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "unavailable", "coverage": null},
+    {"path": "artifacts/capacity/data_access.json", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "partial", "coverage": null},
+    {"path": "data/processed/provenance.json", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "partial", "coverage": null},
+    {"path": "data/processed/storm_events.parquet", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "available", "coverage": "2022-2025 vicinity counties; retrospective only"},
+    {"path": "artifacts/capacity/manifest.json", "run_id": "m1-20261031T062924Z-d9dfcd", "status": "partial", "coverage": null}
   ],
   "commands_tested": [
-    "python -c \"import sys, pandas, numpy, sklearn, pyarrow, requests; print(sys.executable); print(pandas.__version__, sklearn.__version__)\"",
-    "python -m src.data_capacity --help",
-    "python -m src.data_capacity run --bts-months 2023-01",
-    "python -m src.data_capacity run --cache-only --bts-months 2023-01",
+    "python -m src.data_capacity bts --workers 4 --months 2023-01 ... 2025-07",
+    "python -m src.data_capacity run",
+    "python -m src.data_capacity run --cache-only",
     "python -m pytest tests/data_capacity -q",
-    "python -m pytest tests/data_capacity -q --basetemp=tmp/pytest-m1-03"
+    "python -m pytest tests -q"
   ],
   "test_results": [
-    {
-      "command": "python -c \"import sys, pandas, numpy, sklearn, pyarrow, requests; ...\"",
-      "result": "passed",
-      "evidence": "C:\\Users\\zepht\\anaconda3\\python.exe; Python 3.14.6, pandas 3.0.3, numpy 2.4.6, scikit-learn 1.9.0, pyarrow 23.0.1"
-    },
-    {
-      "command": "python -m src.data_capacity run --bts-months 2023-01",
-      "result": "passed",
-      "evidence": "run m1-20261031T044419Z-dd5ca6 completed in 2m40s with network downloads; manifest status partial (AAR unavailable)"
-    },
-    {
-      "command": "python -m src.data_capacity run --cache-only --bts-months 2023-01",
-      "result": "passed",
-      "evidence": "offline rerun; flights/weather/features identical in content to the previous run apart from run_id; current run m1-20261031T045159Z-3df67d"
-    },
-    {
-      "command": "python -m src.data_capacity run --bts-months 2023-01",
-      "result": "passed",
-      "evidence": "rerun m1-20261031T050536Z-89e2f0 with downloads; manifest partial (AAR unavailable); flight_key_impl src.shared.flight_key"
-    },
-    {
-      "command": "python -m pytest tests/data_capacity -q --basetemp=tmp/pytest-m1-03",
-      "result": "passed",
-      "evidence": "42 passed (adds artifact_hashes check)"
-    }
+    {"command": "python -m src.data_capacity bts --workers 4 --months 2023-01 ... 2025-07", "result": "passed", "evidence": "31/31 months downloaded and filtered in 10m16s; 0 failed"},
+    {"command": "python -m src.data_capacity run", "result": "passed", "evidence": "fresh worktree, empty caches: 16m01s, exit 0, 0 failed downloads, run m1-20261031T060631Z-ca753e"},
+    {"command": "python -m src.data_capacity run --cache-only", "result": "passed", "evidence": "run m1-20261031T062924Z-d9dfcd (published); manifest status partial: AAR unavailable only"},
+    {"command": "python -m pytest tests/data_capacity -q", "result": "passed", "evidence": "80 passed in the clean worktree"},
+    {"command": "python -m pytest tests -q", "result": "passed", "evidence": "252 passed on zeph after merging origin/main (Windows)"}
   ],
   "blockers": [
     {
       "requirement": "Challenge 5 core: hourly AAR prediction evaluated by RMSE",
-      "reason": "Genuine facility-set AAR is only in FAA ASPM, and its hourly/quarter-hour data needs an authenticated account. No export is present in data/public/aspm/.",
-      "evidence": "https://www.aspm.faa.gov/ landing page shows 'Direct Login' and 'MyAccess Login'; the public APM pages give only delay metrics. The agent did not script around the login (permission policy declined it).",
-      "owner": "Supervisor / a team member with ASPM access (or the sponsor via the supervisor)",
-      "next_action": "Export ATL+DFW ASPM hourly or quarter-hour AAR for 2023-01-01..2025-07-31 (spec in data/public/aspm/README.md), save it as data/public/aspm/*.csv, then run: python -m src.data_capacity run --cache-only"
+      "reason": "No genuine facility AAR labels: FAA ASPM requires credentials the team lacks, and the organisers provided no AAR data",
+      "evidence": "artifacts/capacity/data_access.json aar.attempts (2 entries) and aar.gate_2_decision = AAR unmet",
+      "owner": "Supervisor/team (decision recorded); Member 3 presents it as an unmet requirement",
+      "next_action": "Present as unmet with access evidence and the one-command path. The throughput stretch in plan section 7 needs agreement from all three members and must never be labelled AAR."
     }
   ],
   "next_steps": [
-    "Train and evaluate AAR as soon as a genuine ASPM extract arrives (code is ready; RMSE by airport/horizon, baseline, cohorts, failure case, interval coverage)",
-    "Optional: ingest all BTS months (python -m src.data_capacity bts --months ...) for complete reporting-carrier counts. This still is not as-of-cutoff demand.",
-    "Support Member 2/3 joins: target_hour_utc = floor(scheduled_dep_utc, 1h), asof_utc = target_hour_utc - horizon_hours, airport = ICAO (airport_iata column provided)"
+    "Support Member 3 integration of traffic_hourly and the unavailable AAR state",
+    "Defects only after Gate 3; the suite has not been run on Linux from this machine"
   ],
-  "contract_changes_requested": [
-    "Additive only: weather_features carries extra documented columns (crosswind_upper_kt, crosswind_gust_kt, cond_*, obs_*, lineage) and airport_iata alongside the ICAO airport key; data/processed/storm_events.parquet is a new retrospective-only table"
-  ]
+  "contract_changes_requested": []
 }

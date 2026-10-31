@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
-  "run_id": "m1-20261031T060631Z-6c6e38",
-  "generated_at_utc": "2026-10-31T06:10:34+00:00",
+  "run_id": "m1-20261031T062924Z-d9dfcd",
+  "generated_at_utc": "2026-10-31T06:32:22+00:00",
   "producer": "member-1/data_capacity",
   "status": "partial",
   "decision": "AAR UNAVAILABLE: FAA ASPM hourly/quarter-hour AAR requires an authenticated ASPM account (Direct Login / MyAccess). No credentialed export is present. Weather (IEM METAR/TAF), BTS and NOAA sources are automatically accessible.",
@@ -50,8 +50,21 @@
         "request": "Check whether FAA ASPM hourly/quarter-hour AAR is downloadable without credentials",
         "response": "https://www.aspm.faa.gov/ offers only 'Direct Login' and 'MyAccess Login' for ASPM; the public APM pages (Airport Analysis, City Pair, Taxi Times) give delay metrics, not AAR. A scripted query against the report server was not attempted because it would bypass the account requirement.",
         "status": "refused_no_credentials"
+      },
+      {
+        "at_utc": "2026-10-31T06:29:12Z",
+        "channel": "hackathon organisers (reported to the agent by the team's Member 1)",
+        "requested_by": "team",
+        "request": "Genuine facility AAR (Airport Arrival Acceptance Rate) data for ATL and DFW",
+        "response": "No arrival acceptance rate data was provided by the organisers. at_utc is when this was reported to the agent; the organisers' actual reply time was not recorded.",
+        "status": "not_provided"
       }
     ],
+    "gate_2_decision": {
+      "decided_at_utc": "2026-10-31T06:29:12Z",
+      "decision": "AAR unmet",
+      "basis": "ASPM requires credentials the team does not have; organisers provided no AAR data. No proxy is published (parallel-plan section 7)."
+    },
     "overlap_feasibility": "IEM TAF/METAR cover 2022-12-30..2025-08-01 for both airports, so any ASPM extract for 2023-01..2025-07 would overlap fully with cutoff-safe features."
   },
   "probes": [
