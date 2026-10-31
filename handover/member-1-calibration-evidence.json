@@ -1,0 +1,1215 @@
+{
+  "base_model": {
+    "baseline_airport_frontier": {
+      "KATL": 81.0,
+      "KDFW": 73.0
+    },
+    "cells": [
+      {
+        "airport": "KATL",
+        "estimate": 84.2,
+        "horizon_hours": 3,
+        "level": "regime",
+        "regime": "convective",
+        "support_n": 3
+      },
+      {
+        "airport": "KATL",
+        "estimate": null,
+        "horizon_hours": 3,
+        "level": "regime",
+        "regime": "winter",
+        "support_n": 0
+      },
+      {
+        "airport": "KATL",
+        "estimate": 82.20000000000002,
+        "horizon_hours": 3,
+        "level": "regime",
+        "regime": "ifr",
+        "support_n": 169
+      },
+      {
+        "airport": "KATL",
+        "estimate": 72.3,
+        "horizon_hours": 3,
+        "level": "regime",
+        "regime": "wind",
+        "support_n": 118
+      },
+      {
+        "airport": "KATL",
+        "estimate": 81.0,
+        "horizon_hours": 3,
+        "level": "regime",
+        "regime": "mvfr",
+        "support_n": 186
+      },
+      {
+        "airport": "KATL",
+        "estimate": 81.0,
+        "horizon_hours": 3,
+        "level": "regime",
+        "regime": "vfr",
+        "support_n": 1800
+      },
+      {
+        "airport": "KATL",
+        "estimate": 80.0,
+        "horizon_hours": 3,
+        "level": "group",
+        "regime": "degraded",
+        "support_n": 476
+      },
+      {
+        "airport": "KATL",
+        "estimate": 81.0,
+        "horizon_hours": 3,
+        "level": "group",
+        "regime": "vfr",
+        "support_n": 1800
+      },
+      {
+        "airport": "KATL",
+        "estimate": 81.0,
+        "horizon_hours": 3,
+        "level": "airport",
+        "regime": "all",
+        "support_n": 2276
+      },
+      {
+        "airport": "KATL",
+        "estimate": 84.3,
+        "horizon_hours": 6,
+        "level": "regime",
+        "regime": "convective",
+        "support_n": 4
+      },
+      {
+        "airport": "KATL",
+        "estimate": null,
+        "horizon_hours": 6,
+        "level": "regime",
+        "regime": "winter",
+        "support_n": 0
+      },
+      {
+        "airport": "KATL",
+        "estimate": 82.0,
+        "horizon_hours": 6,
+        "level": "regime",
+        "regime": "ifr",
+        "support_n": 174
+      },
+      {
+        "airport": "KATL",
+        "estimate": 72.0,
+        "horizon_hours": 6,
+        "level": "regime",
+        "regime": "wind",
+        "support_n": 120
+      },
+      {
+        "airport": "KATL",
+        "estimate": 81.1,
+        "horizon_hours": 6,
+        "level": "regime",
+        "regime": "mvfr",
+        "support_n": 190
+      },
+      {
+        "airport": "KATL",
+        "estimate": 81.0,
+        "horizon_hours": 6,
+        "level": "regime",
+        "regime": "vfr",
+        "support_n": 1788
+      },
+      {
+        "airport": "KATL",
+        "estimate": 81.0,
+        "horizon_hours": 6,
+        "level": "group",
+        "regime": "degraded",
+        "support_n": 488
+      },
+      {
+        "airport": "KATL",
+        "estimate": 81.0,
+        "horizon_hours": 6,
+        "level": "group",
+        "regime": "vfr",
+        "support_n": 1788
+      },
+      {
+        "airport": "KATL",
+        "estimate": 81.0,
+        "horizon_hours": 6,
+        "level": "airport",
+        "regime": "all",
+        "support_n": 2276
+      },
+      {
+        "airport": "KATL",
+        "estimate": 46.0,
+        "horizon_hours": 12,
+        "level": "regime",
+        "regime": "convective",
+        "support_n": 1
+      },
+      {
+        "airport": "KATL",
+        "estimate": null,
+        "horizon_hours": 12,
+        "level": "regime",
+        "regime": "winter",
+        "support_n": 0
+      },
+      {
+        "airport": "KATL",
+        "estimate": 83.0,
+        "horizon_hours": 12,
+        "level": "regime",
+        "regime": "ifr",
+        "support_n": 180
+      },
+      {
+        "airport": "KATL",
+        "estimate": 70.0,
+        "horizon_hours": 12,
+        "level": "regime",
+        "regime": "wind",
+        "support_n": 118
+      },
+      {
+        "airport": "KATL",
+        "estimate": 80.0,
+        "horizon_hours": 12,
+        "level": "regime",
+        "regime": "mvfr",
+        "support_n": 208
+      },
+      {
+        "airport": "KATL",
+        "estimate": 81.0,
+        "horizon_hours": 12,
+        "level": "regime",
+        "regime": "vfr",
+        "support_n": 1769
+      },
+      {
+        "airport": "KATL",
+        "estimate": 80.0,
+        "horizon_hours": 12,
+        "level": "group",
+        "regime": "degraded",
+        "support_n": 507
+      },
+      {
+        "airport": "KATL",
+        "estimate": 81.0,
+        "horizon_hours": 12,
+        "level": "group",
+        "regime": "vfr",
+        "support_n": 1769
+      },
+      {
+        "airport": "KATL",
+        "estimate": 81.0,
+        "horizon_hours": 12,
+        "level": "airport",
+        "regime": "all",
+        "support_n": 2276
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 68.0,
+        "horizon_hours": 3,
+        "level": "regime",
+        "regime": "convective",
+        "support_n": 143
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 55.400000000000006,
+        "horizon_hours": 3,
+        "level": "regime",
+        "regime": "winter",
+        "support_n": 3
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 61.0,
+        "horizon_hours": 3,
+        "level": "regime",
+        "regime": "ifr",
+        "support_n": 61
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 72.80000000000001,
+        "horizon_hours": 3,
+        "level": "regime",
+        "regime": "wind",
+        "support_n": 183
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 65.4,
+        "horizon_hours": 3,
+        "level": "regime",
+        "regime": "mvfr",
+        "support_n": 147
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 74.0,
+        "horizon_hours": 3,
+        "level": "regime",
+        "regime": "vfr",
+        "support_n": 1684
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 69.0,
+        "horizon_hours": 3,
+        "level": "group",
+        "regime": "degraded",
+        "support_n": 537
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 74.0,
+        "horizon_hours": 3,
+        "level": "group",
+        "regime": "vfr",
+        "support_n": 1684
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 73.0,
+        "horizon_hours": 3,
+        "level": "airport",
+        "regime": "all",
+        "support_n": 2221
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 67.4,
+        "horizon_hours": 6,
+        "level": "regime",
+        "regime": "convective",
+        "support_n": 134
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 59.0,
+        "horizon_hours": 6,
+        "level": "regime",
+        "regime": "winter",
+        "support_n": 6
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 61.0,
+        "horizon_hours": 6,
+        "level": "regime",
+        "regime": "ifr",
+        "support_n": 71
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 71.80000000000001,
+        "horizon_hours": 6,
+        "level": "regime",
+        "regime": "wind",
+        "support_n": 193
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 64.0,
+        "horizon_hours": 6,
+        "level": "regime",
+        "regime": "mvfr",
+        "support_n": 151
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 74.0,
+        "horizon_hours": 6,
+        "level": "regime",
+        "regime": "vfr",
+        "support_n": 1666
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 67.0,
+        "horizon_hours": 6,
+        "level": "group",
+        "regime": "degraded",
+        "support_n": 555
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 74.0,
+        "horizon_hours": 6,
+        "level": "group",
+        "regime": "vfr",
+        "support_n": 1666
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 73.0,
+        "horizon_hours": 6,
+        "level": "airport",
+        "regime": "all",
+        "support_n": 2221
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 65.0,
+        "horizon_hours": 12,
+        "level": "regime",
+        "regime": "convective",
+        "support_n": 125
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 40.000000000000014,
+        "horizon_hours": 12,
+        "level": "regime",
+        "regime": "winter",
+        "support_n": 7
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 62.0,
+        "horizon_hours": 12,
+        "level": "regime",
+        "regime": "ifr",
+        "support_n": 84
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 71.0,
+        "horizon_hours": 12,
+        "level": "regime",
+        "regime": "wind",
+        "support_n": 206
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 63.0,
+        "horizon_hours": 12,
+        "level": "regime",
+        "regime": "mvfr",
+        "support_n": 164
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 74.0,
+        "horizon_hours": 12,
+        "level": "regime",
+        "regime": "vfr",
+        "support_n": 1635
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 67.0,
+        "horizon_hours": 12,
+        "level": "group",
+        "regime": "degraded",
+        "support_n": 586
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 74.0,
+        "horizon_hours": 12,
+        "level": "group",
+        "regime": "vfr",
+        "support_n": 1635
+      },
+      {
+        "airport": "KDFW",
+        "estimate": 73.0,
+        "horizon_hours": 12,
+        "level": "airport",
+        "regime": "all",
+        "support_n": 2221
+      }
+    ],
+    "demand_thresholds": {
+      "KATL": 57.0,
+      "KDFW": 60.0
+    }
+  },
+  "correction": {
+    "cells": [
+      {
+        "airport": "KATL",
+        "backoff": "airport_lead_residual",
+        "horizon_hours": 3,
+        "offset": -1.0,
+        "support_n": 1699
+      },
+      {
+        "airport": "KATL",
+        "backoff": "airport_lead_residual",
+        "horizon_hours": 6,
+        "offset": -1.0,
+        "support_n": 1699
+      },
+      {
+        "airport": "KATL",
+        "backoff": "airport_lead_residual",
+        "horizon_hours": 12,
+        "offset": -1.0,
+        "support_n": 1699
+      },
+      {
+        "airport": "KDFW",
+        "backoff": "airport_lead_residual",
+        "horizon_hours": 3,
+        "offset": -0.8000000000000114,
+        "support_n": 1706
+      },
+      {
+        "airport": "KDFW",
+        "backoff": "airport_lead_residual",
+        "horizon_hours": 6,
+        "offset": 0.0,
+        "support_n": 1706
+      },
+      {
+        "airport": "KDFW",
+        "backoff": "airport_lead_residual",
+        "horizon_hours": 12,
+        "offset": 0.0,
+        "support_n": 1706
+      }
+    ],
+    "fit_end_local": "2024-08-31",
+    "fit_start_local": "2024-01-01",
+    "method": "additive_residual_q0.90_airport_lead_v1",
+    "min_support": 100,
+    "model_fitted_data_end_utc": "2024-09-01T05:00:00+00:00",
+    "model_selection_end_utc": "2025-01-01T06:00:00+00:00",
+    "quantile": 0.9,
+    "selection_end_local": "2024-12-31"
+  },
+  "decision": {
+    "adopt": false,
+    "macro_pinball_after": 2.9445922084454232,
+    "macro_pinball_before": 2.9069987196976044,
+    "macro_rmse_after": 20.372969924543572,
+    "macro_rmse_before": 20.84397102678418,
+    "pinball_reduction": -0.012932062368341768,
+    "rmse_increase": -0.022596514917209265,
+    "worst_cell_pinball_increase": 0.03423952675303821
+  },
+  "experiment": "candidate_b_additive_q90",
+  "incumbent_publication_manifest_sha256": "c0d6d26ba4f3f6c216e07a302a4826d868a6893e889c508cff342a9013e9c363",
+  "incumbent_publication_run_id": "m1-capest-20261031T072310Z-a27968",
+  "protocol": {
+    "base_fit": "2023",
+    "calibration": "January-August 2024",
+    "cohort": "available/partial cutoff-safe weather, observed target and 2023-derived high-demand screen",
+    "demand_percentile": 0.75,
+    "quantile": 0.9,
+    "rule": ">=1% macro pinball reduction; <=2% macro RMSE increase; <=5% each-cell pinball increase",
+    "selection": "September-December 2024",
+    "support_rule": "100 distinct eligible calibration hours per airport/lead; otherwise zero offset",
+    "test_policy": "Only after locked choice; previously inspected 2025 is not pristine external validation"
+  },
+  "sources": {
+    "capacity_manifest": "artifacts/capacity/manifest.json",
+    "capacity_manifest_sha256": "e41f85fb26d73d4cddef33c2f5ed146199ef5d0207a505cae4bb424b152b2656",
+    "inputs": [
+      {
+        "name": "traffic_hourly",
+        "path": "artifacts/capacity/traffic_hourly.parquet",
+        "sha256": "bd14ee2bfc7aab93276306c248562e78b2723549ad9e2fe0911afb0c5cbedcde",
+        "upstream_run_id": "m1-20261031T065014Z-eacdd5"
+      },
+      {
+        "name": "weather_features",
+        "path": "artifacts/capacity/weather_features.parquet",
+        "sha256": "6c4374d1c4ed5816b7b6feba100852ddef250947c301e6a12fd9ffd7faf7fd81",
+        "upstream_run_id": "m1-20261031T065014Z-eacdd5"
+      }
+    ],
+    "upstream_run_id": "m1-20261031T065014Z-eacdd5"
+  },
+  "updated_2025_backtest": "Not run: validation rejected candidate; incumbent publication retained.",
+  "validation": [
+    {
+      "after": {
+        "coverage": 0.8620309050772627,
+        "n": 906,
+        "n_unique_hours": 906,
+        "pinball": 2.4625496688741717,
+        "rmse": 19.341440315182936
+      },
+      "airport": "KATL",
+      "before": {
+        "coverage": 0.8774834437086093,
+        "n": 906,
+        "n_unique_hours": 906,
+        "pinball": 2.424911699779249,
+        "rmse": 20.123299017691124
+      },
+      "calibration_backoff_counts": {
+        "airport_lead_residual": 906
+      },
+      "calibration_support_n": [
+        1699
+      ],
+      "excluded_snapshots": 2023,
+      "horizon_hours": 3,
+      "incumbent_backoff_counts": {
+        "regime": 906
+      },
+      "input_status_counts": {
+        "available": 2928,
+        "partial": 1
+      },
+      "same_cohort_sha256": "4389b767bde993accef0928a720c55ce7ab8cc5267df28cbbb75495def0aee50",
+      "severe": [
+        {
+          "after": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "before": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "regime": "convective"
+        },
+        {
+          "after": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "before": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "regime": "winter"
+        },
+        {
+          "after": {
+            "coverage": 0.9393939393939394,
+            "n": 99,
+            "n_unique_hours": 99,
+            "pinball": 2.305858585858586,
+            "rmse": 21.840782906750356
+          },
+          "before": {
+            "coverage": 0.9393939393939394,
+            "n": 99,
+            "n_unique_hours": 99,
+            "pinball": 2.345252525252525,
+            "rmse": 22.71775881676197
+          },
+          "regime": "ifr"
+        },
+        {
+          "after": {
+            "coverage": 0.8787878787878788,
+            "n": 33,
+            "n_unique_hours": 33,
+            "pinball": 2.048181818181818,
+            "rmse": 14.587011657324094
+          },
+          "before": {
+            "coverage": 0.9090909090909091,
+            "n": 33,
+            "n_unique_hours": 33,
+            "pinball": 2.036060606060606,
+            "rmse": 15.364826025304637
+          },
+          "regime": "wind"
+        }
+      ],
+      "total_snapshots": 2929,
+      "training_airport_baseline": {
+        "coverage": 0.8785871964679912,
+        "n": 906,
+        "n_unique_hours": 906,
+        "pinball": 2.428145695364238,
+        "rmse": 20.256005023556565
+      },
+      "unavailable_base_predictions": 0
+    },
+    {
+      "after": {
+        "coverage": 0.8642384105960265,
+        "n": 906,
+        "n_unique_hours": 906,
+        "pinball": 2.470783664459161,
+        "rmse": 19.375211456511835
+      },
+      "airport": "KATL",
+      "before": {
+        "coverage": 0.8774834437086093,
+        "n": 906,
+        "n_unique_hours": 906,
+        "pinball": 2.435353200883002,
+        "rmse": 20.15760008184513
+      },
+      "calibration_backoff_counts": {
+        "airport_lead_residual": 906
+      },
+      "calibration_support_n": [
+        1699
+      ],
+      "excluded_snapshots": 2023,
+      "horizon_hours": 6,
+      "incumbent_backoff_counts": {
+        "regime": 906
+      },
+      "input_status_counts": {
+        "available": 2928,
+        "partial": 1
+      },
+      "same_cohort_sha256": "6cde22dec675a7c1c1365046a8de499e3b28cba276978b47b72212f3eb7dd324",
+      "severe": [
+        {
+          "after": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "before": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "regime": "convective"
+        },
+        {
+          "after": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "before": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "regime": "winter"
+        },
+        {
+          "after": {
+            "coverage": 0.9405940594059405,
+            "n": 101,
+            "n_unique_hours": 101,
+            "pinball": 2.2980198019801983,
+            "rmse": 21.76085139569099
+          },
+          "before": {
+            "coverage": 0.9405940594059405,
+            "n": 101,
+            "n_unique_hours": 101,
+            "pinball": 2.338613861386138,
+            "rmse": 22.635729226684134
+          },
+          "regime": "ifr"
+        },
+        {
+          "after": {
+            "coverage": 0.8888888888888888,
+            "n": 27,
+            "n_unique_hours": 27,
+            "pinball": 2.2666666666666666,
+            "rmse": 13.936363306911248
+          },
+          "before": {
+            "coverage": 0.8888888888888888,
+            "n": 27,
+            "n_unique_hours": 27,
+            "pinball": 2.255555555555555,
+            "rmse": 14.700718047466632
+          },
+          "regime": "wind"
+        }
+      ],
+      "total_snapshots": 2929,
+      "training_airport_baseline": {
+        "coverage": 0.8785871964679912,
+        "n": 906,
+        "n_unique_hours": 906,
+        "pinball": 2.428145695364238,
+        "rmse": 20.256005023556565
+      },
+      "unavailable_base_predictions": 0
+    },
+    {
+      "after": {
+        "coverage": 0.8631346578366446,
+        "n": 906,
+        "n_unique_hours": 906,
+        "pinball": 2.461699779249448,
+        "rmse": 19.350348377741312
+      },
+      "airport": "KATL",
+      "before": {
+        "coverage": 0.8763796909492274,
+        "n": 906,
+        "n_unique_hours": 906,
+        "pinball": 2.4248344370860924,
+        "rmse": 20.130123057364447
+      },
+      "calibration_backoff_counts": {
+        "airport_lead_residual": 906
+      },
+      "calibration_support_n": [
+        1699
+      ],
+      "excluded_snapshots": 2023,
+      "horizon_hours": 12,
+      "incumbent_backoff_counts": {
+        "regime": 906
+      },
+      "input_status_counts": {
+        "available": 2928,
+        "partial": 1
+      },
+      "same_cohort_sha256": "7b366644153ac94ae436dc91ebcb4e6bea3f38c6fa0b8a7b5b9e0b4ee1eb8f1c",
+      "severe": [
+        {
+          "after": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "before": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "regime": "convective"
+        },
+        {
+          "after": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "before": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "regime": "winter"
+        },
+        {
+          "after": {
+            "coverage": 0.9270833333333334,
+            "n": 96,
+            "n_unique_hours": 96,
+            "pinball": 2.373958333333333,
+            "rmse": 22.737863062888444
+          },
+          "before": {
+            "coverage": 0.9375,
+            "n": 96,
+            "n_unique_hours": 96,
+            "pinball": 2.401041666666666,
+            "rmse": 23.617392955193
+          },
+          "regime": "ifr"
+        },
+        {
+          "after": {
+            "coverage": 0.8620689655172413,
+            "n": 29,
+            "n_unique_hours": 29,
+            "pinball": 2.0172413793103448,
+            "rmse": 12.7455198349094
+          },
+          "before": {
+            "coverage": 0.9310344827586207,
+            "n": 29,
+            "n_unique_hours": 29,
+            "pinball": 1.9793103448275862,
+            "rmse": 13.480509557543975
+          },
+          "regime": "wind"
+        }
+      ],
+      "total_snapshots": 2929,
+      "training_airport_baseline": {
+        "coverage": 0.8785871964679912,
+        "n": 906,
+        "n_unique_hours": 906,
+        "pinball": 2.428145695364238,
+        "rmse": 20.256005023556565
+      },
+      "unavailable_base_predictions": 0
+    },
+    {
+      "after": {
+        "coverage": 0.7537399309551208,
+        "n": 869,
+        "n_unique_hours": 869,
+        "pinball": 3.492635212888379,
+        "rmse": 21.152334760559757
+      },
+      "airport": "KDFW",
+      "before": {
+        "coverage": 0.766398158803222,
+        "n": 869,
+        "n_unique_hours": 869,
+        "pinball": 3.3770080552359034,
+        "rmse": 21.634319366538776
+      },
+      "calibration_backoff_counts": {
+        "airport_lead_residual": 869
+      },
+      "calibration_support_n": [
+        1706
+      ],
+      "excluded_snapshots": 2060,
+      "horizon_hours": 3,
+      "incumbent_backoff_counts": {
+        "regime": 869
+      },
+      "input_status_counts": {
+        "available": 2929
+      },
+      "same_cohort_sha256": "907e486fe9facb0bf45bd410089e6fd8f709181bd1df5d8e578b69a9610644e8",
+      "severe": [
+        {
+          "after": {
+            "coverage": 0.8709677419354839,
+            "n": 31,
+            "n_unique_hours": 31,
+            "pinball": 3.1554838709677417,
+            "rmse": 32.074127851265956
+          },
+          "before": {
+            "coverage": 0.9032258064516129,
+            "n": 31,
+            "n_unique_hours": 31,
+            "pinball": 3.132258064516128,
+            "rmse": 32.670890663925796
+          },
+          "regime": "convective"
+        },
+        {
+          "after": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "before": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "regime": "winter"
+        },
+        {
+          "after": {
+            "coverage": 0.7058823529411765,
+            "n": 34,
+            "n_unique_hours": 34,
+            "pinball": 3.6758823529411786,
+            "rmse": 19.06147948087975
+          },
+          "before": {
+            "coverage": 0.7352941176470589,
+            "n": 34,
+            "n_unique_hours": 34,
+            "pinball": 3.5205882352941167,
+            "rmse": 19.4928342791728
+          },
+          "regime": "ifr"
+        },
+        {
+          "after": {
+            "coverage": 0.7469879518072289,
+            "n": 83,
+            "n_unique_hours": 83,
+            "pinball": 2.8698795180722896,
+            "rmse": 18.026753879212052
+          },
+          "before": {
+            "coverage": 0.7469879518072289,
+            "n": 83,
+            "n_unique_hours": 83,
+            "pinball": 2.7474698795180705,
+            "rmse": 18.546041697640028
+          },
+          "regime": "wind"
+        }
+      ],
+      "total_snapshots": 2929,
+      "training_airport_baseline": {
+        "coverage": 0.7744533947065593,
+        "n": 869,
+        "n_unique_hours": 869,
+        "pinball": 3.4426927502876867,
+        "rmse": 22.10256976764731
+      },
+      "unavailable_base_predictions": 0
+    },
+    {
+      "after": {
+        "coverage": 0.7640966628308401,
+        "n": 869,
+        "n_unique_hours": 869,
+        "pinball": 3.3866743383199074,
+        "rmse": 21.530644524139454
+      },
+      "airport": "KDFW",
+      "before": {
+        "coverage": 0.7640966628308401,
+        "n": 869,
+        "n_unique_hours": 869,
+        "pinball": 3.3866743383199074,
+        "rmse": 21.530644524139454
+      },
+      "calibration_backoff_counts": {
+        "airport_lead_residual": 869
+      },
+      "calibration_support_n": [
+        1706
+      ],
+      "excluded_snapshots": 2060,
+      "horizon_hours": 6,
+      "incumbent_backoff_counts": {
+        "regime": 869
+      },
+      "input_status_counts": {
+        "available": 2929
+      },
+      "same_cohort_sha256": "07425488d57bc35916c807f39d3fabd5053e347bef16585a11cee39dba223476",
+      "severe": [
+        {
+          "after": {
+            "coverage": 0.8333333333333334,
+            "n": 30,
+            "n_unique_hours": 30,
+            "pinball": 3.036666666666666,
+            "rmse": 31.399044571451537
+          },
+          "before": {
+            "coverage": 0.8333333333333334,
+            "n": 30,
+            "n_unique_hours": 30,
+            "pinball": 3.036666666666666,
+            "rmse": 31.399044571451537
+          },
+          "regime": "convective"
+        },
+        {
+          "after": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "before": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "regime": "winter"
+        },
+        {
+          "after": {
+            "coverage": 0.7419354838709677,
+            "n": 31,
+            "n_unique_hours": 31,
+            "pinball": 3.496774193548386,
+            "rmse": 18.74962365213697
+          },
+          "before": {
+            "coverage": 0.7419354838709677,
+            "n": 31,
+            "n_unique_hours": 31,
+            "pinball": 3.496774193548386,
+            "rmse": 18.74962365213697
+          },
+          "regime": "ifr"
+        },
+        {
+          "after": {
+            "coverage": 0.7619047619047619,
+            "n": 84,
+            "n_unique_hours": 84,
+            "pinball": 2.7811904761904738,
+            "rmse": 17.493930920396917
+          },
+          "before": {
+            "coverage": 0.7619047619047619,
+            "n": 84,
+            "n_unique_hours": 84,
+            "pinball": 2.7811904761904738,
+            "rmse": 17.493930920396917
+          },
+          "regime": "wind"
+        }
+      ],
+      "total_snapshots": 2929,
+      "training_airport_baseline": {
+        "coverage": 0.7744533947065593,
+        "n": 869,
+        "n_unique_hours": 869,
+        "pinball": 3.4426927502876867,
+        "rmse": 22.10256976764731
+      },
+      "unavailable_base_predictions": 0
+    },
+    {
+      "after": {
+        "coverage": 0.762945914844649,
+        "n": 869,
+        "n_unique_hours": 869,
+        "pinball": 3.3932105868814726,
+        "rmse": 21.48784011312614
+      },
+      "airport": "KDFW",
+      "before": {
+        "coverage": 0.762945914844649,
+        "n": 869,
+        "n_unique_hours": 869,
+        "pinball": 3.3932105868814726,
+        "rmse": 21.48784011312614
+      },
+      "calibration_backoff_counts": {
+        "airport_lead_residual": 869
+      },
+      "calibration_support_n": [
+        1706
+      ],
+      "excluded_snapshots": 2060,
+      "horizon_hours": 12,
+      "incumbent_backoff_counts": {
+        "regime": 869
+      },
+      "input_status_counts": {
+        "available": 2929
+      },
+      "same_cohort_sha256": "2cae43e5b11608e16c90b163ba88fc87589691321776aab6d24bb87a52bf8329",
+      "severe": [
+        {
+          "after": {
+            "coverage": 0.8076923076923077,
+            "n": 26,
+            "n_unique_hours": 26,
+            "pinball": 3.253846153846154,
+            "rmse": 28.292428995431596
+          },
+          "before": {
+            "coverage": 0.8076923076923077,
+            "n": 26,
+            "n_unique_hours": 26,
+            "pinball": 3.253846153846154,
+            "rmse": 28.292428995431596
+          },
+          "regime": "convective"
+        },
+        {
+          "after": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "before": {
+            "coverage": null,
+            "n": 0,
+            "n_unique_hours": 0,
+            "pinball": null,
+            "rmse": null
+          },
+          "regime": "winter"
+        },
+        {
+          "after": {
+            "coverage": 0.7575757575757576,
+            "n": 33,
+            "n_unique_hours": 33,
+            "pinball": 3.4636363636363634,
+            "rmse": 21.52165928040443
+          },
+          "before": {
+            "coverage": 0.7575757575757576,
+            "n": 33,
+            "n_unique_hours": 33,
+            "pinball": 3.4636363636363634,
+            "rmse": 21.52165928040443
+          },
+          "regime": "ifr"
+        },
+        {
+          "after": {
+            "coverage": 0.7777777777777778,
+            "n": 90,
+            "n_unique_hours": 90,
+            "pinball": 2.821111111111111,
+            "rmse": 16.48399897543743
+          },
+          "before": {
+            "coverage": 0.7777777777777778,
+            "n": 90,
+            "n_unique_hours": 90,
+            "pinball": 2.821111111111111,
+            "rmse": 16.48399897543743
+          },
+          "regime": "wind"
+        }
+      ],
+      "total_snapshots": 2929,
+      "training_airport_baseline": {
+        "coverage": 0.7744533947065593,
+        "n": 869,
+        "n_unique_hours": 869,
+        "pinball": 3.4426927502876867,
+        "rmse": 22.10256976764731
+      },
+      "unavailable_base_predictions": 0
+    }
+  ]
+}
