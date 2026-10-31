@@ -6,7 +6,7 @@ from src.dashboard import views
 from src.dashboard.data import load_bundle
 from src.dashboard.views import resolve_airport
 from tests.dashboard import conftest as c
-from tests.dashboard.test_app import run, text  # noqa: F401
+from tests.dashboard.test_app import run, text, show  # noqa: F401
 
 KATL = resolve_airport("KATL")
 
@@ -21,22 +21,24 @@ def frames(app):
 
 def test_absent_additions_show_unavailable_states(run, root):
     app = run(root)
-    app.toggle(key="reveal").set_value(True).run()
-    body = text(app)
+    app.session_state["reveal"] = True
+    app.run()
+    body = text(show(app, "Evaluation")) + text(show(app, "Compare")) + text(show(app, "Traffic"))
     for name in ("Impact comparison", "Storm-event cohorts", "AAR trend", "Reporting-carrier traffic"):
         assert f"**{name} unavailable.**" in body
 
 
 def test_evaluation_additions_render(run, root):
     c.publish_risk(root, evaluation=full_evaluation())
-    app = run(root)
+    app = show(run(root), "Evaluation")
     assert "Measured prediction comparison, not an operational saving" in text(app)
     assert any("model_recall" in f.columns for f in frames(app))
     assert any("cohort" in f.columns for f in frames(app))
     assert "False alarm" not in text(app)  # Failure cases hold outcomes.
-    app.toggle(key="reveal").set_value(True).run()
+    app.session_state["reveal"] = True
+    app.run()
     assert not app.exception
-    assert "**False alarm**" in text(app)
+    assert "**False alarm**" in text(show(app, "Evaluation"))
 
 
 def test_old_and_new_failure_fields_are_not_repeated():
@@ -58,20 +60,22 @@ def test_aar_trend_is_behind_reveal(run, tmp_path):
     c.publish_risk(tmp_path)
     c.publish_capacity(tmp_path, forecast_table=c.forecast().assign(aar_observed=80.0))
     app = run(tmp_path)
-    app.radio(key="horizon").set_value(6).run()
+    next(w for w in app.get("button_group") if w.key == "horizon").set_value(6).run()
     assert not any("aar_observed" in f.columns for f in frames(app))
-    app.toggle(key="reveal").set_value(True).run()
+    app.session_state["reveal"] = True
+    app.run()
     assert not app.exception
-    assert any("aar_observed" in f.columns for f in frames(app))
+    assert any("aar_observed" in f.columns for f in frames(show(app, "Compare")))
 
 
 def test_actual_traffic_counts_need_reveal(run, root):
     c.publish_capacity(root, traffic_table=c.traffic())
-    app = run(root)
+    app = show(run(root), "Traffic")
     assert "not queue demand" in text(app)
-    assert not any("actual_count" in f.columns for f in frames(app))
-    app.toggle(key="reveal").set_value(True).run()
-    assert any("actual_count" in f.columns for f in frames(app))
+    assert "Actual in / out" not in text(app)
+    app.session_state["reveal"] = True
+    app.run()
+    assert "Actual in / out" in text(show(app, "Traffic"))
 
 
 def test_traffic_gap_stays_missing():

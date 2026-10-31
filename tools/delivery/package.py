@@ -72,7 +72,7 @@ def collect(root: Path) -> tuple[dict[str, bytes], list[dict]]:
                 add(path)
     add(root / "output/delivery/build-package.py")
     for name in ("verification.json", "VERIFICATION.md", "frozen-baseline.json",
-                 "controller-brief.json", "CONTROLLER_BRIEF.md"):
+                 "controller-brief.json", "CONTROLLER_BRIEF.md", "arrival-scenario.json"):
         path = root / "output/delivery" / name
         if path.is_file():
             add(path)

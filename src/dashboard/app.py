@@ -218,3 +218,10 @@ def main() -> None:
         live_screen.render(HISTORICAL, FOOTER)
     else:
         replay_mode()
+
+# Compatibility for direct panel callers; the application routes through replay.
+from src.dashboard.presentation_actions import review_actions_section, arrival_scenario_section
+
+def compare_tab(bundle, snapshot, window, reveal):
+    forecasts = replay.outputs.movement_forecasts(bundle, snapshot.airport, snapshot.asof_utc, False)
+    return replay.compare_tab(bundle, snapshot, window, reveal, forecasts)

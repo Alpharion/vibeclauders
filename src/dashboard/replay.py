@@ -247,7 +247,14 @@ def weather_risk_card(bundle: Bundle, snapshot: Snapshot) -> None:
 def response_card(bundle: Bundle, snapshot: Snapshot) -> None:
     actions, reason = outputs.proposed_actions(bundle, snapshot)
     with card("response"):
-        card_title("Proposed response", glyph="file")
+        card_title("Review priorities", glyph="file")
+        brief, problem = views.review_priorities(bundle, snapshot)
+        if brief is not None and brief["status"] == "available":
+            st.write(f"{brief['flagged_flights']} departures meet their review threshold.")
+            st.caption("Review weather and airline/inbound-aircraft status. See Compare for ranked priorities and evidence.")
+        else:
+            st.caption("Departure review priorities unavailable: " + (problem or brief["summary"]))
+        st.caption("Operational proposal")
         if not actions:
             html(badge("NOT AVAILABLE"))
             st.caption(reason)
@@ -610,6 +617,11 @@ def compare_tab(bundle: Bundle, snapshot: Snapshot, window: int, reveal: bool, f
         st.info("This comparison uses observed outcomes. Turn on **Reveal outcomes** to view it.", icon="🔒")
     else:
         revealed_summary(bundle, snapshot, results, forecasts)
+    from src.dashboard.presentation_actions import review_actions_section, arrival_scenario_section
+    with st.container(border=True):
+        card_title("Proposed actions", "For human review. Nothing is transmitted.")
+        review_actions_section(bundle, snapshot)
+        arrival_scenario_section(bundle, snapshot, window)
     scenario_table(bundle, snapshot, results, reveal)
     if reveal:
         with st.expander("Departure-delay alerts at this key"):
@@ -828,6 +840,8 @@ def aar_trend_section(bundle: Bundle, snapshot: Snapshot) -> None:
 
 
 def evaluation_tab(bundle: Bundle, snapshot: Snapshot | None, reveal: bool) -> None:
+    from src.dashboard.readiness import render_readiness
+    render_readiness(bundle, snapshot)
     with st.container(horizontal=True, vertical_alignment="top"):
         theme.title("Evaluation & data coverage", "Models, baselines and evidence behind the replay")
         st.space("stretch")
